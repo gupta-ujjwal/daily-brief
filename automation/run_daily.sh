@@ -15,6 +15,11 @@ cd "$ROOT"
 # Make tools resolvable even under a bare systemd environment.
 export PATH="$HOME/.nix-profile/bin:/run/current-system/sw/bin:/usr/bin:/bin:$PATH"
 
+# Mirror the interactive shell's Claude auth (loaded from secrets in .zshrc).
+# A systemd service doesn't source your shell, so load it here if present.
+[ -f "$HOME/.config/secrets/anthropic_token" ] && \
+  export ANTHROPIC_AUTH_TOKEN="$(cat "$HOME/.config/secrets/anthropic_token")"
+
 log() { printf '%s  %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"; }
 
 DATE="$(date +%F)"
