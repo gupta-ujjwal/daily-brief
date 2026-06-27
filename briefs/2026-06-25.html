@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Brief · 25 June 2026</title>
+<style>
+  :root {
+    --bg: #100f0c; --bg2: #0b0a08; --panel: #18160f; --panel2: #1f1c13;
+    --ink: #f0ebdd; --ink-dim: #cfc8b6; --muted: #8d8676; --line: #2a271e;
+    --hn: #ff8c42; --reddit: #ff5470; --substack: #2dd4bf;
+    --accent: var(--hn);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(900px 500px at 85% -10%, rgba(255,140,66,.10), transparent 60%),
+      radial-gradient(700px 500px at 5% 0%, rgba(45,212,191,.06), transparent 55%);
+    background-attachment: fixed;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 28px 96px; }
+
+  /* ---- Masthead ---- */
+  .masthead { border-bottom: 2px solid var(--line); padding-bottom: 22px; margin-bottom: 8px; }
+  .eyebrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    text-transform: uppercase; letter-spacing: .16em; color: var(--accent); }
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 12px var(--accent); }
+  .eyebrow .sep { color: var(--muted); }
+  h1.title { font: 800 clamp(34px, 6vw, 60px)/1.02 Georgia, "Times New Roman", serif;
+    margin: 14px 0 4px; letter-spacing: -.025em; }
+  h1.title em { color: var(--accent); font-style: italic; }
+  .standfirst { color: var(--muted); font-size: 15px; max-width: 62ch; margin: 6px 0 0; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px;
+    font: 600 12px/1 ui-monospace, monospace; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-dim); }
+  .legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+  /* ---- source theming (per-item accent) ---- */
+  .src-hackernews { --accent: var(--hn); }
+  .src-reddit { --accent: var(--reddit); }
+  .src-substack { --accent: var(--substack); }
+  .legend i.hn { background: var(--hn); }
+  .legend i.reddit { background: var(--reddit); }
+  .legend i.substack { background: var(--substack); }
+
+  .badge { display: inline-flex; align-items: center; gap: 6px;
+    font: 700 10.5px/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    padding: 5px 9px; border-radius: 999px; white-space: nowrap; }
+  .lead-tag { font: 700 10.5px/1 ui-monospace, monospace; text-transform: uppercase;
+    letter-spacing: .2em; color: var(--muted); }
+  .meta { color: var(--muted); font: 500 12.5px/1.5 ui-monospace, monospace; }
+  .meta a { color: var(--accent); text-decoration: none; }
+  .meta a:hover { text-decoration: underline; }
+  .meta .also { color: var(--muted); }
+  .meter { height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .meter > span { display: block; height: 100%;
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 35%, transparent)); }
+
+  /* ---- Tabs (pure CSS: hidden radios + labels, no JS) ---- */
+  .tabs { margin-top: 30px; }
+  .tabinput { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .tabbar { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 30px; padding: 6px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; max-width: 100%; }
+  .tab { cursor: pointer; user-select: none; padding: 10px 16px; border-radius: 9px;
+    font: 700 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .03em;
+    color: var(--muted); display: inline-flex; align-items: center; gap: 9px;
+    border: 1px solid transparent; transition: color .15s, background .15s, box-shadow .15s; }
+  .tab::before { content: ""; width: 9px; height: 9px; border-radius: 3px;
+    background: var(--tabc, var(--muted)); }
+  .tab .count { font: 700 11px/1 ui-monospace, monospace; color: var(--muted);
+    background: var(--panel2); padding: 3px 7px; border-radius: 999px; }
+  .tab:hover { color: var(--ink-dim); }
+  .tab-industry { --tabc: #e2703a; }
+  .tab-learning { --tabc: #7c9eff; }
+  .tab-products { --tabc: #34d399; }
+  .tabinput:focus-visible + .tabbar .tab { outline: none; }
+
+  .panel { display: none; }
+  .panel-intro { color: var(--muted); font-size: 14px; margin: -8px 0 22px; max-width: 70ch; }
+
+  /* show the panel + light up the tab matching the checked radio */
+  #tab-industry:checked ~ #panel-industry,
+  #tab-learning:checked ~ #panel-learning,
+  #tab-products:checked ~ #panel-products { display: block; animation: panel-in .22s ease both; }
+  #tab-industry:checked ~ .tabbar .tab-industry,
+  #tab-learning:checked ~ .tabbar .tab-learning,
+  #tab-products:checked ~ .tabbar .tab-products {
+    color: var(--ink); background: color-mix(in srgb, var(--tabc) 15%, var(--panel2));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tabc) 45%, transparent); }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .card { position: relative; border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px 22px; background: var(--panel);
+    display: flex; flex-direction: column; gap: 12px; transition: border-color .15s, transform .15s; }
+  .card:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); transform: translateY(-2px); }
+  .card .kicker { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  a.card-title { color: var(--ink); text-decoration: none; font: 700 19px/1.28 Georgia, serif; }
+  a.card-title:hover { color: var(--accent); }
+  .card-gist { color: var(--ink-dim); font-size: 14px; line-height: 1.55; margin: 0; flex: 1; }
+  .card .meta { margin-top: 2px; }
+
+  /* lead card — first (top-ranked) item in each section, full width */
+  .card.lead { grid-column: 1 / -1; padding: 28px 30px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%), var(--panel); }
+  .card.lead::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    border-radius: 14px 0 0 14px; background: var(--accent); }
+  .card.lead a.card-title { font: 800 clamp(22px, 3vw, 31px)/1.14 Georgia, serif; letter-spacing: -.02em; }
+  .card.lead .card-gist { font-size: 16px; max-width: 70ch; }
+
+  footer { color: var(--muted); font: 12px/1.6 ui-monospace, monospace; margin-top: 56px;
+    padding-top: 22px; border-top: 1px solid var(--line); text-align: center; }
+  footer a { color: var(--accent); }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 28px 18px 72px; }
+    .grid { grid-template-columns: 1fr; }
+    .card.lead { padding: 22px 22px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="masthead src-hackernews">
+      <div class="eyebrow">
+        <span class="dot"></span> Daily Brief
+        <span class="sep">/</span> 25 June 2026
+        <span class="sep">/</span> last 24h, across platforms
+      </div>
+      <h1 class="title">The day in <em>tech</em>, distilled</h1>
+      <p class="standfirst">Hacker News, Reddit and Substack — ranked across platforms and split across three tabs: <em>The Wire</em>, <em>Deep Dives</em> and <em>Worth a Try</em>. Flip through, with the gist of each.</p>
+      <div class="legend">
+        <span><i class="hn"></i>Hacker News · 26</span>
+        <span><i class="reddit"></i>Reddit · 4</span>
+        <span><i class="substack"></i>Substack · 8</span>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <input type="radio" name="brieftab" id="tab-industry" class="tabinput" checked>
+      <input type="radio" name="brieftab" id="tab-learning" class="tabinput">
+      <input type="radio" name="brieftab" id="tab-products" class="tabinput">
+      <nav class="tabbar">
+        <label for="tab-industry" class="tab tab-industry">The Wire <span class="count">10</span></label>
+        <label for="tab-learning" class="tab tab-learning">Deep Dives <span class="count">12</span></label>
+        <label for="tab-products" class="tab tab-products">Worth a Try <span class="count">8</span></label>
+      </nav>
+      <section id="panel-industry" class="panel">
+        <p class="panel-intro">What's moving across the industry — funding, deals, launches and power plays.</p>
+        <div class="grid">
+        <article class="card lead src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span><span class="lead-tag">Top</span></div>
+        <a class="card-title" href="https://techcrunch.com/2026/06/24/openai-unveils-its-first-custom-chip-built-by-broadcom/">OpenAI unveils its first custom chip, built by Broadcom</a>
+        <p class="card-gist">Skeptics mock the “Jalapeño” name and the AI-accelerated-design claim; others note cheap in-house inference silicon quietly erodes Nvidia&#x27;s moat.</p>
+        <div class="meta">728 pts · 416 comments · <a href="https://news.ycombinator.com/item?id=48663324">discuss →</a></div>
+        <div class="meter"><span style="width:100%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://www.reuters.com/world/china/anthropic-says-alibaba-illicitly-extracted-claude-ai-model-capabilities-2026-06-24/">Anthropic says Alibaba illicitly extracted Claude AI model capabilities</a>
+        <p class="card-gist">Split — some call it Anthropic scapegoating Chinese providers for regulatory cover; others detail black-box vs targeted distillation and reasoning-trace harvesting.</p>
+        <div class="meta">506 pts · 864 comments · <a href="https://news.ycombinator.com/item?id=48664814">discuss →</a></div>
+        <div class="meter"><span style="width:98%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Platformer</span></div>
+        <a class="card-title" href="https://www.platformer.news/matt-garman-aws-ceo-interview-ai-jobs/">The CEO of AWS on why Amazon is hiring 11,000 interns and junior employees</a>
+        <p class="card-gist">Matt Garman says junior hires matter as much as ever — even as AWS now sells agents that recruit, code and process claims.</p>
+        <div class="meta">Casey Newton · <a href="https://www.platformer.news/matt-garman-aws-ceo-interview-ai-jobs/">read →</a></div>
+        <div class="meter"><span style="width:82%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/technology</span></div>
+        <a class="card-title" href="https://www.gadgetreview.com/reid-hoffman-xai-is-a-train-wreck-and-spacex-is-just-buying-its-ai-cred">Reid Hoffman: xAI Is a Train Wreck and SpaceX Is Just Buying Its AI Cred</a>
+        <p class="card-gist">Reid Hoffman calls xAI a “train wreck” and says SpaceX is buying its AI credibility; the thread veers into politics and stock-dumping.</p>
+        <div class="meta">74 comments · <a href="https://www.reddit.com/r/technology/comments/1uer54l/reid_hoffman_xai_is_a_train_wreck_and_spacex_is/">open →</a></div>
+        <div class="meter"><span style="width:67%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://www.reuters.com/business/qualcomm-buy-ai-startup-modular-2026-06-24/">Qualcomm to Acquire Modular</a>
+        <p class="card-gist">Mixed feelings on Mojo&#x27;s “one language, many compute models” ambition; read as Qualcomm assembling an ARM/RISC-V CUDA-alternative AI stack.</p>
+        <div class="meta">209 pts · 76 comments · <a href="https://news.ycombinator.com/item?id=48659798">discuss →</a></div>
+        <div class="meter"><span style="width:65%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://www.economist.com/business/2026/06/21/zombie-unicorns-are-haunting-silicon-valley">Zombie unicorns are haunting Silicon Valley</a>
+        <p class="card-gist">Commenters argue VC valuations are meaningless markers; the real danger is investment-dependent startups sliding toward oblivion once markups stop.</p>
+        <div class="meta">130 pts · 72 comments · <a href="https://news.ycombinator.com/item?id=48668020">discuss →</a></div>
+        <div class="meter"><span style="width:58%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Big Technology</span></div>
+        <a class="card-title" href="https://www.bigtechnology.com/p/greg-brockman-on-openais-plan-to">Greg Brockman On OpenAI’s Plan To Win: Compute Rules All</a>
+        <p class="card-gist">Greg Brockman argues that winning the compute race may be the key to OpenAI winning more broadly.</p>
+        <div class="meta">Marty Swant · <a href="https://www.bigtechnology.com/p/greg-brockman-on-openais-plan-to">read →</a></div>
+        <div class="meter"><span style="width:51%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/technology</span></div>
+        <a class="card-title" href="https://deadline.com/2026/06/peppa-pig-hasbro-child-actors-ai-backlash-1236967142/">‘Peppa Pig’ Causes AI Stink: Concern as Beloved Hasbro Series Asks Child Actors to Sign Over Their Voices to Artificial Intelligence</a>
+        <p class="card-gist">Outcry over Hasbro asking child voice actors to sign their voices over to AI; commenters argue minors can&#x27;t consent and want voice-rights laws.</p>
+        <div class="meta">48 comments · <a href="https://www.reddit.com/r/technology/comments/1uf775z/peppa_pig_causes_ai_stink_concern_as_beloved/">open →</a></div>
+        <div class="meter"><span style="width:46%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">The Pragmatic Engineer</span></div>
+        <a class="card-title" href="https://newsletter.pragmaticengineer.com/p/the-pulse-big-implications-of-us">The Pulse: Big implications of US banning Anthropic’s new model, Fable</a>
+        <p class="card-gist">Roundup — fallout from the US banning Anthropic&#x27;s new model Fable, Meta&#x27;s eroding eng culture, the SpaceX IPO, and Cursor&#x27;s GitHub rival.</p>
+        <div class="meta">Gergely Orosz · <a href="https://newsletter.pragmaticengineer.com/p/the-pulse-big-implications-of-us">read →</a></div>
+        <div class="meter"><span style="width:36%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/technology</span></div>
+        <a class="card-title" href="https://www.theguardian.com/society/2026/jun/25/hospitals-nhs-england-critical-incidents-machines-it-fail-extreme-heat">Hospitals in England declare critical incidents as machines and IT fail in heat</a>
+        <p class="card-gist">Extreme heat downs NHS radiotherapy machines, MRI scanners and IT systems; commenters note the infrastructure was never designed for these temperatures.</p>
+        <div class="meta">38 comments · <a href="https://www.reddit.com/r/technology/comments/1uf79o4/hospitals_in_england_declare_critical_incidents/">open →</a></div>
+        <div class="meter"><span style="width:26%"></span></div>
+      </article>
+        </div>
+      </section>
+      <section id="panel-learning" class="panel">
+        <p class="panel-intro">Essays, ideas and new tech worth slowing down to understand.</p>
+        <div class="grid">
+        <article class="card lead src-reddit">
+        <div class="kicker"><span class="badge">r/technology</span><span class="lead-tag">Top</span></div>
+        <a class="card-title" href="https://www.thedrive.com/news/if-phones-are-killing-pedestrians-why-is-it-only-happening-in-america">If Phones Are Killing Pedestrians, Why Is It Only Happening in America?</a>
+        <p class="card-gist">Commenters blame America&#x27;s lax licensing, car-centric road design and weak enforcement — not just phones — for the country&#x27;s pedestrian-death spike.</p>
+        <div class="meta">181 comments · <a href="https://www.reddit.com/r/technology/comments/1uen84t/if_phones_are_killing_pedestrians_why_is_it_only/">open →</a></div>
+        <div class="meter"><span style="width:92%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">The Pragmatic Engineer</span></div>
+        <a class="card-title" href="https://newsletter.pragmaticengineer.com/p/tech-interviews-with-neetcode">Tech interviews with NeetCode</a>
+        <p class="card-gist">NeetCode on going from Amazon and Google to building a startup — and why deep expertise still matters in the age of AI.</p>
+        <div class="meta">Gergely Orosz · <a href="https://newsletter.pragmaticengineer.com/p/tech-interviews-with-neetcode">read →</a></div>
+        <div class="meter"><span style="width:90%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://blogs.nvidia.com/blog/liquid-cooling-ai-factories/">45°C cooling design cuts data center water use to near zero</a>
+        <p class="card-gist">Talk turns to reusing 45°C waste heat for district heating and even space-based datacenters; commenters debate why a sealed loop uses water at all.</p>
+        <div class="meta">368 pts · 268 comments · <a href="https://news.ycombinator.com/item?id=48660178">discuss →</a></div>
+        <div class="meter"><span style="width:89%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://blog.jim-nielsen.com/2026/blogging-stating-the-obvious/">Blogging can just be stating the obvious</a>
+        <p class="card-gist">Broad agreement — there&#x27;s always a new cohort who doesn&#x27;t know what you know; the key ingredient is a willingness to state the obvious.</p>
+        <div class="meta">275 pts · 95 comments · <a href="https://news.ycombinator.com/item?id=48666927">discuss →</a></div>
+        <div class="meter"><span style="width:81%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">The Pragmatic Engineer</span></div>
+        <a class="card-title" href="https://newsletter.pragmaticengineer.com/p/slow-down-to-speed-up">Slow down to speed up: so much has changed in 6 months’ time</a>
+        <p class="card-gist">How engineering work has shifted over six months — and why deliberately slowing down can be the sensible strategy.</p>
+        <div class="meta">Gergely Orosz · <a href="https://newsletter.pragmaticengineer.com/p/slow-down-to-speed-up">read →</a></div>
+        <div class="meter"><span style="width:75%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://www.greptile.com/blog/prs-on-openclaw">PR spam today looks like email spam in the early 2000s</a>
+        <p class="card-gist">Divided between banning AI-generated PRs outright and treating authors as teachable newcomers; “agents reviewing agent slop” gets pushback.</p>
+        <div class="meta">234 pts · 135 comments · <a href="https://news.ycombinator.com/item?id=48660579">discuss →</a></div>
+        <div class="meter"><span style="width:74%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-computer-use-gemini-3-5-flash/">Computer use in Gemini 3.5 Flash</a>
+        <p class="card-gist">Heavy skepticism — screenshot-driven control is slow, insecure and error-prone — plus complaints about over-tuned refusals on Google&#x27;s models.</p>
+        <div class="meta">227 pts · 148 comments · <a href="https://news.ycombinator.com/item?id=48662999">discuss →</a></div>
+        <div class="meter"><span style="width:71%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Astral Codex Ten</span></div>
+        <a class="card-title" href="https://www.astralcodexten.com/p/should-people-avoid-whole-body-screening">Should People Avoid Whole-Body Screening Info?</a>
+        <p class="card-gist">Scott Alexander weighs whether people are sometimes better off not knowing what a whole-body screen would reveal.</p>
+        <div class="meta">Scott Alexander · <a href="https://www.astralcodexten.com/p/should-people-avoid-whole-body-screening">read →</a></div>
+        <div class="meter"><span style="width:67%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://github.com/LuaJIT/LuaJIT/issues/1475">LuaJIT 3.0 proposed syntax extensions</a>
+        <p class="card-gist">Debate over ternary syntax (if-then-else vs ?:) and whether these even count as “syntax extensions”; general approval of the pragmatic ergonomics.</p>
+        <div class="meta">174 pts · 101 comments · <a href="https://news.ycombinator.com/item?id=48667336">discuss →</a></div>
+        <div class="meter"><span style="width:62%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Import AI</span></div>
+        <a class="card-title" href="https://importai.substack.com/p/import-ai-462-superpersuasion-self">Import AI 462: Superpersuasion; self-sustaining AI; paths to ASI</a>
+        <p class="card-gist">Jack Clark on superpersuasion, self-sustaining AI, paths to ASI, and how religious belief in the singularity has quietly become.</p>
+        <div class="meta">Jack Clark · <a href="https://importai.substack.com/p/import-ai-462-superpersuasion-self">read →</a></div>
+        <div class="meter"><span style="width:59%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Ask HN</span></div>
+        <a class="card-title" href="https://news.ycombinator.com/item?id=48668199">Ask HN: Where is our profession (programmer) going?</a>
+        <p class="card-gist">A founder rattled by Claude-heavy teams asks where programming is headed; replies split between “expertise still matters” and clients offloading everything to AI.</p>
+        <div class="meta">64 pts · 72 comments · <span class="also">also on Ask HN</span> · <a href="https://news.ycombinator.com/item?id=48668199">discuss →</a></div>
+        <div class="meter"><span style="width:50%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Astral Codex Ten</span></div>
+        <a class="card-title" href="https://www.astralcodexten.com/p/preliminary-thoughts-on-the-midjourney">Preliminary Thoughts On The Midjourney Scanner</a>
+        <p class="card-gist">Scott Alexander&#x27;s preliminary thoughts on the Midjourney “scanner.”</p>
+        <div class="meta">Scott Alexander · <a href="https://www.astralcodexten.com/p/preliminary-thoughts-on-the-midjourney">read →</a></div>
+        <div class="meter"><span style="width:44%"></span></div>
+      </article>
+        </div>
+      </section>
+      <section id="panel-products" class="panel">
+        <p class="panel-intro">Products, repos and apps to look out for and actually use.</p>
+        <div class="grid">
+        <article class="card lead src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span><span class="lead-tag">Top</span></div>
+        <a class="card-title" href="https://rubyllm.com/">RubyLLM: A Ruby framework for all major AI providers</a>
+        <p class="card-gist">Users love the DX but flag the leaky-wrapper problem — caching, tool schemas and reasoning tokens differ per provider — plus Ruby&#x27;s slipping mindshare.</p>
+        <div class="meta">398 pts · 70 comments · <a href="https://news.ycombinator.com/item?id=48660711">discuss →</a></div>
+        <div class="meter"><span style="width:89%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://hl2.slqnt.dev/">Half-Life 2 in a Browser</a>
+        <p class="card-gist">Nostalgia plus amazement that nothing can truly be blocked once it runs client-side; commenters swap Quake 3, UT and noclip.website links.</p>
+        <div class="meta">339 pts · 121 comments · <a href="https://news.ycombinator.com/item?id=48669534">discuss →</a></div>
+        <div class="meter"><span style="width:85%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://blog.omgmog.net/post/xteink-x4-e-ink-reader/">The Xteink X4 E-Ink Reader</a>
+        <p class="card-gist">Fans love the cheap, hackable, wifi-transfer reader over a locked-down Kindle; open questions on hyphenation and layout-engine quality.</p>
+        <div class="meta">271 pts · 156 comments · <a href="https://news.ycombinator.com/item?id=48662381">discuss →</a></div>
+        <div class="meter"><span style="width:79%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://github.com/nubjs/nub">Show HN: Nub – A Bun-like all-in-one toolkit for Node.js</a>
+        <p class="card-gist">Praised for augmenting stock Node via a --require hook rather than rewriting it; questions on --require-vs--import and TypeScript path resolution.</p>
+        <div class="meta">254 pts · 70 comments · <a href="https://news.ycombinator.com/item?id=48660267">discuss →</a></div>
+        <div class="meter"><span style="width:75%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://blog.cloudflare.com/oauth-for-all/">Cloudflare launched self-managed OAuth for all</a>
+        <p class="card-gist">Readers puzzle over who the post is for; broader venting that OAuth and enterprise auth are the most confusing part of the cloud.</p>
+        <div class="meta">212 pts · 93 comments · <a href="https://news.ycombinator.com/item?id=48668033">discuss →</a></div>
+        <div class="meter"><span style="width:68%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Show HN</span></div>
+        <a class="card-title" href="https://lookaway.com">Show HN: LookAway, a Mac break reminder that knows when not to interrupt</a>
+        <p class="card-gist">A native Mac break reminder that avoids interrupting at bad moments; feedback flags piracy/DMCA hassles and a laggy marketing site.</p>
+        <div class="meta">66 pts · 21 comments · <a href="https://news.ycombinator.com/item?id=48659483">discuss →</a></div>
+        <div class="meter"><span style="width:50%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Show HN</span></div>
+        <a class="card-title" href="https://wealtii.com">Show HN: Wealtii – A multi-sig digital asset index fund built by a solo founder</a>
+        <p class="card-gist">A 22-year-old solo dev shows an on-chain multi-sig index-fund platform built over eight months on FastAPI, React, Celery and Postgres.</p>
+        <div class="meta">47 pts · 1 comments · <a href="https://news.ycombinator.com/item?id=48660975">discuss →</a></div>
+        <div class="meter"><span style="width:39%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Show HN</span></div>
+        <a class="card-title" href="https://ebookaloud.com">Show HN: eBook to audiobook narration with realistic AI voices</a>
+        <p class="card-gist">A free, subscription-less ebook-to-audiobook tool built on the open Kokoro TTS model; commenters compare it with F5-TTS and other open voices.</p>
+        <div class="meta">7 pts · 5 comments · <a href="https://news.ycombinator.com/item?id=48661083">discuss →</a></div>
+        <div class="meter"><span style="width:22%"></span></div>
+      </article>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      Built from <a href="https://hn.algolia.com/api">Hacker News</a>,
+      <a href="https://www.reddit.com">Reddit</a> &amp;
+      Substack RSS · generated 25 Jun 2026, 17:58
+    </footer>
+  </div>
+</body>
+</html>

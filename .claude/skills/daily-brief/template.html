@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Brief · {{DATE}}</title>
+<style>
+  :root {
+    --bg: #100f0c; --bg2: #0b0a08; --panel: #18160f; --panel2: #1f1c13;
+    --ink: #f0ebdd; --ink-dim: #cfc8b6; --muted: #8d8676; --line: #2a271e;
+    --hn: #ff8c42; --reddit: #ff5470; --substack: #2dd4bf;
+    --accent: var(--hn);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(900px 500px at 85% -10%, rgba(255,140,66,.10), transparent 60%),
+      radial-gradient(700px 500px at 5% 0%, rgba(45,212,191,.06), transparent 55%);
+    background-attachment: fixed;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 28px 96px; }
+
+  /* ---- Masthead ---- */
+  .masthead { border-bottom: 2px solid var(--line); padding-bottom: 22px; margin-bottom: 8px; }
+  .eyebrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    text-transform: uppercase; letter-spacing: .16em; color: var(--accent); }
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 12px var(--accent); }
+  .eyebrow .sep { color: var(--muted); }
+  h1.title { font: 800 clamp(34px, 6vw, 60px)/1.02 Georgia, "Times New Roman", serif;
+    margin: 14px 0 4px; letter-spacing: -.025em; }
+  h1.title em { color: var(--accent); font-style: italic; }
+  .standfirst { color: var(--muted); font-size: 15px; max-width: 62ch; margin: 6px 0 0; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px;
+    font: 600 12px/1 ui-monospace, monospace; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-dim); }
+  .legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+  /* ---- source theming (per-item accent) ---- */
+  .src-hackernews { --accent: var(--hn); }
+  .src-reddit { --accent: var(--reddit); }
+  .src-substack { --accent: var(--substack); }
+  .legend i.hn { background: var(--hn); }
+  .legend i.reddit { background: var(--reddit); }
+  .legend i.substack { background: var(--substack); }
+
+  .badge { display: inline-flex; align-items: center; gap: 6px;
+    font: 700 10.5px/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    padding: 5px 9px; border-radius: 999px; white-space: nowrap; }
+  .lead-tag { font: 700 10.5px/1 ui-monospace, monospace; text-transform: uppercase;
+    letter-spacing: .2em; color: var(--muted); }
+  .meta { color: var(--muted); font: 500 12.5px/1.5 ui-monospace, monospace; }
+  .meta a { color: var(--accent); text-decoration: none; }
+  .meta a:hover { text-decoration: underline; }
+  .meta .also { color: var(--muted); }
+  .meter { height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .meter > span { display: block; height: 100%;
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 35%, transparent)); }
+
+  /* ---- Tabs (pure CSS: hidden radios + labels, no JS) ---- */
+  .tabs { margin-top: 30px; }
+  .tabinput { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .tabbar { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 30px; padding: 6px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; max-width: 100%; }
+  .tab { cursor: pointer; user-select: none; padding: 10px 16px; border-radius: 9px;
+    font: 700 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .03em;
+    color: var(--muted); display: inline-flex; align-items: center; gap: 9px;
+    border: 1px solid transparent; transition: color .15s, background .15s, box-shadow .15s; }
+  .tab::before { content: ""; width: 9px; height: 9px; border-radius: 3px;
+    background: var(--tabc, var(--muted)); }
+  .tab .count { font: 700 11px/1 ui-monospace, monospace; color: var(--muted);
+    background: var(--panel2); padding: 3px 7px; border-radius: 999px; }
+  .tab:hover { color: var(--ink-dim); }
+  .tab-industry { --tabc: #e2703a; }
+  .tab-learning { --tabc: #7c9eff; }
+  .tab-products { --tabc: #34d399; }
+  .tabinput:focus-visible + .tabbar .tab { outline: none; }
+
+  .panel { display: none; }
+  .panel-intro { color: var(--muted); font-size: 14px; margin: -8px 0 22px; max-width: 70ch; }
+
+  /* show the panel + light up the tab matching the checked radio */
+  #tab-industry:checked ~ #panel-industry,
+  #tab-learning:checked ~ #panel-learning,
+  #tab-products:checked ~ #panel-products { display: block; animation: panel-in .22s ease both; }
+  #tab-industry:checked ~ .tabbar .tab-industry,
+  #tab-learning:checked ~ .tabbar .tab-learning,
+  #tab-products:checked ~ .tabbar .tab-products {
+    color: var(--ink); background: color-mix(in srgb, var(--tabc) 15%, var(--panel2));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tabc) 45%, transparent); }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .card { position: relative; border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px 22px; background: var(--panel);
+    display: flex; flex-direction: column; gap: 12px; transition: border-color .15s, transform .15s; }
+  .card:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); transform: translateY(-2px); }
+  .card .kicker { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  a.card-title { color: var(--ink); text-decoration: none; font: 700 19px/1.28 Georgia, serif; }
+  a.card-title:hover { color: var(--accent); }
+  .card-gist { color: var(--ink-dim); font-size: 14px; line-height: 1.55; margin: 0; flex: 1; }
+  .card .meta { margin-top: 2px; }
+
+  /* lead card — first (top-ranked) item in each section, full width */
+  .card.lead { grid-column: 1 / -1; padding: 28px 30px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%), var(--panel); }
+  .card.lead::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    border-radius: 14px 0 0 14px; background: var(--accent); }
+  .card.lead a.card-title { font: 800 clamp(22px, 3vw, 31px)/1.14 Georgia, serif; letter-spacing: -.02em; }
+  .card.lead .card-gist { font-size: 16px; max-width: 70ch; }
+
+  footer { color: var(--muted); font: 12px/1.6 ui-monospace, monospace; margin-top: 56px;
+    padding-top: 22px; border-top: 1px solid var(--line); text-align: center; }
+  footer a { color: var(--accent); }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 28px 18px 72px; }
+    .grid { grid-template-columns: 1fr; }
+    .card.lead { padding: 22px 22px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="masthead src-hackernews">
+      <div class="eyebrow">
+        <span class="dot"></span> Daily Brief
+        <span class="sep">/</span> {{DATE}}
+        <span class="sep">/</span> last 24h, across platforms
+      </div>
+      <h1 class="title">The day in <em>tech</em>, distilled</h1>
+      <p class="standfirst">Hacker News, Reddit and Substack — ranked across platforms and split across three tabs: <em>The Wire</em>, <em>Deep Dives</em> and <em>Worth a Try</em>. Flip through, with the gist of each.</p>
+      <div class="legend">
+        {{SOURCE_LEGEND}}
+      </div>
+    </header>
+
+    {{SECTIONS}}
+
+    <footer>
+      Built from <a href="https://hn.algolia.com/api">Hacker News</a>,
+      <a href="https://www.reddit.com">Reddit</a> &amp;
+      Substack RSS · generated {{GENERATED}} · <a href="{{ROOT}}archive.html">archive</a>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Brief · 27 June 2026</title>
+<style>
+  :root {
+    --bg: #100f0c; --bg2: #0b0a08; --panel: #18160f; --panel2: #1f1c13;
+    --ink: #f0ebdd; --ink-dim: #cfc8b6; --muted: #8d8676; --line: #2a271e;
+    --hn: #ff8c42; --reddit: #ff5470; --substack: #2dd4bf;
+    --accent: var(--hn);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(900px 500px at 85% -10%, rgba(255,140,66,.10), transparent 60%),
+      radial-gradient(700px 500px at 5% 0%, rgba(45,212,191,.06), transparent 55%);
+    background-attachment: fixed;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 28px 96px; }
+
+  /* ---- Masthead ---- */
+  .masthead { border-bottom: 2px solid var(--line); padding-bottom: 22px; margin-bottom: 8px; }
+  .eyebrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    text-transform: uppercase; letter-spacing: .16em; color: var(--accent); }
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 12px var(--accent); }
+  .eyebrow .sep { color: var(--muted); }
+  h1.title { font: 800 clamp(34px, 6vw, 60px)/1.02 Georgia, "Times New Roman", serif;
+    margin: 14px 0 4px; letter-spacing: -.025em; }
+  h1.title em { color: var(--accent); font-style: italic; }
+  .standfirst { color: var(--muted); font-size: 15px; max-width: 62ch; margin: 6px 0 0; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px;
+    font: 600 12px/1 ui-monospace, monospace; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-dim); }
+  .legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+  /* ---- source theming (per-item accent) ---- */
+  .src-hackernews { --accent: var(--hn); }
+  .src-reddit { --accent: var(--reddit); }
+  .src-substack { --accent: var(--substack); }
+  .legend i.hn { background: var(--hn); }
+  .legend i.reddit { background: var(--reddit); }
+  .legend i.substack { background: var(--substack); }
+
+  .badge { display: inline-flex; align-items: center; gap: 6px;
+    font: 700 10.5px/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    padding: 5px 9px; border-radius: 999px; white-space: nowrap; }
+  .lead-tag { font: 700 10.5px/1 ui-monospace, monospace; text-transform: uppercase;
+    letter-spacing: .2em; color: var(--muted); }
+  .meta { color: var(--muted); font: 500 12.5px/1.5 ui-monospace, monospace; }
+  .meta a { color: var(--accent); text-decoration: none; }
+  .meta a:hover { text-decoration: underline; }
+  .meta .also { color: var(--muted); }
+  .meter { height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .meter > span { display: block; height: 100%;
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 35%, transparent)); }
+
+  /* ---- Tabs (pure CSS: hidden radios + labels, no JS) ---- */
+  .tabs { margin-top: 30px; }
+  .tabinput { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .tabbar { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 30px; padding: 6px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; max-width: 100%; }
+  .tab { cursor: pointer; user-select: none; padding: 10px 16px; border-radius: 9px;
+    font: 700 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .03em;
+    color: var(--muted); display: inline-flex; align-items: center; gap: 9px;
+    border: 1px solid transparent; transition: color .15s, background .15s, box-shadow .15s; }
+  .tab::before { content: ""; width: 9px; height: 9px; border-radius: 3px;
+    background: var(--tabc, var(--muted)); }
+  .tab .count { font: 700 11px/1 ui-monospace, monospace; color: var(--muted);
+    background: var(--panel2); padding: 3px 7px; border-radius: 999px; }
+  .tab:hover { color: var(--ink-dim); }
+  .tab-industry { --tabc: #e2703a; }
+  .tab-learning { --tabc: #7c9eff; }
+  .tab-products { --tabc: #34d399; }
+  .tabinput:focus-visible + .tabbar .tab { outline: none; }
+
+  .panel { display: none; }
+  .panel-intro { color: var(--muted); font-size: 14px; margin: -8px 0 22px; max-width: 70ch; }
+
+  /* show the panel + light up the tab matching the checked radio */
+  #tab-industry:checked ~ #panel-industry,
+  #tab-learning:checked ~ #panel-learning,
+  #tab-products:checked ~ #panel-products { display: block; animation: panel-in .22s ease both; }
+  #tab-industry:checked ~ .tabbar .tab-industry,
+  #tab-learning:checked ~ .tabbar .tab-learning,
+  #tab-products:checked ~ .tabbar .tab-products {
+    color: var(--ink); background: color-mix(in srgb, var(--tabc) 15%, var(--panel2));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tabc) 45%, transparent); }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .card { position: relative; border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px 22px; background: var(--panel);
+    display: flex; flex-direction: column; gap: 12px; transition: border-color .15s, transform .15s; }
+  .card:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); transform: translateY(-2px); }
+  .card .kicker { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  a.card-title { color: var(--ink); text-decoration: none; font: 700 19px/1.28 Georgia, serif; }
+  a.card-title:hover { color: var(--accent); }
+  .card-gist { color: var(--ink-dim); font-size: 14px; line-height: 1.55; margin: 0; flex: 1; }
+  .card .meta { margin-top: 2px; }
+
+  /* lead card — first (top-ranked) item in each section, full width */
+  .card.lead { grid-column: 1 / -1; padding: 28px 30px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%), var(--panel); }
+  .card.lead::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    border-radius: 14px 0 0 14px; background: var(--accent); }
+  .card.lead a.card-title { font: 800 clamp(22px, 3vw, 31px)/1.14 Georgia, serif; letter-spacing: -.02em; }
+  .card.lead .card-gist { font-size: 16px; max-width: 70ch; }
+
+  footer { color: var(--muted); font: 12px/1.6 ui-monospace, monospace; margin-top: 56px;
+    padding-top: 22px; border-top: 1px solid var(--line); text-align: center; }
+  footer a { color: var(--accent); }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 28px 18px 72px; }
+    .grid { grid-template-columns: 1fr; }
+    .card.lead { padding: 22px 22px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="masthead src-hackernews">
+      <div class="eyebrow">
+        <span class="dot"></span> Daily Brief
+        <span class="sep">/</span> 27 June 2026
+        <span class="sep">/</span> last 24h, across platforms
+      </div>
+      <h1 class="title">The day in <em>tech</em>, distilled</h1>
+      <p class="standfirst">Hacker News, Reddit and Substack — ranked across platforms and split across three tabs: <em>The Wire</em>, <em>Deep Dives</em> and <em>Worth a Try</em>. Flip through, with the gist of each.</p>
+      <div class="legend">
+        <span><i class="hn"></i>Hacker News · 26</span>
+        <span><i class="reddit"></i>Reddit · 3</span>
+        <span><i class="substack"></i>Substack · 7</span>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <input type="radio" name="brieftab" id="tab-industry" class="tabinput" checked>
+      <input type="radio" name="brieftab" id="tab-learning" class="tabinput">
+      <input type="radio" name="brieftab" id="tab-products" class="tabinput">
+      <nav class="tabbar">
+        <label for="tab-industry" class="tab tab-industry">The Wire <span class="count">10</span></label>
+        <label for="tab-learning" class="tab tab-learning">Deep Dives <span class="count">14</span></label>
+        <label for="tab-products" class="tab tab-products">Worth a Try <span class="count">6</span></label>
+      </nav>
+      <section id="panel-industry" class="panel">
+        <p class="panel-intro">What's moving across the industry — funding, deals, launches and power plays.</p>
+        <div class="grid">
+        <article class="card lead src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span><span class="lead-tag">Top</span></div>
+        <a class="card-title" href="https://www.reuters.com/world/asia-pacific/apple-raises-prices-macbooks-ipads-memory-costs-skyrocket-2026-06-25/">Apple raises prices of MacBooks, iPads</a>
+        <p class="card-gist">Apple hiked Mac and iPad prices 20–30%, citing component costs they can no longer absorb after long shielding customers.</p>
+        <div class="meta">680 pts · 980 comments · <a href="https://news.ycombinator.com/item?id=48672732">discuss →</a></div>
+        <div class="meter"><span style="width:94%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://om.co/2026/06/24/1966-2026/">Om Malik has died</a>
+        <p class="card-gist">Om Malik, godfather of early tech blogging who lifted up many writers around him, died at 60.</p>
+        <div class="meta">724 pts · 72 comments · <a href="https://news.ycombinator.com/item?id=48678852">discuss →</a></div>
+        <div class="meter"><span style="width:93%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://newsroom.ibm.com/2026-06-25-ibm-debuts-worlds-first-sub-1-nanometer-chip-technology">IBM debuts sub-1 nanometer chip technology</a>
+        <p class="card-gist">IBM&#x27;s sub-1nm node is a transistor density milestone, not a literal dimension—actual features remain far larger than 1nm.</p>
+        <div class="meta">293 pts · 160 comments · <a href="https://news.ycombinator.com/item?id=48674967">discuss →</a></div>
+        <div class="meter"><span style="width:82%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://twitter.com/mfts0/status/2070080422482977095">Hey Nico, you didn&#x27;t vibe code your data room but stole it from Papermark</a>
+        <p class="card-gist">Startup allegedly shipped AGPL-licensed Papermark code rebranded as vibe-coded from scratch, violating open-source license obligations.</p>
+        <div class="meta">244 pts · 98 comments · <a href="https://news.ycombinator.com/item?id=48672328">discuss →</a></div>
+        <div class="meter"><span style="width:78%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Platformer</span></div>
+        <a class="card-title" href="https://www.platformer.news/matt-garman-aws-ceo-interview-ai-jobs/">The CEO of AWS on why Amazon is hiring 11,000 interns and junior employees</a>
+        <p class="card-gist">AWS CEO defends hiring 11,000 junior employees even while AWS sells AI agents that automate the same entry-level tasks.</p>
+        <div class="meta">Casey Newton · <a href="https://www.platformer.news/matt-garman-aws-ceo-interview-ai-jobs/">read →</a></div>
+        <div class="meter"><span style="width:73%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://www.bloomberg.com/news/articles/2026-06-25/apple-to-skip-high-end-m6-mac-chips-to-launch-m7-pro-m7-max-m7-ultra-instead?embedded-checkout=true">Apple to skip high-end M6 Mac chips in favor of AI-focused M7 line</a>
+        <p class="card-gist">Apple skipping M6 high-end chips to prioritize an AI-focused M7 architecture, pushing MacBook Pro redesign past 2027.</p>
+        <div class="meta">181 pts · 141 comments · <a href="https://news.ycombinator.com/item?id=48676795">discuss →</a></div>
+        <div class="meter"><span style="width:67%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/technology</span></div>
+        <a class="card-title" href="https://www.theverge.com/transportation/956316/ford-quality-jd-power-ranking-ai-automated-mistakes">Ford had to hire back former engineers to fix mistakes made by its automated systems</a>
+        <p class="card-gist">Ford&#x27;s AI-driven design automation introduced enough errors that they had to rehire the experienced engineers they&#x27;d previously let go.</p>
+        <div class="meta">174 comments · <a href="https://www.reddit.com/r/technology/comments/1uf81ob/ford_had_to_hire_back_former_engineers_to_fix/">open →</a></div>
+        <div class="meter"><span style="width:64%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Ask HN</span></div>
+        <a class="card-title" href="https://news.ycombinator.com/item?id=48673194">Tell HN: OpenAI has started putting ads on paid programs</a>
+        <p class="card-gist">OpenAI is running third-party ads for cheap-tier paid subscribers, importing the ad-supported streaming playbook into AI products.</p>
+        <div class="meta">110 pts · 56 comments · <span class="also">also on Ask HN</span> · <a href="https://news.ycombinator.com/item?id=48673194">discuss →</a></div>
+        <div class="meter"><span style="width:59%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Big Technology</span></div>
+        <a class="card-title" href="https://www.bigtechnology.com/p/greg-brockman-on-openais-plan-to">Greg Brockman On OpenAI’s Plan To Win: Compute Rules All</a>
+        <p class="card-gist">OpenAI president argues winning the compute race is the single decisive lever for winning AI dominance overall.</p>
+        <div class="meta">Marty Swant · <a href="https://www.bigtechnology.com/p/greg-brockman-on-openais-plan-to">read →</a></div>
+        <div class="meter"><span style="width:36%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Show HN</span></div>
+        <a class="card-title" href="https://www.rtrvr.ai/blog/code-as-plan-deepseek-flash-text-only-browser-agent">Show HN: DeepSeek Flash inverted the economics of agent products</a>
+        <p class="card-gist">DeepSeek&#x27;s cheap API pricing breaks the model where labs charge developers high rates to cross-subsidize consumer AI products.</p>
+        <div class="meta">8 pts · 0 comments · <a href="https://news.ycombinator.com/item?id=48680260">discuss →</a></div>
+        <div class="meter"><span style="width:16%"></span></div>
+      </article>
+        </div>
+      </section>
+      <section id="panel-learning" class="panel">
+        <p class="panel-intro">Essays, ideas and new tech worth slowing down to understand.</p>
+        <div class="grid">
+        <article class="card lead src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span><span class="lead-tag">Top</span></div>
+        <a class="card-title" href="https://scrollprize.org/firstscroll">An entire Herculaneum scroll has been read for the first time</a>
+        <p class="card-gist">AI-assisted virtual unwrapping decoded a complete Herculaneum scroll revealing Epicurean philosophy, though some columns were physically destroyed.</p>
+        <div class="meta">1136 pts · 237 comments · <a href="https://news.ycombinator.com/item?id=48675179">discuss →</a></div>
+        <div class="meter"><span style="width:100%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/technology</span></div>
+        <a class="card-title" href="https://www.businessinsider.com/europe-air-conditioning-ac-heatwave-debate-2026-6">The American mind cannot comprehend Europe&#x27;s AC aversion</a>
+        <p class="card-gist">Europe&#x27;s AC resistance is structural—old buildings, different heating norms, cultural habits—not mere stubbornness or climate denial.</p>
+        <div class="meta">185 comments · <a href="https://www.reddit.com/r/technology/comments/1ufsq7l/the_american_mind_cannot_comprehend_europes_ac/">open →</a></div>
+        <div class="meter"><span style="width:93%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Astral Codex Ten</span></div>
+        <a class="card-title" href="https://www.astralcodexten.com/p/the-metaculus-threat-to-democracy">The Metaculus Democracy Threat Index</a>
+        <p class="card-gist">Metaculus aggregates crowd forecasts into a quantitative index tracking democratic erosion risk across countries.</p>
+        <div class="meta">Scott Alexander · <a href="https://www.astralcodexten.com/p/the-metaculus-threat-to-democracy">read →</a></div>
+        <div class="meter"><span style="width:91%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://expression.fire.org/p/the-papers-please-era-of-the-internet">The &#x27;papers, please&#x27; era of the internet will decimate your privacy</a>
+        <p class="card-gist">Age-verification and real-identity internet laws treating users as suspects will systematically destroy what remains of online privacy.</p>
+        <div class="meta">565 pts · 249 comments · <a href="https://news.ycombinator.com/item?id=48679608">discuss →</a></div>
+        <div class="meter"><span style="width:88%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">The Pragmatic Engineer</span></div>
+        <a class="card-title" href="https://newsletter.pragmaticengineer.com/p/tech-interviews-with-neetcode">Tech interviews with NeetCode</a>
+        <p class="card-gist">NeetCode argues deep technical expertise still matters even as AI handles routine coding, drawing from his Amazon and Google experience.</p>
+        <div class="meta">Gergely Orosz · <a href="https://newsletter.pragmaticengineer.com/p/tech-interviews-with-neetcode">read →</a></div>
+        <div class="meter"><span style="width:82%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://ziglang.org/devlog/2026/#2026-06-25">Zig&#x27;s new bitCast semantics and LLVM back end improvements</a>
+        <p class="card-gist">Zig&#x27;s new bitCast makes byte-order semantics explicit and target-independent, eliminating endian-dependent behavior that caused subtle cross-platform bugs.</p>
+        <div class="meta">223 pts · 111 comments · <a href="https://news.ycombinator.com/item?id=48673825">discuss →</a></div>
+        <div class="meter"><span style="width:73%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">The Pragmatic Engineer</span></div>
+        <a class="card-title" href="https://newsletter.pragmaticengineer.com/p/slow-down-to-speed-up">Slow down to speed up: so much has changed in 6 months’ time</a>
+        <p class="card-gist">Engineering changed so fast in six months that deliberately slowing down to evaluate AI tools may outperform blindly racing ahead.</p>
+        <div class="meta">Gergely Orosz · <a href="https://newsletter.pragmaticengineer.com/p/slow-down-to-speed-up">read →</a></div>
+        <div class="meter"><span style="width:64%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://unconv.ai/blog/introducing-un-0-generating-images-with-coupled-oscillators/">Un-0: Generating Images with Coupled Oscillators</a>
+        <p class="card-gist">Analog coupled-oscillator systems can generate images with potentially better energy efficiency than neural diffusion models, though scaling is unclear.</p>
+        <div class="meta">133 pts · 32 comments · <a href="https://news.ycombinator.com/item?id=48679007">discuss →</a></div>
+        <div class="meter"><span style="width:61%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://www.jeffgeerling.com/blog/2026/framework-10g-ethernet-module-usb-c-complexity/">Framework&#x27;s 10G Ethernet module exposes USB-C&#x27;s complexity</a>
+        <p class="card-gist">Framework&#x27;s 10G Ethernet expansion card exposes real thermal and power limits in USB-C spec for high-bandwidth wired peripherals.</p>
+        <div class="meta">106 pts · 43 comments · <a href="https://news.ycombinator.com/item?id=48681220">discuss →</a></div>
+        <div class="meter"><span style="width:56%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Astral Codex Ten</span></div>
+        <a class="card-title" href="https://www.astralcodexten.com/p/should-people-avoid-whole-body-screening">Should People Avoid Whole-Body Screening Info?</a>
+        <p class="card-gist">Whether whole-body cancer screening saves enough lives to justify the anxiety, false positives, and downstream over-treatment it generates.</p>
+        <div class="meta">Scott Alexander · <a href="https://www.astralcodexten.com/p/should-people-avoid-whole-body-screening">read →</a></div>
+        <div class="meter"><span style="width:54%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://gchandbook.org/">The Garbage Collection Handbook: The Art of Automatic Memory Management (2nd Ed) (2023)</a>
+        <p class="card-gist">The definitive reference on GC algorithms—covering tracing and reference counting—with a second edition updating both theory and practice.</p>
+        <div class="meta">94 pts · 12 comments · <a href="https://news.ycombinator.com/item?id=48680370">discuss →</a></div>
+        <div class="meter"><span style="width:50%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://calpaterson.com/bank-python.html">An oral history of Bank Python (2021)</a>
+        <p class="card-gist">Banks built entire self-contained Python ecosystems where employees spend whole careers, never touching the outside software world.</p>
+        <div class="meta">93 pts · 27 comments · <a href="https://news.ycombinator.com/item?id=48678645">discuss →</a></div>
+        <div class="meter"><span style="width:49%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Import AI</span></div>
+        <a class="card-title" href="https://importai.substack.com/p/import-ai-462-superpersuasion-self">Import AI 462: Superpersuasion; self-sustaining AI; paths to ASI</a>
+        <p class="card-gist">AI approaching superpersuasion capability; debate over whether belief in the singularity constitutes a quasi-religious faith system.</p>
+        <div class="meta">Jack Clark · <a href="https://importai.substack.com/p/import-ai-462-superpersuasion-self">read →</a></div>
+        <div class="meter"><span style="width:45%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/technology</span></div>
+        <a class="card-title" href="https://fortune.com/2026/06/25/return-to-office-ceos-ego-research/">Fortune 500 bosses demanding staff return to the office share one trait: Narcissism, research finds</a>
+        <p class="card-gist">Research finds Fortune 500 CEOs pushing RTO mandates share narcissistic personality traits, prioritizing control and visibility over employee wellbeing.</p>
+        <div class="meta">39 comments · <a href="https://www.reddit.com/r/technology/comments/1uftwck/fortune_500_bosses_demanding_staff_return_to_the/">open →</a></div>
+        <div class="meter"><span style="width:26%"></span></div>
+      </article>
+        </div>
+      </section>
+      <section id="panel-products" class="panel">
+        <p class="panel-intro">Products, repos and apps to look out for and actually use.</p>
+        <div class="grid">
+        <article class="card lead src-hackernews">
+        <div class="kicker"><span class="badge">Show HN</span><span class="lead-tag">Top</span></div>
+        <a class="card-title" href="https://hackernewstrends.com">Show HN: I made Google Trends for Hacker News by indexing 18 years of comments</a>
+        <p class="card-gist">Indexes 18 years of HN comments to show word and topic frequency trends over time, like Google Trends for HN discourse.</p>
+        <div class="meta">692 pts · 147 comments · <a href="https://news.ycombinator.com/item?id=48673671">discuss →</a></div>
+        <div class="meter"><span style="width:92%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://github.com/inkeep/open-knowledge">Show HN: OpenKnowledge – open source AI-first alternative to Obsidian/Notion</a>
+        <p class="card-gist">Free, local, open-source markdown editor with native Claude and Codex integrations, positioning as an Obsidian and Notion alternative.</p>
+        <div class="meta">241 pts · 117 comments · <a href="https://news.ycombinator.com/item?id=48675435">discuss →</a></div>
+        <div class="meter"><span style="width:75%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://yllan.org/software/OS9Map/">OS9Map</a>
+        <p class="card-gist">Experiment enabling Mac OS 9 to reach modern internet services by running a translation proxy on the local network.</p>
+        <div class="meta">210 pts · 40 comments · <a href="https://news.ycombinator.com/item?id=48674484">discuss →</a></div>
+        <div class="meter"><span style="width:68%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Show HN</span></div>
+        <a class="card-title" href="https://lingochunk.com/try">Show HN: Turn native language audio into flashcards and shadowing practice</a>
+        <p class="card-gist">Converts native-language audio into Anki flashcards and shadowing exercises, built originally for personal German and Greek language study.</p>
+        <div class="meta">76 pts · 30 comments · <a href="https://news.ycombinator.com/item?id=48671886">discuss →</a></div>
+        <div class="meter"><span style="width:44%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Show HN</span></div>
+        <a class="card-title" href="https://github.com/Fran314/secrets-manager-rs">Show HN: Secs-man, a secrets manager you can (not) rely on</a>
+        <p class="card-gist">Encrypted local secrets manager designed so data stays recoverable with standard tools even if the software itself disappears.</p>
+        <div class="meta">29 pts · 19 comments · <a href="https://news.ycombinator.com/item?id=48672389">discuss →</a></div>
+        <div class="meter"><span style="width:37%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Show HN</span></div>
+        <a class="card-title" href="https://www.prototyper.co">Show HN: Visual Workspace for Agents Based on Unix</a>
+        <p class="card-gist">Visual canvas for AI agents where every artifact—plans, apps, diagrams—is a Unix file, enabling shared team workspaces.</p>
+        <div class="meta">10 pts · 2 comments · <a href="https://news.ycombinator.com/item?id=48671826">discuss →</a></div>
+        <div class="meter"><span style="width:24%"></span></div>
+      </article>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      Built from <a href="https://hn.algolia.com/api">Hacker News</a>,
+      <a href="https://www.reddit.com">Reddit</a> &amp;
+      Substack RSS · generated 26 Jun 2026, 11:19 · <a href="../archive.html">archive</a>
+    </footer>
+  </div>
+</body>
+</html>

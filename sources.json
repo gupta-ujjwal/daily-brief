@@ -1,0 +1,38 @@
+{
+  "window_hours": 24,
+  "final_keep": 30,
+  "ranking": {
+    "source_weights": { "hackernews": 1.0, "reddit": 0.92, "substack": 0.9 },
+    "percentile_weight": 0.6,
+    "engagement_weight": 0.4
+  },
+  "hackernews": {
+    "top": 14,
+    "ask": 6,
+    "include_ask": true,
+    "show": 6,
+    "include_show": true
+  },
+  "reddit": {
+    "subreddits": ["programming", "technology", "MachineLearning", "webdev", "compsci"],
+    "keep": 12,
+    "time": "day",
+    "min_comments": 3,
+    "max_fetch": 20,
+    "comment_delay": 1.0,
+    "fetch_comments": 4
+  },
+  "substack": {
+    "keep": 10,
+    "window_hours": 168,
+    "skip_patterns": ["open thread"],
+    "feeds": [
+      { "name": "The Pragmatic Engineer", "url": "https://newsletter.pragmaticengineer.com/feed" },
+      { "name": "Import AI", "url": "https://importai.substack.com/feed" },
+      { "name": "One Useful Thing", "url": "https://www.oneusefulthing.org/feed" },
+      { "name": "Big Technology", "url": "https://www.bigtechnology.com/feed" },
+      { "name": "Astral Codex Ten", "url": "https://www.astralcodexten.com/feed" },
+      { "name": "Platformer", "url": "https://www.platformer.news/feed" }
+    ]
+  }
+}

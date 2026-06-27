@@ -1,0 +1,6 @@
+# Intermediate fetch output (regenerated each run, includes per-item gists)
+data.json
+
+# Python bytecode
+__pycache__/
+*.pyc
