@@ -59,6 +59,66 @@ Edit `sources.json`:
 }
 ```
 
+## Personalize from your accounts
+
+By default the Reddit and Substack sources fall back to curated public lists (in
+`sources.json`) and Medium pulls a few public tag/publication feeds — so the brief
+**always builds with zero setup**. Add credentials to pull *your* feeds instead.
+Each source tries the richest tier it can and **falls back automatically**; a
+provenance line in the brief's footer shows which tier served each source, so a
+stale cookie is visible at a glance (and the footer turns red — "refresh your
+cookies/tokens" — if every personal source has fallen back).
+
+All credentials live in `~/.config/secrets/` (same place as `anthropic_token`),
+are read directly by `auth.py`, and are never committed. Absent or expired
+credentials simply disable that tier.
+
+### Reddit — your home feed (`GET /best`)
+
+1. Create a Reddit app at <https://www.reddit.com/prefs/apps> (type **script** or
+   **installed app**). Note the client id and secret.
+2. Mint a **refresh token** once via the OAuth auth-code flow (scopes: `read`,
+   `mysubreddits`; `duration=permanent`). Password-grant is avoided because it
+   breaks under 2FA.
+3. Write `~/.config/secrets/reddit_oauth.json`:
+   ```json
+   { "client_id": "…", "client_secret": "…", "refresh_token": "…" }
+   ```
+
+*(Optional, zero-auth fallback tier)* Enable private RSS feeds in old-Reddit
+`prefs/feeds/`, copy the home-feed URL, and drop it in
+`~/.config/secrets/reddit_home_rss` (one line). It's subscription-based (not
+algorithmic) and validity-checked against your `reddit.subreddits` list, since this
+feed can silently degrade to r/popular.
+
+### Substack — your subscriptions
+
+1. Log in at substack.com, open DevTools → Application → Cookies → copy the
+   **`substack.sid`** value (it's `HttpOnly`, so use the cookie panel, not the
+   console). Put it in `~/.config/secrets/substack_sid` (one line — bare value or
+   `substack.sid=…`). Lasts ~3 months.
+2. Set your numeric `substack.user_id` in `sources.json` (find it in the
+   `/api/v1/user/<id>/public_profile/self` request while logged in). The brief then
+   pulls your actual subscription list and reads each publication's RSS.
+3. *(Optional, off by default)* set `substack.use_inbox: true` to use the aggregated
+   reader inbox (`/api/v1/reader/posts`) — richer ordering but undocumented and
+   fragile; verify the live shape if it misbehaves.
+
+### Medium — your follows
+
+Medium has **no durable personalized-feed API**, so personalization is a hand-curated
+list of who/what you follow in `sources.json → medium.follows`:
+```jsonc
+"follows": [
+  { "type": "author",      "handle": "@some-writer",   "label": "Some Writer" },
+  { "type": "publication", "handle": "better-programming" },
+  { "type": "tag",         "handle": "machine-learning" }
+]
+```
+The brief merges the public RSS of each. (`medium.use_graphql` is an off-by-default
+stub for the cookie/GraphQL "For you" feed — intentionally not wired up because it
+breaks within months.)
+
 ## Run it manually
 
 In Claude Code, from this folder:

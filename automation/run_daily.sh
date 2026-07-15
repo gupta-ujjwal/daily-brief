@@ -20,6 +20,12 @@ export PATH="$HOME/.nix-profile/bin:/run/current-system/sw/bin:/usr/bin:/bin:$PA
 [ -f "$HOME/.config/secrets/anthropic_token" ] && \
   export ANTHROPIC_AUTH_TOKEN="$(cat "$HOME/.config/secrets/anthropic_token")"
 
+# Personalized sources (Reddit/Substack/Medium) read their own credentials
+# directly from ~/.config/secrets/ via auth.py — reddit_oauth.json, substack_sid,
+# reddit_home_rss. No env wiring needed; absent secrets just fall back to the
+# generic tiers, so the brief always builds. See README "Personalize from your
+# accounts" for how to populate them.
+
 log() { printf '%s  %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"; }
 
 DATE="$(date +%F)"
