@@ -1,8 +1,9 @@
 {
   "window_hours": 24,
   "final_keep": 30,
+  "per_source_timeout": 120,
   "ranking": {
-    "source_weights": { "hackernews": 1.0, "reddit": 0.92, "substack": 0.9 },
+    "source_weights": { "hackernews": 1.0, "reddit": 0.92, "substack": 0.9, "medium": 0.9 },
     "percentile_weight": 0.6,
     "engagement_weight": 0.4
   },
@@ -14,6 +15,7 @@
     "include_show": true
   },
   "reddit": {
+    "home_limit": 25,
     "subreddits": ["programming", "technology", "MachineLearning", "webdev", "compsci"],
     "keep": 12,
     "time": "day",
@@ -22,9 +24,21 @@
     "comment_delay": 1.0,
     "fetch_comments": 4
   },
+  "medium": {
+    "keep": 10,
+    "window_hours": 168,
+    "use_graphql": false,
+    "follows": [
+      { "type": "tag", "handle": "programming", "label": "Programming" },
+      { "type": "tag", "handle": "artificial-intelligence", "label": "AI" },
+      { "type": "publication", "handle": "better-programming", "label": "Better Programming" }
+    ]
+  },
   "substack": {
     "keep": 10,
     "window_hours": 168,
+    "use_inbox": false,
+    "user_id": null,
     "skip_patterns": ["open thread"],
     "feeds": [
       { "name": "The Pragmatic Engineer", "url": "https://newsletter.pragmaticengineer.com/feed" },
