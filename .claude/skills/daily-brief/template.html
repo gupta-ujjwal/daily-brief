@@ -8,7 +8,7 @@
   :root {
     --bg: #100f0c; --bg2: #0b0a08; --panel: #18160f; --panel2: #1f1c13;
     --ink: #f0ebdd; --ink-dim: #cfc8b6; --muted: #8d8676; --line: #2a271e;
-    --hn: #ff8c42; --reddit: #ff5470; --substack: #2dd4bf;
+    --hn: #ff8c42; --reddit: #ff5470; --substack: #2dd4bf; --medium: #e0b341;
     --accent: var(--hn);
   }
   * { box-sizing: border-box; }
@@ -45,9 +45,11 @@
   .src-hackernews { --accent: var(--hn); }
   .src-reddit { --accent: var(--reddit); }
   .src-substack { --accent: var(--substack); }
+  .src-medium { --accent: var(--medium); }
   .legend i.hn { background: var(--hn); }
   .legend i.reddit { background: var(--reddit); }
   .legend i.substack { background: var(--substack); }
+  .legend i.medium { background: var(--medium); }
 
   .badge { display: inline-flex; align-items: center; gap: 6px;
     font: 700 10.5px/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .1em;
@@ -119,6 +121,9 @@
   footer { color: var(--muted); font: 12px/1.6 ui-monospace, monospace; margin-top: 56px;
     padding-top: 22px; border-top: 1px solid var(--line); text-align: center; }
   footer a { color: var(--accent); }
+  .provenance { font: 500 11.5px/1.5 ui-monospace, monospace; color: var(--ink-dim);
+    margin-bottom: 10px; }
+  .provenance.degraded { color: var(--reddit); }
 
   @media (max-width: 720px) {
     .wrap { padding: 28px 18px 72px; }
@@ -136,7 +141,7 @@
         <span class="sep">/</span> last 24h, across platforms
       </div>
       <h1 class="title">The day in <em>tech</em>, distilled</h1>
-      <p class="standfirst">Hacker News, Reddit and Substack — ranked across platforms and split across three tabs: <em>The Wire</em>, <em>Deep Dives</em> and <em>Worth a Try</em>. Flip through, with the gist of each.</p>
+      <p class="standfirst">Hacker News, Reddit, Substack and Medium — ranked across platforms and split across three tabs: <em>The Wire</em>, <em>Deep Dives</em> and <em>Worth a Try</em>. Flip through, with the gist of each.</p>
       <div class="legend">
         {{SOURCE_LEGEND}}
       </div>
@@ -145,9 +150,10 @@
     {{SECTIONS}}
 
     <footer>
+      {{PROVENANCE}}
       Built from <a href="https://hn.algolia.com/api">Hacker News</a>,
-      <a href="https://www.reddit.com">Reddit</a> &amp;
-      Substack RSS · generated {{GENERATED}} · <a href="{{ROOT}}archive.html">archive</a>
+      <a href="https://www.reddit.com">Reddit</a>, Substack &amp;
+      Medium · generated {{GENERATED}} · <a href="{{ROOT}}archive.html">archive</a>
     </footer>
   </div>
 </body>

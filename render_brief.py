@@ -24,7 +24,37 @@ LEGEND = {  # source key -> (legend dot class, display name)
     "hackernews": ("hn", "Hacker News"),
     "reddit": ("reddit", "Reddit"),
     "substack": ("substack", "Substack"),
+    "medium": ("medium", "Medium"),
 }
+
+# Per-source served tier -> short human label for the provenance footer. Tiers not
+# listed (e.g. "front-page" for HN) are treated as generic and not shown.
+TIER_LABELS = {
+    "home-oauth": "your home feed", "home-rss": "your home RSS",
+    "public": "generic subreddits (fallback)",
+    "inbox": "your inbox", "subscriptions": "your subscriptions",
+    "feeds": "curated list (fallback)",
+    "follows": "your follows", "graphql": "your For-you",
+}
+
+
+def provenance_line(d):
+    """A one-line 'where each personal source came from' note for the footer, so a
+    silently-degraded feed (e.g. Reddit fell back to generic subreddits) is visible
+    in the brief itself rather than buried in logs."""
+    prov = d.get("provenance") or {}
+    parts = []
+    for key in ("reddit", "substack", "medium"):
+        tier = prov.get(key)
+        if tier and tier in TIER_LABELS:
+            _, name = LEGEND[key]
+            parts.append(f"{name}: {TIER_LABELS[tier]}")
+    if not parts:
+        return ""
+    cls = "provenance degraded" if d.get("degraded") else "provenance"
+    body = " · ".join(parts)
+    warn = " — refresh your cookies/tokens" if d.get("degraded") else ""
+    return f'<div class="{cls}">Personalized from — {esc(body)}{warn}</div>'
 
 # category key -> (tab name, one-line intro). Order = tab order.
 CATEGORIES = [
@@ -149,6 +179,7 @@ def main():
            .replace("{{DATE}}", esc(disp_date))
            .replace("{{GENERATED}}", gen)
            .replace("{{SOURCE_LEGEND}}", "\n        ".join(legend))
+           .replace("{{PROVENANCE}}", provenance_line(d))
            .replace("{{ROOT}}", esc(args.root_prefix))
            .replace("{{SECTIONS}}", tabs))
     if "{{" in out:
