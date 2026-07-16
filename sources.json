@@ -29,16 +29,16 @@
     "window_hours": 168,
     "use_graphql": false,
     "follows": [
-      { "type": "tag", "handle": "programming", "label": "Programming" },
-      { "type": "tag", "handle": "artificial-intelligence", "label": "AI" },
-      { "type": "publication", "handle": "better-programming", "label": "Better Programming" }
+      { "type": "publication", "handle": "towards-data-science", "label": "Towards Data Science" },
+      { "type": "publication", "handle": "towards-artificial-intelligence", "label": "Towards AI" },
+      { "type": "publication", "handle": "better-programming", "label": "Better Programming" },
+      { "type": "publication", "handle": "gitconnected", "label": "Level Up Coding" }
     ]
   },
   "substack": {
     "keep": 10,
     "window_hours": 168,
     "use_inbox": false,
-    "user_id": null,
     "skip_patterns": ["open thread"],
     "feeds": [
       { "name": "The Pragmatic Engineer", "url": "https://newsletter.pragmaticengineer.com/feed" },

@@ -96,11 +96,10 @@ feed can silently degrade to r/popular.
 1. Log in at substack.com, open DevTools → Application → Cookies → copy the
    **`substack.sid`** value (it's `HttpOnly`, so use the cookie panel, not the
    console). Put it in `~/.config/secrets/substack_sid` (one line — bare value or
-   `substack.sid=…`). Lasts ~3 months.
-2. Set your numeric `substack.user_id` in `sources.json` (find it in the
-   `/api/v1/user/<id>/public_profile/self` request while logged in). The brief then
-   pulls your actual subscription list and reads each publication's RSS.
-3. *(Optional, off by default)* set `substack.use_inbox: true` to use the aggregated
+   `substack.sid=…`). Lasts ~3 months. That's the only step — the brief calls
+   `/api/v1/subscriptions` to get your followed publications and reads each one's
+   RSS (no user_id needed).
+2. *(Optional, off by default)* set `substack.use_inbox: true` to use the aggregated
    reader inbox (`/api/v1/reader/posts`) — richer ordering but undocumented and
    fragile; verify the live shape if it misbehaves.
 

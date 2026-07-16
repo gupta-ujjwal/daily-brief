@@ -521,19 +521,18 @@ def fetch_substack(cfg, since):
 
 
 def fetch_substack_subscriptions(cfg, since, cookie):
-    """Tier 2: derive your subscription feeds from your Substack account, then
-    reuse the per-publication RSS path. Needs the substack.sid cookie and your
-    numeric user_id (config `substack.user_id`); returns [] if either is absent."""
-    user_id = cfg.get("user_id")
-    if not (cookie and user_id):
+    """Tier 2: derive your followed publications from your Substack account, then
+    reuse the per-publication RSS path. Needs only the substack.sid cookie — the
+    /api/v1/subscriptions endpoint returns publications[] with a subdomain each,
+    so no user_id is required. Returns [] if the cookie is absent/expired."""
+    if not cookie:
         return []
-    data = get(f"https://substack.com/api/v1/user/{user_id}/public_profile/self",
+    data = get("https://substack.com/api/v1/subscriptions?tvOnly=false",
                headers={"Cookie": cookie})
     if not isinstance(data, dict):
         return []
     feeds = []
-    for sub in data.get("subscriptions", []) or []:
-        pub = sub.get("publication") or {}
+    for pub in data.get("publications", []) or []:
         domain = pub.get("custom_domain") or (
             f"{pub['subdomain']}.substack.com" if pub.get("subdomain") else None)
         if domain:
@@ -785,7 +784,7 @@ def main():
     intended = {
         "reddit": bool(auth.read_json_secret("reddit_oauth.json")
                        or auth.read_secret("reddit_home_rss")),
-        "substack": bool(substack_cookie or cfg.get("substack", {}).get("user_id")),
+        "substack": bool(substack_cookie),
     }
     stale = is_degraded(provenance, intended)
     degraded = bool(stale)
