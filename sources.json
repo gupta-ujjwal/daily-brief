@@ -16,7 +16,7 @@
   },
   "reddit": {
     "home_limit": 25,
-    "subreddits": ["programming", "technology", "MachineLearning", "webdev", "compsci"],
+    "subreddits": ["bengaluru", "bangalore", "indianreaders", "indiatech", "carsindia", "watchesindia", "indianstreetbets", "indianrealestate", "indiatax", "dundermifflin", "homelabporn", "fintechdev"],
     "keep": 12,
     "time": "day",
     "min_comments": 3,
