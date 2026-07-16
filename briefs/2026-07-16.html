@@ -83,6 +83,7 @@
   .tab-industry { --tabc: #e2703a; }
   .tab-learning { --tabc: #7c9eff; }
   .tab-products { --tabc: #34d399; }
+  .tab-personal { --tabc: #c084fc; }
   .tabinput:focus-visible + .tabbar .tab { outline: none; }
 
   .panel { display: none; }
@@ -91,10 +92,12 @@
   /* show the panel + light up the tab matching the checked radio */
   #tab-industry:checked ~ #panel-industry,
   #tab-learning:checked ~ #panel-learning,
-  #tab-products:checked ~ #panel-products { display: block; animation: panel-in .22s ease both; }
+  #tab-products:checked ~ #panel-products,
+  #tab-personal:checked ~ #panel-personal { display: block; animation: panel-in .22s ease both; }
   #tab-industry:checked ~ .tabbar .tab-industry,
   #tab-learning:checked ~ .tabbar .tab-learning,
-  #tab-products:checked ~ .tabbar .tab-products {
+  #tab-products:checked ~ .tabbar .tab-products,
+  #tab-personal:checked ~ .tabbar .tab-personal {
     color: var(--ink); background: color-mix(in srgb, var(--tabc) 15%, var(--panel2));
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tabc) 45%, transparent); }
   @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
@@ -144,7 +147,7 @@
       <p class="standfirst">Hacker News, Reddit, Substack and Medium — ranked across platforms and split across three tabs: <em>The Wire</em>, <em>Deep Dives</em> and <em>Worth a Try</em>. Flip through, with the gist of each.</p>
       <div class="legend">
         <span><i class="hn"></i>Hacker News · 26</span>
-        <span><i class="reddit"></i>Reddit · 7</span>
+        <span><i class="reddit"></i>Reddit · 22</span>
         <span><i class="substack"></i>Substack · 10</span>
         <span><i class="medium"></i>Medium · 10</span>
       </div>
@@ -154,62 +157,50 @@
       <input type="radio" name="brieftab" id="tab-industry" class="tabinput" checked>
       <input type="radio" name="brieftab" id="tab-learning" class="tabinput">
       <input type="radio" name="brieftab" id="tab-products" class="tabinput">
+      <input type="radio" name="brieftab" id="tab-personal" class="tabinput">
       <nav class="tabbar">
-        <label for="tab-industry" class="tab tab-industry">The Wire <span class="count">7</span></label>
-        <label for="tab-learning" class="tab tab-learning">Deep Dives <span class="count">17</span></label>
-        <label for="tab-products" class="tab tab-products">Worth a Try <span class="count">6</span></label>
+        <label for="tab-industry" class="tab tab-industry">The Wire <span class="count">5</span></label>
+        <label for="tab-learning" class="tab tab-learning">Deep Dives <span class="count">10</span></label>
+        <label for="tab-products" class="tab tab-products">Worth a Try <span class="count">4</span></label>
+        <label for="tab-personal" class="tab tab-personal">Off the Clock <span class="count">11</span></label>
       </nav>
       <section id="panel-industry" class="panel">
         <p class="panel-intro">What's moving across the industry — funding, deals, launches and power plays.</p>
         <div class="grid">
         <article class="card lead src-hackernews">
         <div class="kicker"><span class="badge">Hacker News</span><span class="lead-tag">Top</span></div>
-        <a class="card-title" href="https://www.reuters.com/business/finance/stripe-advent-offer-buy-paypal-more-than-53-billion-sources-say-2026-07-15/">Stripe and Advent have made a joint offer to acquire PayPal – sources</a>
-        <p class="card-gist">Stripe acquiring PayPal worries observers about reduced payment competition and implicit fee collusion.</p>
-        <div class="meta">357 pts · 211 comments · <a href="https://news.ycombinator.com/item?id=48915953">discuss →</a></div>
-        <div class="meter"><span style="width:95%"></span></div>
-      </article>
-        <article class="card src-hackernews">
-        <div class="kicker"><span class="badge">Hacker News</span></div>
         <a class="card-title" href="https://github.com/xai-org/grok-build">Grok Build is open source</a>
-        <p class="card-gist">xAI open-sources Grok Build under apparent damage control after being caught exfiltrating user query data.</p>
-        <div class="meta">283 pts · 325 comments · <a href="https://news.ycombinator.com/item?id=48926590">discuss →</a></div>
-        <div class="meter"><span style="width:90%"></span></div>
-      </article>
-        <article class="card src-reddit">
-        <div class="kicker"><span class="badge">r/technology</span></div>
-        <a class="card-title" href="https://www.huffpost.com/entry/kylie-jenner-meta-glasses-fascist_n_6a565e74e4b0540b8c7b111a">Kylie Jenner’s dystopian Meta glasses get brutal backlash: ‘It’s giving fascism, not fashion’ — Meta is testing a prototype to “continuously record audio while taking photos every few seconds” without any warning light</a>
-        <p class="card-gist">Meta&#x27;s prototype glasses continuously record audio and photos with no warning light, drawing sharp privacy backlash.</p>
-        <div class="meta">163 comments · <a href="https://www.reddit.com/r/technology/comments/1ux8ej9/kylie_jenners_dystopian_meta_glasses_get_brutal/">open →</a></div>
-        <div class="meter"><span style="width:83%"></span></div>
-      </article>
-        <article class="card src-reddit">
-        <div class="kicker"><span class="badge">r/technology</span></div>
-        <a class="card-title" href="https://www.dexerto.com/entertainment/hinge-founder-announces-new-ai-dating-app-straight-out-of-black-mirror-3387437/">Hinge founder announces new AI dating app straight out of Black Mirror</a>
-        <p class="card-gist">Hinge founder&#x27;s AI app matches via conversation instead of profiles; critics call it dystopian commodification of connection.</p>
-        <div class="meta">159 comments · <a href="https://www.reddit.com/r/technology/comments/1ux5res/hinge_founder_announces_new_ai_dating_app/">open →</a></div>
-        <div class="meter"><span style="width:73%"></span></div>
-      </article>
-        <article class="card src-reddit">
-        <div class="kicker"><span class="badge">r/technology</span></div>
-        <a class="card-title" href="https://finance.yahoo.com/markets/stocks/articles/spacex-investors-lamenting-money-ve-155334039.html">SpaceX Investors Are Lamenting All the Money They’ve Lost</a>
-        <p class="card-gist">SpaceX retail investors are underwater while insiders&#x27; lockup periods haven&#x27;t started yet; float remains tiny.</p>
-        <div class="meta">154 comments · <a href="https://www.reddit.com/r/technology/comments/1uxgyim/spacex_investors_are_lamenting_all_the_money/">open →</a></div>
-        <div class="meter"><span style="width:64%"></span></div>
+        <p class="card-gist">xAI open-sourcing Grok Build widely read as PR damage control after being caught exfiltrating user data.</p>
+        <div class="meta">435 pts · 467 comments · <a href="https://news.ycombinator.com/item?id=48926590">discuss →</a></div>
+        <div class="meter"><span style="width:96%"></span></div>
       </article>
         <article class="card src-substack">
-        <div class="kicker"><span class="badge">Platformer</span></div>
-        <a class="card-title" href="https://www.platformer.news/ai-jobs-warning-brynjolfsson-acemoglu/">The loudest warning about AI and jobs yet</a>
-        <p class="card-gist">200 economists and AI leaders warn AI job displacement is accelerating faster than policy or retraining can absorb.</p>
-        <div class="meta">Casey Newton · <a href="https://www.platformer.news/ai-jobs-warning-brynjolfsson-acemoglu/">read →</a></div>
-        <div class="meter"><span style="width:60%"></span></div>
+        <div class="kicker"><span class="badge">Latent.Space</span></div>
+        <a class="card-title" href="https://www.latent.space/p/ainews-thinkys-inkling-975b-a41b">[AINews] Thinky&#x27;s Inkling: 975B-A41B multimodal, new best American Apache 2.0 open model (with Inkling-Small, 276B-A12B)</a>
+        <p class="card-gist">Thinky&#x27;s 975B Apache-2.0 open-weights multimodal model tops US benchmarks; smaller 276B variant also ships.</p>
+        <div class="meta">Latent.Space · <a href="https://www.latent.space/p/ainews-thinkys-inkling-975b-a41b">read →</a></div>
+        <div class="meter"><span style="width:84%"></span></div>
+      </article>
+        <article class="card src-medium">
+        <div class="kicker"><span class="badge">Medium · Towards AI</span></div>
+        <a class="card-title" href="https://pub.towardsai.net/ai-price-war-fractures-single-vendor-stacks-chinese-apis-capture-46-of-traffic-74c7009a4ff6?source=rss----98111c9905da---4">AI Price War Fractures Single-Vendor Stacks. Chinese APIs Capture 46% of Traffic</a>
+        <p class="card-gist">Aggressive pricing from xAI and Chinese providers is fracturing single-vendor OpenAI stacks; Chinese APIs now claim 46% of traffic.</p>
+        <div class="meta">MohamedAbdelmenem · <a href="https://pub.towardsai.net/ai-price-war-fractures-single-vendor-stacks-chinese-apis-capture-46-of-traffic-74c7009a4ff6?source=rss----98111c9905da---4">read →</a></div>
+        <div class="meter"><span style="width:84%"></span></div>
       </article>
         <article class="card src-hackernews">
         <div class="kicker"><span class="badge">Hacker News</span></div>
-        <a class="card-title" href="https://elbowgreasegames.substack.com/p/misfits-attic-announces-duskers-20">Duskers, the scary command line game, is getting a sequel</a>
-        <p class="card-gist">Duskers 2 appears to abandon the original&#x27;s CLI aesthetic for a graphical engine, disappointing fans of the first game.</p>
-        <div class="meta">96 pts · 22 comments · <a href="https://news.ycombinator.com/item?id=48925888">discuss →</a></div>
-        <div class="meter"><span style="width:56%"></span></div>
+        <a class="card-title" href="https://www.siegelendowment.org/wp-content/uploads/2026/07/fortune-david-siegel-open-source-ai.pdf">Governments, companies, nonprofits should invest in free, open source AI [pdf]</a>
+        <p class="card-gist">Academics argue governments and nonprofits should fund open-source AI with inducement prizes to counter proprietary concentration.</p>
+        <div class="meta">186 pts · 67 comments · <a href="https://news.ycombinator.com/item?id=48927095">discuss →</a></div>
+        <div class="meter"><span style="width:76%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Feed Me</span></div>
+        <a class="card-title" href="https://www.readfeedme.com/p/jony-ive-is-cooking-in-the-openai">Jony Ive is cooking in the OpenAI kitchen. </a>
+        <p class="card-gist">Jony Ive&#x27;s secretive OpenAI hardware project teased as a physically intimate, phone-replacing device you might want to hug.</p>
+        <div class="meta">Emily Sundberg · <a href="https://www.readfeedme.com/p/jony-ive-is-cooking-in-the-openai">read →</a></div>
+        <div class="meter"><span style="width:66%"></span></div>
       </article>
         </div>
       </section>
@@ -217,123 +208,74 @@
         <p class="panel-intro">Essays, ideas and new tech worth slowing down to understand.</p>
         <div class="grid">
         <article class="card lead src-reddit">
-        <div class="kicker"><span class="badge">r/technology</span><span class="lead-tag">Top</span></div>
-        <a class="card-title" href="https://www.gamesradar.com/games/layoffs-might-offer-better-short-term-financial-results-late-nintendo-president-satoru-iwata-admitted-in-2013-but-employees-who-fear-that-they-may-be-laid-off-will-never-produce-the-same-results/">Layoffs might offer &quot;better short-term financial results,&quot; late Nintendo president Satoru Iwata admitted in 2013, but &quot;employees who fear that they may be laid off&quot; will never produce the same results</a>
-        <p class="card-gist">Repeated layoff rounds destroy psychological safety more than one-shot cuts; fear permanently degrades output quality.</p>
-        <div class="meta">164 comments · <a href="https://www.reddit.com/r/technology/comments/1ux0kka/layoffs_might_offer_better_shortterm_financial/">open →</a></div>
-        <div class="meter"><span style="width:92%"></span></div>
-      </article>
-        <article class="card src-hackernews">
-        <div class="kicker"><span class="badge">Hacker News</span></div>
-        <a class="card-title" href="https://ramones.dev/posts/mental-health/">Prioritize mental health, and why communication is so important</a>
-        <p class="card-gist">Mental health decline at work often starts with biology and environment before communication; address those first.</p>
-        <div class="meta">293 pts · 253 comments · <a href="https://news.ycombinator.com/item?id=48919198">discuss →</a></div>
+        <div class="kicker"><span class="badge">r/functionalprogramming</span><span class="lead-tag">Top</span></div>
+        <a class="card-title" href="https://www.reddit.com/r/functionalprogramming/comments/1uxxbu3/abstracting_effects_with_continuations/">Abstracting effects with continuations</a>
+        <p class="card-gist">Continuations as a single primitive can unify monads, algebraic effects, and callbacks for effect abstraction in FP.</p>
+        <div class="meta"><a href="https://www.reddit.com/r/functionalprogramming/comments/1uxxbu3/abstracting_effects_with_continuations/">open →</a></div>
         <div class="meter"><span style="width:92%"></span></div>
       </article>
         <article class="card src-substack">
-        <div class="kicker"><span class="badge">Astral Codex Ten</span></div>
-        <a class="card-title" href="https://www.astralcodexten.com/p/six-slightly-skew-boogeymen">Six Slightly Skew Boogeymen</a>
-        <p class="card-gist">Common fears are real but slightly misframed; the threat is adjacent to, not identical with, the thing people worry about.</p>
-        <div class="meta">Scott Alexander · <a href="https://www.astralcodexten.com/p/six-slightly-skew-boogeymen">read →</a></div>
+        <div class="kicker"><span class="badge">Hands On System Design - Distributed Systems Implementation </span></div>
+        <a class="card-title" href="https://sdcourse.substack.com/p/day-173-implement-feature-usage-analytics">Day 173: Implement Feature Usage Analytics</a>
+        <p class="card-gist">Step-by-step guide to building feature usage analytics that connects product behavior to revenue impact.</p>
+        <div class="meta">System Design Course · <a href="https://sdcourse.substack.com/p/day-173-implement-feature-usage-analytics">read →</a></div>
         <div class="meter"><span style="width:90%"></span></div>
       </article>
         <article class="card src-medium">
-        <div class="kicker"><span class="badge">Medium · Programming</span></div>
-        <a class="card-title" href="https://hellonehha.medium.com/stop-vibe-coding-start-writing-specs-dfe03ef6a022?source=rss------programming-5">Stop Vibe Coding. Start Writing Specs.</a>
-        <p class="card-gist">AI agents without upfront specs add unwanted features and wrong tech; precise specs prevent scope and stack drift.</p>
-        <div class="meta">Neha Sharma · <a href="https://hellonehha.medium.com/stop-vibe-coding-start-writing-specs-dfe03ef6a022?source=rss------programming-5">read →</a></div>
+        <div class="kicker"><span class="badge">Medium · Towards AI</span></div>
+        <a class="card-title" href="https://pub.towardsai.net/i-built-a-hybrid-rag-app-that-talks-to-my-pdf-and-knows-when-to-say-i-dont-know-5e4044a54921?source=rss----98111c9905da---4">I Built a Hybrid RAG App That Talks to My PDF — and Knows When to Say “I Don’t Know”</a>
+        <p class="card-gist">RAG systems must refuse out-of-scope queries; confident hallucination on unrelated prompts is the core failure mode to design against.</p>
+        <div class="meta">Pariv Shah · <a href="https://pub.towardsai.net/i-built-a-hybrid-rag-app-that-talks-to-my-pdf-and-knows-when-to-say-i-dont-know-5e4044a54921?source=rss----98111c9905da---4">read →</a></div>
         <div class="meter"><span style="width:90%"></span></div>
-      </article>
-        <article class="card src-hackernews">
-        <div class="kicker"><span class="badge">Hacker News</span></div>
-        <a class="card-title" href="https://dev.moe/en/3025">Mysteries of Telegram Data Centers (2022)</a>
-        <p class="card-gist">Telegram&#x27;s DC geography suspiciously mirrors Five Eyes intelligence boundaries, suggesting non-neutral infrastructure choices.</p>
-        <div class="meta">240 pts · 131 comments · <a href="https://news.ycombinator.com/item?id=48920475">discuss →</a></div>
-        <div class="meter"><span style="width:85%"></span></div>
-      </article>
-        <article class="card src-substack">
-        <div class="kicker"><span class="badge">The Pragmatic Engineer</span></div>
-        <a class="card-title" href="https://newsletter.pragmaticengineer.com/p/context-engineering-with-dex-horthy">Context engineering with Dex Horthy</a>
-        <p class="card-gist">What you put into an LLM&#x27;s context window — not just the prompt — is the real lever for AI coding quality.</p>
-        <div class="meta">Gergely Orosz · <a href="https://newsletter.pragmaticengineer.com/p/context-engineering-with-dex-horthy">read →</a></div>
-        <div class="meter"><span style="width:84%"></span></div>
-      </article>
-        <article class="card src-medium">
-        <div class="kicker"><span class="badge">Medium · Programming</span></div>
-        <a class="card-title" href="https://medium.com/@bikkisingh/top-15-php-interview-questions-asked-in-2026-with-answers-5b1f99ce7ab9?source=rss------programming-5">Top 15 PHP Interview Questions Asked in 2026 (With Answers)</a>
-        <p class="card-gist">Modern PHP features like match expressions trip up even experienced developers; interview prep reveals real knowledge gaps.</p>
-        <div class="meta">Bikki Singh · <a href="https://medium.com/@bikkisingh/top-15-php-interview-questions-asked-in-2026-with-answers-5b1f99ce7ab9?source=rss------programming-5">read →</a></div>
-        <div class="meter"><span style="width:84%"></span></div>
       </article>
         <article class="card src-hackernews">
         <div class="kicker"><span class="badge">Hacker News</span></div>
         <a class="card-title" href="https://www.neomindlabs.com/2026/06/08/running-gemma-4-26b-at-5-tokens-sec-on-a-13-year-old-xeon-with-no-gpu/">Running Gemma 4 26B at 5 tokens/sec on a 13-year-old Xeon with no GPU</a>
-        <p class="card-gist">Running a 26B model at 5 tok/s on a 2013 Xeon required patching AVX2 assumptions absent in Ivy Bridge CPUs.</p>
-        <div class="meta">238 pts · 156 comments · <a href="https://news.ycombinator.com/item?id=48922434">discuss →</a></div>
-        <div class="meter"><span style="width:83%"></span></div>
-      </article>
-        <article class="card src-substack">
-        <div class="kicker"><span class="badge">Astral Codex Ten</span></div>
-        <a class="card-title" href="https://www.astralcodexten.com/p/ai-chip-regulation-is-not-a-dystopian">AI Chip Regulation Is Not A Dystopian Surveillance State</a>
-        <p class="card-gist">AI chip export controls are proportionate policy, not a surveillance overreach — the dystopia framing is overblown.</p>
-        <div class="meta">Scott Alexander · <a href="https://www.astralcodexten.com/p/ai-chip-regulation-is-not-a-dystopian">read →</a></div>
-        <div class="meter"><span style="width:78%"></span></div>
-      </article>
-        <article class="card src-medium">
-        <div class="kicker"><span class="badge">Medium · AI</span></div>
-        <a class="card-title" href="https://medium.com/@sowmithdurusoju/the-complete-guide-to-llm-inference-transformers-vllm-sglang-d88aa7ebb00e?source=rss------artificial_intelligence-5">The Complete Guide to LLM Inference: Transformers, vLLM &amp; SGLang</a>
-        <p class="card-gist">Practical comparison of vLLM vs SGLang for production inference, covering KV caching, batching, and throughput tradeoffs.</p>
-        <div class="meta">Sowmithdurusoju · <a href="https://medium.com/@sowmithdurusoju/the-complete-guide-to-llm-inference-transformers-vllm-sglang-d88aa7ebb00e?source=rss------artificial_intelligence-5">read →</a></div>
-        <div class="meter"><span style="width:78%"></span></div>
-      </article>
-        <article class="card src-hackernews">
-        <div class="kicker"><span class="badge">Hacker News</span></div>
-        <a class="card-title" href="https://eardatasci.github.io/c/ambiance/index.html">Towards a harness that can do anything</a>
-        <p class="card-gist">Debate on agent harness design converges on Unix-philosophy determinism: lean, auditable scaffolds beat generic flexibility.</p>
-        <div class="meta">173 pts · 87 comments · <a href="https://news.ycombinator.com/item?id=48921077">discuss →</a></div>
-        <div class="meter"><span style="width:75%"></span></div>
-      </article>
-        <article class="card src-substack">
-        <div class="kicker"><span class="badge">Platformer</span></div>
-        <a class="card-title" href="https://www.platformer.news/david-pierce-interview-productivity-podcast/">The man who tried 200 to-do apps has some advice about AI</a>
-        <p class="card-gist">After 200 productivity apps, the advice is to stop chasing tools — the AI era demands different defaults, not more apps.</p>
-        <div class="meta">Casey Newton · <a href="https://www.platformer.news/david-pierce-interview-productivity-podcast/">read →</a></div>
-        <div class="meter"><span style="width:72%"></span></div>
-      </article>
-        <article class="card src-substack">
-        <div class="kicker"><span class="badge">The Pragmatic Engineer</span></div>
-        <a class="card-title" href="https://newsletter.pragmaticengineer.com/p/what-is-loop-engineering">What is “loop engineering?”</a>
-        <p class="card-gist">&quot;Loop engineering&quot; is mostly rebranded cron/trigger automation with AI slop sprinkled in; unlikely to outlast the hype.</p>
-        <div class="meta">Gergely Orosz · <a href="https://newsletter.pragmaticengineer.com/p/what-is-loop-engineering">read →</a></div>
-        <div class="meter"><span style="width:66%"></span></div>
-      </article>
-        <article class="card src-medium">
-        <div class="kicker"><span class="badge">Medium · AI</span></div>
-        <a class="card-title" href="https://medium.com/@thquang2605/gemini-claude-or-chatgpt-how-to-match-the-right-ai-to-your-coding-task-and-avoid-the-70-trap-c1fc5afe97f6?source=rss------artificial_intelligence-5">Gemini, Claude, or ChatGPT? How to Match the Right AI to Your Coding Task (And Avoid the 70% Trap)</a>
-        <p class="card-gist">AI gets you 70% of a project fast, but the final 30% requires deliberate model selection to avoid silent failures.</p>
-        <div class="meta">Nguyên Khang · <a href="https://medium.com/@thquang2605/gemini-claude-or-chatgpt-how-to-match-the-right-ai-to-your-coding-task-and-avoid-the-70-trap-c1fc5afe97f6?source=rss------artificial_intelligence-5">read →</a></div>
-        <div class="meter"><span style="width:66%"></span></div>
+        <p class="card-gist">Getting Gemma 4 26B running on a 2013 Xeon (no AVX2, no GPU) required patching the inference kernel for the older ISA.</p>
+        <div class="meta">284 pts · 184 comments · <a href="https://news.ycombinator.com/item?id=48922434">discuss →</a></div>
+        <div class="meter"><span style="width:90%"></span></div>
       </article>
         <article class="card src-hackernews">
         <div class="kicker"><span class="badge">Hacker News</span></div>
         <a class="card-title" href="https://mort.coffee/home/sqlite-editions/">SQLite should have (Rust-style) editions</a>
-        <p class="card-gist">Proposal: SQLite opt-in behavior versions (like Rust editions) to fix legacy design mistakes without breaking compatibility.</p>
-        <div class="meta">128 pts · 52 comments · <a href="https://news.ycombinator.com/item?id=48928135">discuss →</a></div>
-        <div class="meter"><span style="width:66%"></span></div>
+        <p class="card-gist">Proposal for SQLite to adopt opt-in versioned &#x27;editions&#x27; to fix legacy defaults without breaking backward compatibility.</p>
+        <div class="meta">260 pts · 104 comments · <a href="https://news.ycombinator.com/item?id=48928135">discuss →</a></div>
+        <div class="meter"><span style="width:83%"></span></div>
+      </article>
+        <article class="card src-medium">
+        <div class="kicker"><span class="badge">Medium · Towards AI</span></div>
+        <a class="card-title" href="https://pub.towardsai.net/evolution-of-nlp-tf-idf-to-agents-e08c9da95174?source=rss----98111c9905da---4">Evolution of NLP: TF-IDF to Agents</a>
+        <p class="card-gist">NLP arc from TF-IDF bag-of-words through transformer embeddings to agents that autonomously plan evidence gathering.</p>
+        <div class="meta">Zoumana Keita · <a href="https://pub.towardsai.net/evolution-of-nlp-tf-idf-to-agents-e08c9da95174?source=rss----98111c9905da---4">read →</a></div>
+        <div class="meter"><span style="width:78%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Product Market Fit</span></div>
+        <a class="card-title" href="https://www.productmarketfit.tech/p/the-one-person-billion-dollar-company">The One Person Billion-Dollar Company With Claude</a>
+        <p class="card-gist">Ten-skill playbook for using Claude to replace entire startup functions and scale a solo founder to outsized outcomes.</p>
+        <div class="meta">Guillermo Flor · <a href="https://www.productmarketfit.tech/p/the-one-person-billion-dollar-company">read →</a></div>
+        <div class="meter"><span style="width:72%"></span></div>
+      </article>
+        <article class="card src-medium">
+        <div class="kicker"><span class="badge">Medium · Towards AI</span></div>
+        <a class="card-title" href="https://pub.towardsai.net/loop-engineering-in-claude-code-let-the-agent-run-itself-e3ffe52578d3?source=rss----98111c9905da---4">Loop Engineering in Claude Code: Let the Agent Run Itself</a>
+        <p class="card-gist">Design a closed agent loop—find work, execute, verify with an objective check, iterate—instead of hand-prompting every turn.</p>
+        <div class="meta">Remy B. · <a href="https://pub.towardsai.net/loop-engineering-in-claude-code-let-the-agent-run-itself-e3ffe52578d3?source=rss----98111c9905da---4">read →</a></div>
+        <div class="meter"><span style="width:72%"></span></div>
       </article>
         <article class="card src-hackernews">
         <div class="kicker"><span class="badge">Ask HN</span></div>
         <a class="card-title" href="https://news.ycombinator.com/item?id=48920698">Ask HN: Is it just me, or is software buggier across the board?</a>
-        <p class="card-gist">Software quality has steadily declined for a decade; MVP-release culture and reduced QA investment are the main culprits.</p>
-        <div class="meta">106 pts · 93 comments · <span class="also">also on Ask HN</span> · <a href="https://news.ycombinator.com/item?id=48920698">discuss →</a></div>
-        <div class="meter"><span style="width:64%"></span></div>
+        <p class="card-gist">Broad consensus: software quality has declined for a decade as &#x27;ship fast, patch later&#x27; replaced Gold Master discipline.</p>
+        <div class="meta">112 pts · 95 comments · <span class="also">also on Ask HN</span> · <a href="https://news.ycombinator.com/item?id=48920698">discuss →</a></div>
+        <div class="meter"><span style="width:68%"></span></div>
       </article>
         <article class="card src-medium">
-        <div class="kicker"><span class="badge">Medium · AI</span></div>
-        <a class="card-title" href="https://medium.com/codetodeploy/youre-not-running-out-of-tokens-you-re-rebuilding-the-same-context-every-time-efb786626eb1?source=rss------artificial_intelligence-5">You’re not running out of tokens. You’re rebuilding the same context, every time.</a>
-        <p class="card-gist">Token waste comes from rebuilding context each session, not context limits — persistent context habits fix this quietly.</p>
-        <div class="meta">Filippo Biasiolo · <a href="https://medium.com/codetodeploy/youre-not-running-out-of-tokens-you-re-rebuilding-the-same-context-every-time-efb786626eb1?source=rss------artificial_intelligence-5">read →</a></div>
-        <div class="meter"><span style="width:60%"></span></div>
+        <div class="kicker"><span class="badge">Medium · Towards AI</span></div>
+        <a class="card-title" href="https://pub.towardsai.net/migration-to-agent-first-architecture-for-enhanced-security-160f6655b6b2?source=rss----98111c9905da---4">Migration to Agent-First Architecture for Enhanced Security</a>
+        <p class="card-gist">Migrating legacy services to agent-first models exposes hidden security gaps once autonomous agents start calling external APIs without guardrails.</p>
+        <div class="meta">David Pradeep · <a href="https://pub.towardsai.net/migration-to-agent-first-architecture-for-enhanced-security-160f6655b6b2?source=rss----98111c9905da---4">read →</a></div>
+        <div class="meter"><span style="width:66%"></span></div>
       </article>
         </div>
       </section>
@@ -343,54 +285,122 @@
         <article class="card lead src-hackernews">
         <div class="kicker"><span class="badge">Hacker News</span><span class="lead-tag">Top</span></div>
         <a class="card-title" href="https://thinkingmachines.ai/news/introducing-inkling/">Inkling: Our Open-Weights Model</a>
-        <p class="card-gist">xAI releases largest open-weight multimodal model with audio; community excited about local inference potential.</p>
-        <div class="meta">727 pts · 185 comments · <a href="https://news.ycombinator.com/item?id=48924912">discuss →</a></div>
+        <p class="card-gist">975B open-weights multimodal model with audio support; community sizing up local-run options against proprietary alternatives.</p>
+        <div class="meta">955 pts · 236 comments · <a href="https://news.ycombinator.com/item?id=48924912">discuss →</a></div>
         <div class="meter"><span style="width:100%"></span></div>
       </article>
         <article class="card src-hackernews">
         <div class="kicker"><span class="badge">Hacker News</span></div>
-        <a class="card-title" href="https://clocks.dev">Collection of Digital Clock Designs</a>
-        <p class="card-gist">Curated gallery of creative browser-based clock implementations, ranging from subtle to technically impressive.</p>
-        <div class="meta">185 pts · 36 comments · <a href="https://news.ycombinator.com/item?id=48923380">discuss →</a></div>
-        <div class="meter"><span style="width:76%"></span></div>
-      </article>
-        <article class="card src-medium">
-        <div class="kicker"><span class="badge">Medium · AI</span></div>
-        <a class="card-title" href="https://medium.com/codetodeploy/canva-code-2-0-just-made-ai-website-building-free-for-everyone-even-free-users-acae2bfc4c1b?source=rss------artificial_intelligence-5">Canva Code 2.0 Just Made AI Website Building Free for Everyone (Even Free Users)</a>
-        <p class="card-gist">Canva Code 2.0 opens AI website generation to free users, removing the last paywall on no-code web building.</p>
-        <div class="meta">Greek Ai · <a href="https://medium.com/codetodeploy/canva-code-2-0-just-made-ai-website-building-free-for-everyone-even-free-users-acae2bfc4c1b?source=rss------artificial_intelligence-5">read →</a></div>
-        <div class="meter"><span style="width:72%"></span></div>
-      </article>
-        <article class="card src-hackernews">
-        <div class="kicker"><span class="badge">Hacker News</span></div>
         <a class="card-title" href="https://developer.puter.com/labs/firefox-wasm/">Show HN: Firefox in WebAssembly</a>
-        <p class="card-gist">Full Firefox — Gecko, SpiderMonkey, all UI — compiled to WASM and running inside a canvas element in any browser.</p>
-        <div class="meta">140 pts · 78 comments · <a href="https://news.ycombinator.com/item?id=48926939">discuss →</a></div>
-        <div class="meter"><span style="width:72%"></span></div>
+        <p class="card-gist">Full Firefox (Gecko + SpiderMonkey) compiled to WASM runs inside another browser tab, end-to-end encrypted via WISP.</p>
+        <div class="meta">198 pts · 98 comments · <a href="https://news.ycombinator.com/item?id=48926939">discuss →</a></div>
+        <div class="meter"><span style="width:80%"></span></div>
       </article>
         <article class="card src-hackernews">
-        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <div class="kicker"><span class="badge">Show HN</span></div>
         <a class="card-title" href="https://github.com/welcome-to-the-sunny-side/misa77">Show HN: misa77 - a codec that decodes 2x faster than LZ4 (at better ratios)</a>
-        <p class="card-gist">New compression codec achieves 2x faster decompression than LZ4 at comparable ratios by aggressively reducing branches.</p>
-        <div class="meta">132 pts · 40 comments · <a href="https://news.ycombinator.com/item?id=48922838">discuss →</a></div>
+        <p class="card-gist">New codec beats LZ4 decompression speed at comparable ratios by slashing branches; compression is intentionally slow.</p>
+        <div class="meta">144 pts · 42 comments · <a href="https://news.ycombinator.com/item?id=48922838">discuss →</a></div>
+        <div class="meter"><span style="width:72%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/hermesagent</span></div>
+        <a class="card-title" href="https://www.reddit.com/r/hermesagent/comments/1uxqxoc/rant_this_program_needs_a_stable_build_and_beta/">Rant: This program NEEDS A stable build and beta build</a>
+        <p class="card-gist">Users frustrated Hermes agent ships no stable channel, mixing experimental changes with no way to pin a known-good build.</p>
+        <div class="meta"><a href="https://www.reddit.com/r/hermesagent/comments/1uxqxoc/rant_this_program_needs_a_stable_build_and_beta/">open →</a></div>
         <div class="meter"><span style="width:68%"></span></div>
       </article>
+        </div>
+      </section>
+      <section id="panel-personal" class="panel">
+        <p class="panel-intro">Your world beyond tech — local, hobby and the rest of your personal feed.</p>
+        <div class="grid">
+        <article class="card lead src-reddit">
+        <div class="kicker"><span class="badge">r/indiatech</span><span class="lead-tag">Top</span></div>
+        <a class="card-title" href="https://i.redd.it/i60fdd3znjdh1.jpeg">The people behind HiAnime have been arrested in Vietnam .</a>
+        <p class="card-gist">Vietnamese authorities arrested the operators behind HiAnime, a major free anime streaming site.</p>
+        <div class="meta"><a href="https://www.reddit.com/r/IndiaTech/comments/1uxvv0k/the_people_behind_hianime_have_been_arrested_in/">open →</a></div>
+        <div class="meter"><span style="width:89%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/watchesindia</span></div>
+        <a class="card-title" href="https://i.redd.it/rbfmxbd1kjdh1.jpeg">My #1 pick for date nights</a>
+        <p class="card-gist">A watch enthusiast shares their favourite dress watch pick for date nights.</p>
+        <div class="meta"><a href="https://www.reddit.com/r/watchesindia/comments/1uxvhhp/my_1_pick_for_date_nights/">open →</a></div>
+        <div class="meter"><span style="width:87%"></span></div>
+      </article>
         <article class="card src-hackernews">
         <div class="kicker"><span class="badge">Hacker News</span></div>
-        <a class="card-title" href="https://brainless.swerdlow.dev">Brainless: Shadcn components that look like Claude Code, Codex and Grok</a>
-        <p class="card-gist">Shadcn component library that replicates the terminal aesthetic of Claude Code, Codex, and Grok for your own UI.</p>
-        <div class="meta">98 pts · 20 comments · <a href="https://news.ycombinator.com/item?id=48926085">discuss →</a></div>
-        <div class="meter"><span style="width:58%"></span></div>
+        <a class="card-title" href="https://www.pigeonsandplanes.com/read/music-piracy-what-cd-oink-nine-inch-nails-streaming">The lost joy of music piracy</a>
+        <p class="card-gist">Nostalgic for OiNK and What.cd&#x27;s curation culture; yt-dlp made piracy trivial but killed the community magic.</p>
+        <div class="meta">277 pts · 136 comments · <a href="https://news.ycombinator.com/item?id=48930454">discuss →</a></div>
+        <div class="meter"><span style="width:87%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/carsindia</span></div>
+        <a class="card-title" href="https://i.redd.it/712ff3ru7jdh1.jpeg">He wants us to pay over 1.8 USD/Litre of Petrol in India— That’s higher than countries where per capita is 80-120K USD</a>
+        <p class="card-gist">Outrage that Indian petrol prices rival those in countries with 10x higher per-capita income.</p>
+        <div class="meta"><a href="https://www.reddit.com/r/CarsIndia/comments/1uxu8us/he_wants_us_to_pay_over_18_usdlitre_of_petrol_in/">open →</a></div>
+        <div class="meter"><span style="width:84%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/bangalorerentals</span></div>
+        <a class="card-title" href="https://v.redd.it/plrot09f7jdh1">Seeking for advice regarding 1bhk</a>
+        <p class="card-gist">Renter seeking community guidance on finding and negotiating a 1BHK in Bangalore.</p>
+        <div class="meta"><a href="https://www.reddit.com/r/bangalorerentals/comments/1uxu79k/seeking_for_advice_regarding_1bhk/">open →</a></div>
+        <div class="meter"><span style="width:81%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/indiatax</span></div>
+        <a class="card-title" href="https://i.redd.it/gjijani04jdh1.jpeg">Reminder to disclose your RSUs in ITR</a>
+        <p class="card-gist">Indian taxpayers holding foreign-company RSUs must disclose them as foreign assets in ITR-2/3 or face penalties.</p>
+        <div class="meta"><a href="https://www.reddit.com/r/IndiaTax/comments/1uxtuh0/reminder_to_disclose_your_rsus_in_itr/">open →</a></div>
+        <div class="meter"><span style="width:79%"></span></div>
+      </article>
+        <article class="card src-substack">
+        <div class="kicker"><span class="badge">Product Growth</span></div>
+        <a class="card-title" href="https://www.news.aakashg.com/p/google-pm-interview-guide-2026">How to Crack the NEW Google PM Interview</a>
+        <p class="card-gist">&#x27;Googleyness&#x27; now weighs more than product sense in 2026 PM loops; guide breaks down what interviewers actually score.</p>
+        <div class="meta">Aakash Gupta · <a href="https://www.news.aakashg.com/p/google-pm-interview-guide-2026">read →</a></div>
+        <div class="meter"><span style="width:78%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/carsindia</span></div>
+        <a class="card-title" href="https://www.reddit.com/gallery/1uxsvjg">Someone had to say it.... [OC]</a>
+        <p class="card-gist">A meme or pointed take about Indian car culture the poster felt the community needed to hear.</p>
+        <div class="meta"><a href="https://www.reddit.com/r/CarsIndia/comments/1uxsvjg/someone_had_to_say_it_oc/">open →</a></div>
+        <div class="meter"><span style="width:76%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/dalalstreetbets</span></div>
+        <a class="card-title" href="https://www.reddit.com/r/dalalstreetbets/comments/1uxscxk/should_i_hold_groww_stock_for_5_to_10_years/">Should I hold Groww stock for 5 to 10 years?</a>
+        <p class="card-gist">Retail investors debate whether Groww&#x27;s long-term fintech prospects justify a 5–10 year hold post-IPO.</p>
+        <div class="meta"><a href="https://www.reddit.com/r/dalalstreetbets/comments/1uxscxk/should_i_hold_groww_stock_for_5_to_10_years/">open →</a></div>
+        <div class="meter"><span style="width:74%"></span></div>
+      </article>
+        <article class="card src-reddit">
+        <div class="kicker"><span class="badge">r/st_broseph</span></div>
+        <a class="card-title" href="https://www.reddit.com/r/St_Broseph/comments/1uxr1wi/landlord_reversing_agreed_deposit_settlement/">landlord reversing agreed deposit settlement after I already fulfilled the conditions, no written agreement</a>
+        <p class="card-gist">Tenant fulfilled all conditions for deposit return but landlord reneged with no written agreement to enforce.</p>
+        <div class="meta"><a href="https://www.reddit.com/r/St_Broseph/comments/1uxr1wi/landlord_reversing_agreed_deposit_settlement/">open →</a></div>
+        <div class="meter"><span style="width:71%"></span></div>
+      </article>
+        <article class="card src-hackernews">
+        <div class="kicker"><span class="badge">Hacker News</span></div>
+        <a class="card-title" href="https://elbowgreasegames.substack.com/p/misfits-attic-announces-duskers-20">Duskers, the scary command line game, is getting a sequel</a>
+        <p class="card-gist">Cult drone/command-line horror game Duskers gets a sequel; more graphical engine divides the existing fanbase.</p>
+        <div class="meta">124 pts · 39 comments · <a href="https://news.ycombinator.com/item?id=48925888">discuss →</a></div>
+        <div class="meter"><span style="width:69%"></span></div>
       </article>
         </div>
       </section>
     </div>
 
     <footer>
-      <div class="provenance">Personalized from — Reddit: generic subreddits (fallback) · Substack: curated list (fallback) · Medium: your follows</div>
+      <div class="provenance">Personalized from — Reddit: your home RSS · Substack: your subscriptions · Medium: your follows</div>
       Built from <a href="https://hn.algolia.com/api">Hacker News</a>,
       <a href="https://www.reddit.com">Reddit</a>, Substack &amp;
-      Medium · generated 16 Jul 2026, 08:03 · <a href="../archive.html">archive</a>
+      Medium · generated 16 Jul 2026, 14:36 · <a href="../archive.html">archive</a>
     </footer>
   </div>
 </body>
