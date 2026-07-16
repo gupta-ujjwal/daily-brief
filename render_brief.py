@@ -61,6 +61,7 @@ CATEGORIES = [
     ("industry", "The Wire", "What's moving across the industry — funding, deals, launches and power plays."),
     ("learning", "Deep Dives", "Essays, ideas and new tech worth slowing down to understand."),
     ("products", "Worth a Try", "Products, repos and apps to look out for and actually use."),
+    ("personal", "Off the Clock", "Your world beyond tech — local, hobby and the rest of your personal feed."),
 ]
 DEFAULT_CATEGORY = "industry"
 

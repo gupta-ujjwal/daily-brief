@@ -17,10 +17,11 @@ import re
 import subprocess
 import sys
 
-VALID = {"industry", "learning", "products"}
+VALID = {"industry", "learning", "products", "personal"}
 
 PROMPT_HEAD = """\
-You are writing a daily tech digest. For EACH item below, produce:
+You are writing a daily digest that blends tech with the reader's personal feed.
+For EACH item below, produce:
 - "gist": one line, <= 25 words — what the discussion is actually arguing about or
   the key takeaway. NOT a restatement of the title. Use the comments/text.
 - "category": exactly one of:
@@ -30,11 +31,15 @@ You are writing a daily tech digest. For EACH item below, produce:
     capabilities and concepts worth understanding.
   - "products": things to try or adopt — Show HN, repos, frameworks, tools,
     devices, apps, services.
-  When ambiguous, choose by reader intent: read-to-know=industry,
+  - "personal": NON-tech, personal-interest or local posts — local city/community,
+    cars/watches/hobbies, lifestyle, memes, sports, real estate, personal finance
+    chatter. Anything that is not about technology/software/business belongs here.
+  Decide tech-vs-personal FIRST: if it isn't about tech/software/business/science,
+  it's "personal". Among tech items, choose by reader intent: read-to-know=industry,
   read-to-learn=learning, go-try-it=products.
 
 Return ONLY a JSON array, one object per item, in the SAME order, shaped exactly:
-[{"i": <index>, "category": "industry|learning|products", "gist": "..."}]
+[{"i": <index>, "category": "industry|learning|products|personal", "gist": "..."}]
 No prose, no markdown, no code fences.
 
 ITEMS:

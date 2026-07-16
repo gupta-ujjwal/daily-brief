@@ -83,6 +83,7 @@
   .tab-industry { --tabc: #e2703a; }
   .tab-learning { --tabc: #7c9eff; }
   .tab-products { --tabc: #34d399; }
+  .tab-personal { --tabc: #c084fc; }
   .tabinput:focus-visible + .tabbar .tab { outline: none; }
 
   .panel { display: none; }
@@ -91,10 +92,12 @@
   /* show the panel + light up the tab matching the checked radio */
   #tab-industry:checked ~ #panel-industry,
   #tab-learning:checked ~ #panel-learning,
-  #tab-products:checked ~ #panel-products { display: block; animation: panel-in .22s ease both; }
+  #tab-products:checked ~ #panel-products,
+  #tab-personal:checked ~ #panel-personal { display: block; animation: panel-in .22s ease both; }
   #tab-industry:checked ~ .tabbar .tab-industry,
   #tab-learning:checked ~ .tabbar .tab-learning,
-  #tab-products:checked ~ .tabbar .tab-products {
+  #tab-products:checked ~ .tabbar .tab-products,
+  #tab-personal:checked ~ .tabbar .tab-personal {
     color: var(--ink); background: color-mix(in srgb, var(--tabc) 15%, var(--panel2));
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tabc) 45%, transparent); }
   @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }

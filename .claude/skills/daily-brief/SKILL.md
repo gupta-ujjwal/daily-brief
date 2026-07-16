@@ -39,8 +39,12 @@ three clickable tabs: **The Wire** (industry), **Deep Dives** (learning) and
        opinion/discussion, new capabilities and concepts to understand.
      - `"products"` → **Worth a Try**: things to try or adopt — Show HN, repos,
        frameworks, tools, devices, apps, services.
+     - `"personal"` → **Off the Clock**: NON-tech, personal-interest or local posts
+       — local city/community, cars/watches/hobbies, lifestyle, memes, sports, real
+       estate, personal-finance chatter (mostly from a personalized Reddit home feed).
 
-     When an item could fit two, pick by the reader's intent (read-to-know →
+     Decide tech-vs-personal FIRST: anything not about tech/software/business/science
+     is `"personal"`. Among tech items, pick by the reader's intent (read-to-know →
      industry, read-to-learn → learning, go-try-it → products).
 
    Write both fields back into `data.json` (leave everything else untouched).
