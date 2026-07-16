@@ -70,6 +70,29 @@ def esc(s):
     return html.escape(s or "")
 
 
+# Outline bookmark icon; CSS fills it when the card is saved.
+BOOKMARK_SVG = ('<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">'
+                '<path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>')
+
+
+def bookmark_btn(it):
+    """A per-card save button carrying the story's data so the client can persist
+    it to localStorage without re-deriving anything. Keyed by url (or discuss_url)."""
+    key = it.get("url") or it.get("discuss_url") or ""
+    data = {
+        "data-url": key,
+        "data-title": it.get("title") or "",
+        "data-source": it.get("source") or "",
+        "data-label": it.get("source_label") or "",
+        "data-gist": it.get("gist") or "",
+        "data-cat": it.get("category") or "",
+        "data-discuss": it.get("discuss_url") or key,
+    }
+    attrs = " ".join(f'{k}="{esc(v)}"' for k, v in data.items())
+    return (f'<button class="bm-btn" type="button" aria-label="Save to bookmarks" '
+            f'title="Save" {attrs}>{BOOKMARK_SVG}</button>')
+
+
 def meta(it):
     s = it.get("source")
     parts = []
@@ -102,7 +125,8 @@ def card_block(it, lead=False):
     cls = "card lead" if lead else "card"
     right = '<span class="lead-tag">Top</span>' if lead else ""
     return f'''<article class="{cls} src-{it['source']}">
-        <div class="kicker"><span class="badge">{esc(it['source_label'])}</span>{right}</div>
+        <div class="kicker"><span class="badge">{esc(it['source_label'])}</span>
+          <span class="kicker-r">{right}{bookmark_btn(it)}</span></div>
         <a class="card-title" href="{esc(it['url'])}">{esc(it['title'])}</a>
         {gist}
         <div class="meta">{meta(it)}</div>

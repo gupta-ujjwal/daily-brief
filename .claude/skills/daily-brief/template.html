@@ -128,6 +128,74 @@
     margin-bottom: 10px; }
   .provenance.degraded { color: var(--reddit); }
 
+  /* ---- Bookmarks ---- */
+  .kicker-r { display: inline-flex; align-items: center; gap: 8px; }
+  .bm-btn { display: inline-flex; align-items: center; justify-content: center;
+    padding: 3px; border: none; background: none; cursor: pointer; color: var(--muted);
+    border-radius: 6px; transition: color .15s, transform .1s; }
+  .bm-btn:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .bm-btn:active { transform: scale(.86); }
+  .bm-btn svg { fill: none; stroke: currentColor; stroke-width: 1.7; }
+  .bm-btn.on { color: var(--accent); }
+  .bm-btn.on svg { fill: currentColor; }
+
+  /* side tab handle */
+  .bm-tab { position: fixed; right: 0; top: 46%; transform: translateY(-50%); z-index: 50;
+    writing-mode: vertical-rl; text-orientation: mixed;
+    background: var(--panel2); color: var(--ink-dim); border: 1px solid var(--line);
+    border-right: none; border-radius: 10px 0 0 10px; padding: 16px 9px; cursor: pointer;
+    font: 700 11.5px/1 ui-monospace, monospace; letter-spacing: .16em; text-transform: uppercase;
+    box-shadow: -4px 0 18px rgba(0,0,0,.35); transition: color .15s, background .15s; }
+  .bm-tab:hover { color: var(--accent); background: var(--panel); }
+  .bm-tab .bm-count { display: inline-block; margin-top: 8px; color: var(--accent); }
+
+  .bm-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 59;
+    opacity: 0; visibility: hidden; transition: opacity .2s, visibility .2s; }
+  .bm-backdrop.open { opacity: 1; visibility: visible; }
+
+  .bm-drawer { position: fixed; top: 0; right: 0; height: 100%; width: min(400px, 94vw);
+    background: var(--bg2); border-left: 1px solid var(--line); z-index: 60;
+    transform: translateX(100%); transition: transform .26s cubic-bezier(.4,0,.2,1);
+    display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,.5); }
+  .bm-drawer.open { transform: none; }
+  .bm-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 22px 14px; border-bottom: 1px solid var(--line); }
+  .bm-head h2 { margin: 0; font: 800 20px/1 Georgia, serif; letter-spacing: -.01em; }
+  .bm-head h2 em { color: var(--accent); font-style: normal; }
+  .bm-close { background: none; border: none; color: var(--muted); font-size: 24px;
+    cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 6px; }
+  .bm-close:hover { color: var(--ink); }
+  .bm-newgroup { display: flex; gap: 8px; padding: 14px 22px; border-bottom: 1px solid var(--line); }
+  .bm-newgroup input { flex: 1; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; color: var(--ink); padding: 8px 11px; font: 13px/1 inherit; }
+  .bm-newgroup input:focus { outline: none; border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+  .bm-newgroup button { background: var(--accent); color: #100f0c; border: none; border-radius: 8px;
+    padding: 0 14px; font: 700 13px/1 ui-monospace, monospace; cursor: pointer; }
+  .bm-newgroup button:hover { filter: brightness(1.08); }
+  .bm-body { overflow-y: auto; padding: 8px 22px 40px; flex: 1; }
+  .bm-empty { color: var(--muted); font-size: 14px; text-align: center; padding: 40px 10px; }
+  .bm-group { margin-top: 18px; }
+  .bm-group-h { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px dashed var(--line); }
+  .bm-group-h .name { font: 700 12px/1 ui-monospace, monospace; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-dim); }
+  .bm-group-h .name .n { color: var(--muted); }
+  .bm-del-group { background: none; border: none; color: var(--muted); cursor: pointer;
+    font: 11px/1 ui-monospace, monospace; padding: 3px 5px; border-radius: 5px; }
+  .bm-del-group:hover { color: var(--reddit); }
+  .bm-item { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 11px 12px; margin-bottom: 9px; }
+  .bm-item .t { display: block; color: var(--ink); text-decoration: none; font: 600 14px/1.32 Georgia, serif; }
+  .bm-item .t:hover { color: var(--accent); }
+  .bm-item .row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .bm-item .src { font: 500 11px/1 ui-monospace, monospace; color: var(--muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+  .bm-item select { margin-left: auto; background: var(--panel2); color: var(--ink-dim);
+    border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font: 11px/1 inherit; cursor: pointer; }
+  .bm-item .rm { background: none; border: none; color: var(--muted); cursor: pointer;
+    font-size: 15px; padding: 2px 5px; border-radius: 5px; }
+  .bm-item .rm:hover { color: var(--reddit); }
+
   @media (max-width: 720px) {
     .wrap { padding: 28px 18px 72px; }
     .grid { grid-template-columns: 1fr; }
@@ -144,7 +212,7 @@
         <span class="sep">/</span> last 24h, across platforms
       </div>
       <h1 class="title">The day in <em>tech</em>, distilled</h1>
-      <p class="standfirst">Hacker News, Reddit, Substack and Medium — ranked across platforms and split across three tabs: <em>The Wire</em>, <em>Deep Dives</em> and <em>Worth a Try</em>. Flip through, with the gist of each.</p>
+      <p class="standfirst">Hacker News, Reddit, Substack and Medium — ranked across platforms, split across tabs, with the gist of each. Bookmark what's worth keeping — it's saved in your browser, organised into your own groups.</p>
       <div class="legend">
         {{SOURCE_LEGEND}}
       </div>
@@ -159,5 +227,142 @@
       Medium · generated {{GENERATED}} · <a href="{{ROOT}}archive.html">archive</a>
     </footer>
   </div>
+
+  <!-- Bookmarks: side tab + slide-out drawer (data lives in localStorage) -->
+  <button class="bm-tab" id="bmTab" type="button" aria-label="Open bookmarks">Bookmarks<span class="bm-count" id="bmCount">0</span></button>
+  <div class="bm-backdrop" id="bmBackdrop"></div>
+  <aside class="bm-drawer" id="bmDrawer" aria-label="Saved bookmarks">
+    <div class="bm-head">
+      <h2>Saved <em>&#9733;</em></h2>
+      <button class="bm-close" id="bmClose" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div class="bm-newgroup">
+      <input id="bmNewName" type="text" placeholder="New group name&#8230;" maxlength="40" aria-label="New group name">
+      <button id="bmAddGroup" type="button">Add</button>
+    </div>
+    <div class="bm-body" id="bmBody"></div>
+  </aside>
+
+  <script>
+  (function () {
+    "use strict";
+    var KEY = "db_bookmarks_v1", UNSORTED = "__unsorted__";
+    function load() {
+      try { var s = JSON.parse(localStorage.getItem(KEY)); if (s && s.items) { s.groups = s.groups || []; return s; } } catch (e) {}
+      return { groups: [], items: {} };
+    }
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+    var state = load();
+
+    var body = document.getElementById("bmBody");
+    var countEl = document.getElementById("bmCount");
+    var drawer = document.getElementById("bmDrawer");
+    var backdrop = document.getElementById("bmBackdrop");
+    var newName = document.getElementById("bmNewName");
+
+    function count() { return Object.keys(state.items).length; }
+    function groupsAll() { return [{ id: UNSORTED, name: "Unsorted" }].concat(state.groups); }
+    function itemsIn(gid) {
+      return Object.keys(state.items).map(function (k) { return state.items[k]; })
+        .filter(function (it) { return (it.group || UNSORTED) === gid; })
+        .sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
+    }
+    function updateCount() { countEl.textContent = count(); }
+    function syncButtons() {
+      var btns = document.querySelectorAll(".bm-btn");
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.toggle("on", !!state.items[btns[i].getAttribute("data-url")]);
+      }
+    }
+    function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+    function itemNode(it) {
+      var node = el("div", "bm-item");
+      var a = el("a", "t", it.title || it.url); a.href = it.url; a.target = "_blank"; a.rel = "noopener";
+      node.appendChild(a);
+      var row = el("div", "row");
+      row.appendChild(el("span", "src", it.label || it.source || ""));
+      var sel = el("select");
+      groupsAll().forEach(function (g) {
+        var o = el("option", null, g.name); o.value = g.id;
+        if ((it.group || UNSORTED) === g.id) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.onchange = function () { it.group = sel.value; save(); render(); };
+      row.appendChild(sel);
+      var rm = el("button", "rm", "×"); rm.title = "Remove";
+      rm.onclick = function () { delete state.items[it.url]; save(); render(); syncButtons(); updateCount(); };
+      row.appendChild(rm);
+      node.appendChild(row);
+      return node;
+    }
+
+    function render() {
+      body.innerHTML = "";
+      if (count() === 0) {
+        body.appendChild(el("div", "bm-empty", "No bookmarks yet. Tap the bookmark icon on any story to save it here."));
+        return;
+      }
+      groupsAll().forEach(function (g) {
+        var items = itemsIn(g.id);
+        if (g.id === UNSORTED && items.length === 0) return;
+        var wrap = el("div", "bm-group");
+        var h = el("div", "bm-group-h");
+        var name = el("span", "name"); name.textContent = g.name;
+        name.appendChild(el("span", "n", "  " + items.length));
+        h.appendChild(name);
+        if (g.id !== UNSORTED) {
+          var del = el("button", "bm-del-group", "delete");
+          del.onclick = function () {
+            state.groups = state.groups.filter(function (x) { return x.id !== g.id; });
+            Object.keys(state.items).forEach(function (k) { if (state.items[k].group === g.id) state.items[k].group = UNSORTED; });
+            save(); render();
+          };
+          h.appendChild(del);
+        }
+        wrap.appendChild(h);
+        items.forEach(function (it) { wrap.appendChild(itemNode(it)); });
+        body.appendChild(wrap);
+      });
+    }
+
+    function addGroup() {
+      var name = (newName.value || "").trim();
+      if (!name) return;
+      state.groups.push({ id: "g" + Date.now() + Math.floor(Math.random() * 1000), name: name });
+      newName.value = ""; save(); render();
+    }
+    document.getElementById("bmAddGroup").onclick = addGroup;
+    newName.addEventListener("keydown", function (e) { if (e.key === "Enter") addGroup(); });
+
+    function open() { drawer.classList.add("open"); backdrop.classList.add("open"); render(); }
+    function close() { drawer.classList.remove("open"); backdrop.classList.remove("open"); }
+    document.getElementById("bmTab").onclick = open;
+    document.getElementById("bmClose").onclick = close;
+    backdrop.onclick = close;
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+
+    document.querySelectorAll(".bm-btn").forEach(function (btn) {
+      var u = btn.getAttribute("data-url");
+      if (!u) return;
+      btn.addEventListener("click", function () {
+        if (state.items[u]) { delete state.items[u]; btn.classList.remove("on"); }
+        else {
+          state.items[u] = {
+            url: u, title: btn.getAttribute("data-title"), source: btn.getAttribute("data-source"),
+            label: btn.getAttribute("data-label"), gist: btn.getAttribute("data-gist"),
+            cat: btn.getAttribute("data-cat"), discuss: btn.getAttribute("data-discuss"),
+            group: UNSORTED, savedAt: Date.now()
+          };
+          btn.classList.add("on");
+        }
+        save(); updateCount();
+        if (drawer.classList.contains("open")) render();
+      });
+    });
+
+    syncButtons(); updateCount();
+  })();
+  </script>
 </body>
 </html>
