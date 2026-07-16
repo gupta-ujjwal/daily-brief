@@ -7,3 +7,6 @@ __pycache__/
 
 # Brainstorm/develop working scratch (implementation-docs/ is committed)
 notes/
+
+# Playwright MCP session scratch
+.playwright-mcp/
