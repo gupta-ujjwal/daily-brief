@@ -89,5 +89,27 @@ class AuthTotality(unittest.TestCase):
         self.assertIsNone(auth.read_secret("nonexistent"))
 
 
+class NoSignalCap(unittest.TestCase):
+    """Items with zero engagement in a group that HAS engagement signals must be
+    capped at 0.6 score_norm so they can't out-rank real engagement. Editorial
+    sources (no signals for the whole group) must NOT be capped."""
+
+    def test_zero_signal_item_capped_in_mixed_group(self):
+        items = [
+            {"points": 100, "num_comments": 50, "created_at": 1, "url": "a"},
+            {"points": 0, "num_comments": 0, "created_at": 2, "url": "b"},
+        ]
+        fs.score_source(items, {}, 1.0)
+        self.assertLessEqual(items[1]["score_norm"], 0.6)
+
+    def test_editorial_group_not_capped(self):
+        items = [
+            {"points": 0, "num_comments": 0, "created_at": 2, "url": "a"},
+            {"points": 0, "num_comments": 0, "created_at": 1, "url": "b"},
+        ]
+        fs.score_source(items, {}, 1.0)
+        self.assertGreater(items[0]["score_norm"], 0.6)
+
+
 if __name__ == "__main__":
     unittest.main()

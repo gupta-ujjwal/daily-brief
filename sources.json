@@ -5,7 +5,8 @@
   "ranking": {
     "source_weights": { "hackernews": 1.0, "reddit": 0.92, "substack": 0.9, "medium": 0.9 },
     "percentile_weight": 0.6,
-    "engagement_weight": 0.4
+    "engagement_weight": 0.4,
+    "category_weights": { "industry": 1.0, "learning": 1.0, "products": 0.95, "personal": 0.5 }
   },
   "hackernews": {
     "top": 14,

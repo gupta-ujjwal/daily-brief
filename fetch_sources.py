@@ -684,6 +684,8 @@ def score_source(items, rank_cfg, weight):
         percentile = 1.0 - (i / (n - 1) if n > 1 else 0.0)
         engagement = eng[i] / emax
         base = pw * percentile + ew * engagement
+        if has_signal and not (it.get("points") or it.get("num_comments")):
+            base = min(base, 0.6)
         it["score_norm"] = round(base, 4)
         it["rank_score"] = round(base * weight, 4)
 

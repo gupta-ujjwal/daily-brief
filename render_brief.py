@@ -16,9 +16,11 @@ import datetime
 import html
 import json
 import os
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, ".claude", "skills", "daily-brief", "template.html")
+SOURCES = os.path.join(HERE, "sources.json")
 
 LEGEND = {  # source key -> (legend dot class, display name)
     "hackernews": ("hn", "Hacker News"),
@@ -65,9 +67,43 @@ CATEGORIES = [
 ]
 DEFAULT_CATEGORY = "industry"
 
+# Tie-break order for fullest-tab selection: first category wins on equal counts.
+CATEGORY_PRIORITY = {key: i for i, (key, _, _) in enumerate(CATEGORIES)}
+
+# Populated by rescore_by_category() if it skips; emitted as an HTML comment
+# so a silent ranking degradation is visible in the page source.
+rescore_sentinel = ""
+
 
 def esc(s):
     return html.escape(s or "")
+
+
+def rescore_by_category(items):
+    """Apply per-category weights after gists/categories are assigned, then
+    recompute feed_score and re-sort items in-place. Reads
+    ranking.category_weights from sources.json. Fail-safe: on any error, sets a
+    sentinel comment and leaves scores untouched."""
+    global rescore_sentinel
+    try:
+        with open(SOURCES) as f:
+            cfg = json.load(f)
+        weights = cfg.get("ranking", {}).get("category_weights", {})
+        if not weights:
+            rescore_sentinel = "<!-- rescoring-skipped: no category_weights in sources.json -->"
+            return
+    except Exception as e:
+        rescore_sentinel = f"<!-- rescoring-skipped: {esc(str(e))} -->"
+        print(f"  rescore: skipped — {e}", file=sys.stderr)
+        return
+    for it in items:
+        cat = it.get("category", DEFAULT_CATEGORY)
+        w = weights.get(cat, 1.0)
+        it["rank_score"] = round(it.get("rank_score", 0) * w, 4)
+    top = max((it.get("rank_score", 0) for it in items), default=1.0) or 1.0
+    for it in items:
+        it["feed_score"] = round(it.get("rank_score", 0) / top, 4)
+    items.sort(key=lambda x: x.get("rank_score", 0), reverse=True)
 
 
 # Outline bookmark icon; CSS fills it when the card is saved.
@@ -148,8 +184,10 @@ def panel_block(key, intro, items):
 def tabs_block(present):
     """present = list of (key, name, intro, items) for non-empty categories."""
     radios, labels, panels = [], [], []
+    best_i = max(range(len(present)), key=lambda i: (
+        len(present[i][3]), -CATEGORY_PRIORITY.get(present[i][0], 99)))
     for i, (key, name, intro, items) in enumerate(present):
-        checked = " checked" if i == 0 else ""
+        checked = " checked" if i == best_i else ""
         radios.append(f'<input type="radio" name="brieftab" id="tab-{key}" class="tabinput"{checked}>')
         labels.append(f'<label for="tab-{key}" class="tab tab-{key}">{name} '
                       f'<span class="count">{len(items)}</span></label>')
@@ -178,6 +216,8 @@ def main():
     if not items:
         raise SystemExit("no items in data.json — nothing to render")
 
+    rescore_by_category(items)
+
     today = datetime.date.today()
     disp_date = args.date or today.strftime("%-d %B %Y")
     out_path = args.out or os.path.join(HERE, "briefs", f"{today.isoformat()}.html")
@@ -188,8 +228,13 @@ def main():
     for it in items:
         cat = it.get("category")
         buckets[cat if cat in valid else DEFAULT_CATEGORY].append(it)
+    # Merge sparse tabs: products (< 4 items) folds into learning; personal is
+    # exempt (it's a coda tab — a thin personal section is fine).
+    if len(buckets.get("products", [])) < 4:
+        buckets["learning"].extend(buckets["products"])
+        del buckets["products"]
     present = [(key, name, intro, buckets[key])
-               for key, name, intro in CATEGORIES if buckets[key]]
+               for key, name, intro in CATEGORIES if buckets.get(key)]
     tabs = tabs_block(present)
 
     legend = []
@@ -207,14 +252,21 @@ def main():
            .replace("{{PROVENANCE}}", provenance_line(d))
            .replace("{{ROOT}}", esc(args.root_prefix))
            .replace("{{SECTIONS}}", tabs))
+    if rescore_sentinel:
+        out = rescore_sentinel + "\n" + out
     if "{{" in out:
         raise SystemExit("unfilled placeholder remains in template")
 
     out_dir = os.path.dirname(out_path)
     if out_dir:
         os.makedirs(out_dir, exist_ok=True)
-    with open(out_path, "w") as f:
+    tmp_path = out_path + ".tmp"
+    with open(tmp_path, "w") as f:
         f.write(out)
+    if os.path.exists(out_path):
+        os.replace(tmp_path, out_path)
+    else:
+        os.rename(tmp_path, out_path)
     print(f"wrote {out_path}: {len(items)} items, {len(out)} bytes")
 
 
