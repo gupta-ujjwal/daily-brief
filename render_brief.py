@@ -129,6 +129,59 @@ def bookmark_btn(it):
             f'title="Save" {attrs}>{BOOKMARK_SVG}</button>')
 
 
+def relative_date(ts):
+    """Turn an epoch timestamp into a relative date string."""
+    if not ts:
+        return ""
+    now = datetime.datetime.now().timestamp()
+    diff = now - ts
+    if diff < 3600:
+        return f"{int(diff / 60)}m ago"
+    if diff < 86400:
+        return f"{int(diff / 3600)}h ago"
+    if diff < 604800:
+        return f"{int(diff / 86400)}d ago"
+    dt = datetime.datetime.fromtimestamp(ts)
+    if dt.year == datetime.datetime.now().year:
+        return dt.strftime("%b %d")
+    return dt.strftime("%b %Y")
+
+
+def reading_time(it):
+    """Rough reading-time estimate from available text length."""
+    text = (it.get("text") or "")
+    comments = it.get("comments") or []
+    for c in comments:
+        text += " " + (c.get("text") or "")
+    words = len(text.split())
+    if words < 50:
+        return ""
+    mins = max(1, round(words / 200))
+    return f"{mins} min read"
+
+
+def rank_reason(it):
+    """A one-line 'why you're seeing this' string replacing the mystery meter."""
+    s = it.get("source")
+    parts = []
+    if s == "hackernews":
+        pts = it.get("points", 0)
+        cmts = it.get("num_comments", 0)
+        if pts:
+            parts.append(f"{pts} pts on HN")
+        if cmts:
+            parts.append(f"{cmts} comments")
+    elif s == "reddit":
+        sub = it.get("source_label", "")
+        parts.append(f"from {sub}" if sub else "from Reddit")
+    else:
+        parts.append(f"from {it.get('source_label', s or 'a feed')}")
+    if it.get("also_on"):
+        also = ", ".join(sorted(set(it["also_on"])))
+        parts.append(f"also on {also}")
+    return " · ".join(parts) if parts else ""
+
+
 def meta(it):
     s = it.get("source")
     parts = []
@@ -143,6 +196,12 @@ def meta(it):
         if it.get("author"):
             parts.append(esc(it["author"]))
         link = "read →"
+    rd = relative_date(it.get("created_at", 0))
+    if rd:
+        parts.append(f'<span class="date">{rd}</span>')
+    rt = reading_time(it)
+    if rt:
+        parts.append(f'<span class="rtime">{rt}</span>')
     if it.get("also_on"):
         also = ", ".join(sorted(set(it["also_on"])))
         parts.append(f'<span class="also">also on {esc(also)}</span>')
@@ -151,22 +210,21 @@ def meta(it):
     return f"{inner} · {a}" if inner else a
 
 
-def width(it):
-    return round(float(it.get("feed_score", 0)) * 100)
-
-
 def card_block(it, lead=False):
     g = it.get("gist", "")
-    gist = f'<p class="card-gist">{esc(g)}</p>' if g else ""
+    ai_label = '<span class="ai-tag">AI gist</span>' if g else ""
+    gist = f'<p class="card-gist">{ai_label}{esc(g)}</p>' if g else ""
     cls = "card lead" if lead else "card"
     right = '<span class="lead-tag">Top</span>' if lead else ""
-    return f'''<article class="{cls} src-{it['source']}">
+    reason = rank_reason(it)
+    reason_html = f'<div class="rank-reason">{esc(reason)}</div>' if reason else ""
+    return f'''<article class="{cls} src-{it['source']}" data-created="{it.get('created_at', 0)}">
         <div class="kicker"><span class="badge">{esc(it['source_label'])}</span>
           <span class="kicker-r">{right}{bookmark_btn(it)}</span></div>
         <a class="card-title" href="{esc(it['url'])}">{esc(it['title'])}</a>
         {gist}
         <div class="meta">{meta(it)}</div>
-        <div class="meter"><span style="width:{width(it)}%"></span></div>
+        {reason_html}
       </article>'''
 
 
@@ -263,10 +321,7 @@ def main():
     tmp_path = out_path + ".tmp"
     with open(tmp_path, "w") as f:
         f.write(out)
-    if os.path.exists(out_path):
-        os.replace(tmp_path, out_path)
-    else:
-        os.rename(tmp_path, out_path)
+    os.replace(tmp_path, out_path)
     print(f"wrote {out_path}: {len(items)} items, {len(out)} bytes")
 
 

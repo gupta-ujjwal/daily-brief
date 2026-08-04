@@ -22,8 +22,10 @@ VALID = {"industry", "learning", "products", "personal"}
 PROMPT_HEAD = """\
 You are writing a daily digest that blends tech with the reader's personal feed.
 For EACH item below, produce:
-- "gist": one line, <= 25 words — what the discussion is actually arguing about or
-  the key takeaway. NOT a restatement of the title. Use the comments/text.
+- "gist": one line, 90-150 characters (roughly 15-25 words) — what the discussion
+  is actually arguing about or the key takeaway. NOT a restatement of the title.
+  Use the comments/text. For the FIRST item in each category (the lead), frame it
+  as WHY IT MATTERS to the reader, not just what it says.
 - "category": exactly one of:
   - "industry": business, funding, M&A, layoffs, policy, company/strategy moves,
     notable launches reported as news.

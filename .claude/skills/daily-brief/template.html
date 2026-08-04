@@ -62,9 +62,21 @@
   .meta a { color: var(--accent); text-decoration: none; }
   .meta a:hover { text-decoration: underline; }
   .meta .also { color: var(--muted); }
-  .meter { height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
-  .meter > span { display: block; height: 100%;
-    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 35%, transparent)); }
+  .meta .date, .meta .rtime { color: var(--muted); }
+  .ai-tag { display: inline-block; font: 600 9.5px/1 ui-monospace, monospace; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--muted); background: var(--panel2); padding: 2px 6px;
+    border-radius: 4px; margin-right: 7px; vertical-align: middle; }
+  .rank-reason { color: var(--muted); font: 500 11.5px/1.4 ui-monospace, monospace;
+    margin-top: 2px; }
+  .card.seen { opacity: .5; }
+  .card.new-item { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+  .card.new-item::after { content: "NEW"; position: absolute; top: 10px; right: 10px;
+    font: 700 9px/1 ui-monospace, monospace; letter-spacing: .1em; color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 15%, transparent); padding: 3px 6px;
+    border-radius: 4px; }
+  .caught-up { text-align: center; padding: 40px 20px; color: var(--muted);
+    font: 600 14px/1.5 ui-monospace, monospace; }
+  .caught-up em { color: var(--accent); font-style: normal; }
 
   /* ---- Tabs (pure CSS: hidden radios + labels, no JS) ---- */
   .tabs { margin-top: 30px; }
@@ -226,6 +238,10 @@
     </header>
 
     {{SECTIONS}}
+
+    <div class="caught-up" id="caughtUp" style="display:none">
+      You're <em>caught up</em> for today. Come back tomorrow.
+    </div>
 
     <footer>
       {{PROVENANCE}}
@@ -409,6 +425,40 @@
     });
 
     syncButtons(); updateCount();
+  })();
+
+  (function () {
+    "use strict";
+    var VISIT_KEY = "db_visit_state";
+    var now = Date.now();
+    var state;
+    try { state = JSON.parse(localStorage.getItem(VISIT_KEY)) || {}; } catch (e) { state = {}; }
+    var lastVisit = state.lastVisit || 0;
+    var seen = state.seen || {};
+
+    var cards = document.querySelectorAll(".card[data-created]");
+    var newCount = 0;
+    cards.forEach(function (card) {
+      var created = parseInt(card.getAttribute("data-created"), 10) * 1000;
+      var url = card.querySelector("a.card-title");
+      var key = url ? url.href : created;
+      if (seen[key]) {
+        card.classList.add("seen");
+      } else if (created > lastVisit && lastVisit > 0) {
+        card.classList.add("new-item");
+        newCount++;
+      }
+      seen[key] = true;
+    });
+
+    var caughtUp = document.getElementById("caughtUp");
+    if (caughtUp && cards.length > 0 && newCount === 0 && lastVisit > 0) {
+      caughtUp.style.display = "block";
+    }
+
+    try {
+      localStorage.setItem(VISIT_KEY, JSON.stringify({ lastVisit: now, seen: seen }));
+    } catch (e) {}
   })();
   </script>
 </body>
