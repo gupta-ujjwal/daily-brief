@@ -99,9 +99,19 @@ def main():
         return
 
     # Safe fallback first, so a later failure still leaves a renderable file.
+    # Infer a reasonable category from the source/kind instead of dumping all
+    # items into "industry" (which would compound the empty-tab problem).
     for it in items:
-        it.setdefault("category", "industry")
-        it.setdefault("gist", "")
+        if not it.get("category"):
+            if it.get("source") == "hackernews" and it.get("kind") == "show":
+                it["category"] = "products"
+            elif it.get("source") == "reddit":
+                it["category"] = "personal"
+            else:
+                it["category"] = "learning"
+        if not it.get("gist"):
+            title = (it.get("title") or "")[:150]
+            it["gist"] = title
 
     prompt = PROMPT_HEAD + json.dumps(compact(items), ensure_ascii=False)
     try:
@@ -113,8 +123,13 @@ def main():
             if not r:
                 continue
             cat = r.get("category")
-            it["category"] = cat if cat in VALID else "industry"
-            it["gist"] = (r.get("gist") or "").strip()
+            it["category"] = cat if cat in VALID else it.get("category", "industry")
+            g = (r.get("gist") or "").strip()
+            if len(g) < 60:
+                text = (it.get("text") or "").strip()
+                comments = it.get("comments") or []
+                g = (text[:150] or (comments[0].get("text", "")[:150] if comments else "")) or g or (it.get("title") or "")[:150]
+            it["gist"] = g
             filled += 1
         print(f"gen_gists: filled {filled}/{len(items)} items via claude ({args.model})",
               file=sys.stderr)
