@@ -203,14 +203,39 @@ def card_block(it, lead=False):
       </article>'''
 
 
-def panel_block(key, intro, items):
-    cards = [card_block(it, lead=(i == 0)) for i, it in enumerate(items)]
-    cards_html = "\n        ".join(cards)
+def row_block(it):
+    """Compact tail-row variant of card_block — same data attrs for JS parity,
+    different CSS (.card.row) for headline-list density."""
+    g = it.get("gist", "")
+    ai_label = '<span class="ai-tag">AI gist</span>' if g else ""
+    gist = f'<p class="card-gist">{ai_label}{esc(g)}</p>' if g else ""
+    return f'''<article class="card row src-{it['source']}" data-created="{it.get('created_at', 0)}" data-brief-item>
+        <div class="kicker"><span class="badge">{esc(it['source_label'])}</span>
+          <span class="kicker-r">{bookmark_btn(it)}</span></div>
+        <a class="card-title" href="{esc(it['url'])}">{esc(it['title'])}</a>
+        {gist}
+        <div class="meta">{meta(it)}</div>
+      </article>'''
+
+
+def panel_block(key, name, intro, items):
+    n = len(items)
+    lead_html = card_block(items[0], lead=True)
+    secondary = items[1:4]
+    tail = items[4:]
+    parts = [lead_html]
+    if secondary:
+        sec_cards = "\n        ".join(card_block(it) for it in secondary)
+        parts.append(f'<div class="grid">\n        {sec_cards}\n        </div>')
+    if tail:
+        tail_rows = "\n        ".join(row_block(it) for it in tail)
+        parts.append(f'<div class="tail-list">\n        {tail_rows}\n        </div>')
+    finish = f'<div class="finish-line">End of {esc(name)} &middot; {n} stories</div>'
+    parts.append(finish)
+    inner = "\n        ".join(parts)
     return f'''<section id="panel-{key}" class="panel">
         <p class="panel-intro">{intro}</p>
-        <div class="grid">
-        {cards_html}
-        </div>
+        {inner}
       </section>'''
 
 
@@ -223,8 +248,9 @@ def tabs_block(present):
         checked = " checked" if i == best_i else ""
         radios.append(f'<input type="radio" name="brieftab" id="tab-{key}" class="tabinput"{checked}>')
         labels.append(f'<label for="tab-{key}" class="tab tab-{key}">{name} '
-                      f'<span class="count">{len(items)}</span></label>')
-        panels.append(panel_block(key, intro, items))
+                      f'<span class="count">{len(items)}</span>'
+                      f'<span class="new-count" data-tab-key="{key}"></span></label>')
+        panels.append(panel_block(key, name, intro, items))
     return (f'<div class="tabs">\n      '
             + "\n      ".join(radios)
             + '\n      <nav class="tabbar">\n        '
