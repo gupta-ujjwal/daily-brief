@@ -10,7 +10,11 @@
     --bg: #100f0c; --bg2: #0b0a08; --panel: #18160f; --panel2: #1f1c13;
     --ink: #f0ebdd; --ink-dim: #cfc8b6; --muted: #8d8676; --line: #2a271e;
     --hn: #ff8c42; --reddit: #ff5470; --substack: #2dd4bf; --medium: #e0b341;
-    --brand: #c97a3e; --accent: var(--brand);
+    /* --brand is the identity hue (masthead, mark, favicon). It doubles as the
+       default --accent for links, so it has to carry text contrast: #c97a3e read
+       at 5.8:1 on --bg and made the whole page look dull next to the old HN
+       orange (8.3:1). #e0894a keeps the copper identity at 7.2:1. */
+    --brand: #e0894a; --accent: var(--brand);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -67,7 +71,10 @@
   .ai-tag { display: inline-block; font: 600 9.5px/1 ui-monospace, monospace; text-transform: uppercase;
     letter-spacing: .1em; color: var(--muted); background: var(--panel2); padding: 2px 6px;
     border-radius: 4px; margin-right: 7px; vertical-align: middle; }
-  .card.seen { opacity: .5; }
+  /* Dim the newness signal, not the content. At .5 a revisited edition read as
+     washed-out, which is most of the page for a returning reader. */
+  .card.seen { opacity: .82; }
+  .card.seen .card-title { color: var(--ink-dim); }
   .card.new-item { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
   .card.new-item::after { content: "NEW"; position: absolute; top: 10px; right: 10px;
     font: 700 9px/1 ui-monospace, monospace; letter-spacing: .1em; color: var(--accent);
@@ -129,8 +136,11 @@
   .card-gist { color: var(--ink-dim); font-size: 14px; line-height: 1.55; margin: 0; flex: 1; }
   .card .meta { margin-top: 2px; }
 
-  /* lead card — first (top-ranked) item in each section, full width */
-  .card.lead { grid-column: 1 / -1; padding: 28px 30px;
+  /* lead card — first (top-ranked) item in each section, full width.
+     The lead is a SIBLING of .grid, not a child, so it needs its own bottom
+     margin: without it the lead sat flush against the deck at 0px and the two
+     tiers read as one block. Tier rhythm is 26px throughout. */
+  .card.lead { grid-column: 1 / -1; padding: 28px 30px; margin-bottom: 26px;
     background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%), var(--panel); }
   .card.lead::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
     border-radius: 14px 0 0 14px; background: var(--accent); }
@@ -138,7 +148,7 @@
   .card.lead .card-gist { font-size: 16px; max-width: 70ch; }
 
   /* tail rows — compact headline-list density (items 5+) */
-  .tail-list { display: flex; flex-direction: column; gap: 2px; margin-top: 18px; }
+  .tail-list { display: flex; flex-direction: column; gap: 6px; margin-top: 26px; }
   /* Row wraps to two lines: [badge · title · meta] then the gist full-width beneath.
      Keeping the gist on the headline line squeezed it to ~13 visible chars against
      real titles — the triage signal has to survive, so it gets its own line. */
