@@ -4,12 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Daily Brief · 6 August 2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2C9 6 7 9 7 13a5 5 0 0 0 10 0c0-2-1-4-2-5-1 2-2 3-3 3 0-3 1-6 0-9z' fill='%23c97a3e'/></svg>">
 <style>
   :root {
     --bg: #100f0c; --bg2: #0b0a08; --panel: #18160f; --panel2: #1f1c13;
     --ink: #f0ebdd; --ink-dim: #cfc8b6; --muted: #8d8676; --line: #2a271e;
     --hn: #ff8c42; --reddit: #ff5470; --substack: #2dd4bf; --medium: #e0b341;
-    --accent: var(--hn);
+    --brand: #c97a3e; --accent: var(--brand);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -18,7 +19,7 @@
     font: 16px/1.65 -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     background-image:
-      radial-gradient(900px 500px at 85% -10%, rgba(255,140,66,.10), transparent 60%),
+      radial-gradient(900px 500px at 85% -10%, rgba(201,122,62,.10), transparent 60%),
       radial-gradient(700px 500px at 5% 0%, rgba(45,212,191,.06), transparent 55%);
     background-attachment: fixed;
   }
@@ -66,17 +67,16 @@
   .ai-tag { display: inline-block; font: 600 9.5px/1 ui-monospace, monospace; text-transform: uppercase;
     letter-spacing: .1em; color: var(--muted); background: var(--panel2); padding: 2px 6px;
     border-radius: 4px; margin-right: 7px; vertical-align: middle; }
-  .rank-reason { color: var(--muted); font: 500 11.5px/1.4 ui-monospace, monospace;
-    margin-top: 2px; }
   .card.seen { opacity: .5; }
   .card.new-item { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
   .card.new-item::after { content: "NEW"; position: absolute; top: 10px; right: 10px;
     font: 700 9px/1 ui-monospace, monospace; letter-spacing: .1em; color: var(--accent);
     background: color-mix(in srgb, var(--accent) 15%, transparent); padding: 3px 6px;
     border-radius: 4px; }
-  .caught-up { text-align: center; padding: 40px 20px; color: var(--muted);
-    font: 600 14px/1.5 ui-monospace, monospace; }
-  .caught-up em { color: var(--accent); font-style: normal; }
+  .finish-line { text-align: center; padding: 28px 20px 8px; color: var(--muted);
+    font: 600 13px/1.5 ui-monospace, monospace; border-top: 1px solid var(--line);
+    margin-top: 24px; }
+  .finish-line em { color: var(--brand); font-style: normal; }
 
   /* ---- Tabs (pure CSS: hidden radios + labels, no JS) ---- */
   .tabs { margin-top: 30px; }
@@ -91,6 +91,10 @@
     background: var(--tabc, var(--muted)); }
   .tab .count { font: 700 11px/1 ui-monospace, monospace; color: var(--muted);
     background: var(--panel2); padding: 3px 7px; border-radius: 999px; }
+  .tab .new-count { font: 700 10px/1 ui-monospace, monospace; color: var(--brand);
+    background: color-mix(in srgb, var(--brand) 15%, transparent); padding: 3px 7px;
+    border-radius: 999px; }
+  .tab .new-count:empty { display: none; }
   .tab:hover { color: var(--ink-dim); }
   .tab-industry { --tabc: #e2703a; }
   .tab-learning { --tabc: #7c9eff; }
@@ -114,7 +118,7 @@
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tabc) 45%, transparent); }
   @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .card { position: relative; border: 1px solid var(--line); border-radius: 14px;
     padding: 20px 22px; background: var(--panel);
     display: flex; flex-direction: column; gap: 12px; transition: border-color .15s, transform .15s; }
@@ -130,8 +134,27 @@
     background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%), var(--panel); }
   .card.lead::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
     border-radius: 14px 0 0 14px; background: var(--accent); }
-  .card.lead a.card-title { font: 800 clamp(22px, 3vw, 31px)/1.14 Georgia, serif; letter-spacing: -.02em; }
+  .card.lead a.card-title { font: 800 clamp(28px, 4vw, 42px)/1.14 Georgia, serif; letter-spacing: -.02em; }
   .card.lead .card-gist { font-size: 16px; max-width: 70ch; }
+
+  /* tail rows — compact headline-list density (items 5+) */
+  .tail-list { display: flex; flex-direction: column; gap: 2px; margin-top: 18px; }
+  /* Row wraps to two lines: [badge · title · meta] then the gist full-width beneath.
+     Keeping the gist on the headline line squeezed it to ~13 visible chars against
+     real titles — the triage signal has to survive, so it gets its own line. */
+  .card.row { flex-direction: row; flex-wrap: wrap; align-items: flex-start;
+    gap: 5px 14px; padding: 12px 16px; border-radius: 10px; }
+  .card.row .kicker { flex-shrink: 0; min-width: 0; order: 1; }
+  .card.row .badge { font-size: 9.5px; padding: 4px 7px; }
+  .card.row .kicker-r { gap: 4px; }
+  .card.row a.card-title { font: 700 15px/1.3 Georgia, serif; flex: 1 1 auto; min-width: 0;
+    order: 2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; }
+  .card.row .meta { font-size: 11.5px; white-space: nowrap; flex-shrink: 0; min-width: 0;
+    order: 3; margin-left: auto; }
+  .card.row .card-gist { font-size: 13px; flex: 1 0 100%; min-width: 0; order: 4;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin: 0; }
+  .card.row:hover { transform: none; }
 
   footer { color: var(--muted); font: 12px/1.6 ui-monospace, monospace; margin-top: 56px;
     padding-top: 22px; border-top: 1px solid var(--line); text-align: center; }
@@ -216,6 +239,11 @@
     .wrap { padding: 28px 18px 72px; }
     .grid { grid-template-columns: 1fr; }
     .card.lead { padding: 22px 22px; }
+    .card.row { flex-direction: column; gap: 6px; }
+    .card.row > * { order: 0; margin-left: 0; }
+    .card.row .card-gist { white-space: normal; }
+    .card.row .meta { white-space: normal; }
+    .card.row a.card-title { -webkit-line-clamp: unset; }
     .bm-tab { top: auto; bottom: 16px; right: 16px; writing-mode: horizontal-tb;
       padding: 10px 14px; }
     .bm-tab .bm-count { display: inline-block; margin-top: 0; margin-left: 6px; }
@@ -224,7 +252,7 @@
 </head>
 <body>
   <div class="wrap">
-    <header class="masthead src-hackernews">
+    <header class="masthead">
       <div class="eyebrow">
         <span class="dot"></span> Daily Brief
         <span class="sep">/</span> 6 August 2026
@@ -234,7 +262,7 @@
       <p class="standfirst">Hacker News, Reddit, Substack and Medium — ranked across platforms, split across tabs, with the gist of each. Bookmark what's worth keeping — it's saved in your browser, organised into your own groups.</p>
       <div class="legend">
         <span><i class="hn"></i>Hacker News · 26</span>
-        <span><i class="reddit"></i>Reddit · 22</span>
+        <span><i class="reddit"></i>Reddit · 23</span>
         <span><i class="substack"></i>Substack · 10</span>
         <span><i class="medium"></i>Medium · 10</span>
       </div>
@@ -243,278 +271,263 @@
     <div class="tabs">
       <input type="radio" name="brieftab" id="tab-industry" class="tabinput">
       <input type="radio" name="brieftab" id="tab-learning" class="tabinput" checked>
+      <input type="radio" name="brieftab" id="tab-products" class="tabinput">
       <input type="radio" name="brieftab" id="tab-personal" class="tabinput">
       <nav class="tabbar">
-        <label for="tab-industry" class="tab tab-industry">The Wire <span class="count">4</span></label>
-        <label for="tab-learning" class="tab tab-learning">Deep Dives <span class="count">14</span></label>
-        <label for="tab-personal" class="tab tab-personal">Off the Clock <span class="count">12</span></label>
+        <label for="tab-industry" class="tab tab-industry">The Wire <span class="count">6</span><span class="new-count" data-tab-key="industry"></span></label>
+        <label for="tab-learning" class="tab tab-learning">Deep Dives <span class="count">10</span><span class="new-count" data-tab-key="learning"></span></label>
+        <label for="tab-products" class="tab tab-products">Worth a Try <span class="count">6</span><span class="new-count" data-tab-key="products"></span></label>
+        <label for="tab-personal" class="tab tab-personal">Off the Clock <span class="count">8</span><span class="new-count" data-tab-key="personal"></span></label>
       </nav>
       <section id="panel-industry" class="panel">
         <p class="panel-intro">What's moving across the industry — funding, deals, launches and power plays.</p>
-        <div class="grid">
-        <article class="card lead src-hackernews" data-created="1785946784">
+        <article class="card lead src-hackernews" data-created="1785946784" data-brief-item>
         <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.discoveryloop.com/" data-title="Discovery Loop" data-source="hackernews" data-label="Hacker News" data-gist="Jeff Dean&#x27;s new startup automates the entire experimental loop — a bet that AI-driven science, not just agents, is the next leverage point." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49184960"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.discoveryloop.com/" data-title="Discovery Loop" data-source="hackernews" data-label="Hacker News" data-gist="Jeff Dean&#x27;s new startup automates the research experiment loop, signaling AI&#x27;s next leap targets science-not just coding agents you can&#x27;t scale." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49184960"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://www.discoveryloop.com/">Discovery Loop</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Jeff Dean&#x27;s new startup automates the entire experimental loop — a bet that AI-driven science, not just agents, is the next leverage point.</p>
-        <div class="meta">616 pts · 388 comments · <span class="date">10h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49184960">discuss →</a></div>
-        <div class="rank-reason">616 pts on HN · 388 comments</div>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Jeff Dean&#x27;s new startup automates the research experiment loop, signaling AI&#x27;s next leap targets science-not just coding agents you can&#x27;t scale.</p>
+        <div class="meta">▲ 830 · 512 comments · <span class="date">23h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49184960">discuss →</a></div>
       </article>
-        <article class="card src-hackernews" data-created="1785945931">
+        <div class="grid">
+        <article class="card src-hackernews" data-created="1785945931" data-brief-item>
         <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://blog.google/company-news/inside-google/message-ceo/next-chapter-ai-momentum/" data-title="Changes at Google DeepMind: Demis Hassabis from CEO to Chair, Jeff Dean departs" data-source="hackernews" data-label="Hacker News" data-gist="Demis Hassabis moves to Chair as Jeff Dean exits after 27 years — one theory blames DeepMind&#x27;s OpenAI/Anthropic gap on how each company was built." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49184755"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://blog.google/company-news/inside-google/message-ceo/next-chapter-ai-momentum/" data-title="Changes at Google DeepMind: Demis Hassabis from CEO to Chair, Jeff Dean departs" data-source="hackernews" data-label="Hacker News" data-gist="Hassabis moves to Chair as Jeff Dean exits DeepMind; commenters argue slow culture, not talent, explains the gap with OpenAI and Anthropic." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49184755"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://blog.google/company-news/inside-google/message-ceo/next-chapter-ai-momentum/">Changes at Google DeepMind: Demis Hassabis from CEO to Chair, Jeff Dean departs</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Demis Hassabis moves to Chair as Jeff Dean exits after 27 years — one theory blames DeepMind&#x27;s OpenAI/Anthropic gap on how each company was built.</p>
-        <div class="meta">495 pts · 601 comments · <span class="date">10h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49184755">discuss →</a></div>
-        <div class="rank-reason">495 pts on HN · 601 comments</div>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Hassabis moves to Chair as Jeff Dean exits DeepMind; commenters argue slow culture, not talent, explains the gap with OpenAI and Anthropic.</p>
+        <div class="meta">▲ 751 · 810 comments · <span class="date">23h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49184755">discuss →</a></div>
       </article>
-        <article class="card src-hackernews" data-created="1785938333">
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://blog.cloudflare.com/cloudflare-os/" data-title="Cloudflare OS: an open platform for agents, apps, and work" data-source="hackernews" data-label="Hacker News" data-gist="Cloudflare&#x27;s new agent OS pitch is dividing readers between &#x27;chatbot with real capabilities&#x27; and IT dread of yet another ungoverned SharePoint-style sprawl." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49182996"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://blog.cloudflare.com/cloudflare-os/">Cloudflare OS: an open platform for agents, apps, and work</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Cloudflare&#x27;s new agent OS pitch is dividing readers between &#x27;chatbot with real capabilities&#x27; and IT dread of yet another ungoverned SharePoint-style sprawl.</p>
-        <div class="meta">478 pts · 241 comments · <span class="date">12h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49182996">discuss →</a></div>
-        <div class="rank-reason">478 pts on HN · 241 comments</div>
+        <article class="card src-substack" data-created="1786008515" data-brief-item>
+        <div class="kicker"><span class="badge">AI Supremacy </span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.ai-supremacy.com/p/the-year-ai-science-and-the-physical-ai-went-mainstream-humanoid-robotics" data-title="The Year AI Science and the Physical AI Industry Came Alive" data-source="substack" data-label="AI Supremacy " data-gist="Gemini Robotics 2 and robot IPOs mark physical AI going mainstream, even as compute costs, negative cash flow and circular revenue raise doubts." data-cat="industry" data-discuss="https://www.ai-supremacy.com/p/the-year-ai-science-and-the-physical-ai-went-mainstream-humanoid-robotics"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.ai-supremacy.com/p/the-year-ai-science-and-the-physical-ai-went-mainstream-humanoid-robotics">The Year AI Science and the Physical AI Industry Came Alive</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Gemini Robotics 2 and robot IPOs mark physical AI going mainstream, even as compute costs, negative cash flow and circular revenue raise doubts.</p>
+        <div class="meta">Michael Spencer · <span class="date">5h ago</span> · <a href="https://www.ai-supremacy.com/p/the-year-ai-science-and-the-physical-ai-went-mainstream-humanoid-robotics">read →</a></div>
       </article>
-        <article class="card src-reddit" data-created="1785958563">
-        <div class="kicker"><span class="badge">r/youshouldknow</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/YouShouldKnow/comments/1vgptlv/ysk_computer_hardware_price_increases_are_in_full/" data-title="YSK: Computer hardware price increases are in full swing. If you need to replace an older laptop or phone, now might be the time. It&#x27;s only going to get more expensive." data-source="reddit" data-label="r/youshouldknow" data-gist="Component and chip price hikes are accelerating, so replacing an aging laptop or phone now beats waiting — costs are trending only upward from here." data-cat="industry" data-discuss="https://www.reddit.com/r/YouShouldKnow/comments/1vgptlv/ysk_computer_hardware_price_increases_are_in_full/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/YouShouldKnow/comments/1vgptlv/ysk_computer_hardware_price_increases_are_in_full/">YSK: Computer hardware price increases are in full swing. If you need to replace an older laptop or phone, now might be the time. It&#x27;s only going to get more expensive.</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Component and chip price hikes are accelerating, so replacing an aging laptop or phone now beats waiting — costs are trending only upward from here.</p>
-        <div class="meta"><span class="date">6h ago</span> · <a href="https://www.reddit.com/r/YouShouldKnow/comments/1vgptlv/ysk_computer_hardware_price_increases_are_in_full/">open →</a></div>
-        <div class="rank-reason">from r/youshouldknow</div>
+        <article class="card src-medium" data-created="1786027929" data-brief-item>
+        <div class="kicker"><span class="badge">Medium · Towards AI</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/i-think-metas-muse-code-could-be-the-biggest-threat-to-cursor-yet-here-s-why-b82347eb8300?source=rss----98111c9905da---4" data-title="I Think Meta’s Muse Code Could Be the Biggest Threat to Cursor Yet. Here’s Why." data-source="medium" data-label="Medium · Towards AI" data-gist="A longtime paying Cursor user argues Meta&#x27;s free Muse Code could undercut Cursor&#x27;s business model, reshaping the AI coding-tool market." data-cat="industry" data-discuss="https://pub.towardsai.net/i-think-metas-muse-code-could-be-the-biggest-threat-to-cursor-yet-here-s-why-b82347eb8300?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://pub.towardsai.net/i-think-metas-muse-code-could-be-the-biggest-threat-to-cursor-yet-here-s-why-b82347eb8300?source=rss----98111c9905da---4">I Think Meta’s Muse Code Could Be the Biggest Threat to Cursor Yet. Here’s Why.</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A longtime paying Cursor user argues Meta&#x27;s free Muse Code could undercut Cursor&#x27;s business model, reshaping the AI coding-tool market.</p>
+        <div class="meta">inprogrammer · <span class="date">33m ago</span> · <a href="https://pub.towardsai.net/i-think-metas-muse-code-could-be-the-biggest-threat-to-cursor-yet-here-s-why-b82347eb8300?source=rss----98111c9905da---4">read →</a></div>
       </article>
         </div>
+        <div class="tail-list">
+        <article class="card row src-substack" data-created="1785990851" data-brief-item>
+        <div class="kicker"><span class="badge">Latent.Space</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.latent.space/p/ainews-jeff-sanjay-oriol-and-quoc" data-title="[AINews] Jeff, Sanjay, Oriol, and Quoc depart DeepMind; Demis to Chair; Koray to SVP — what is going on at GDM???" data-source="substack" data-label="Latent.Space" data-gist="Newsletter roundup confirms the DeepMind exodus is real: Jeff, Sanjay, Oriol and Quoc all out as Demis moves to Chair — an era at Google AI closing." data-cat="industry" data-discuss="https://www.latent.space/p/ainews-jeff-sanjay-oriol-and-quoc"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.latent.space/p/ainews-jeff-sanjay-oriol-and-quoc">[AINews] Jeff, Sanjay, Oriol, and Quoc depart DeepMind; Demis to Chair; Koray to SVP — what is going on at GDM???</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Newsletter roundup confirms the DeepMind exodus is real: Jeff, Sanjay, Oriol and Quoc all out as Demis moves to Chair — an era at Google AI closing.</p>
+        <div class="meta">Latent.Space · <span class="date">10h ago</span> · <a href="https://www.latent.space/p/ainews-jeff-sanjay-oriol-and-quoc">read →</a></div>
+      </article>
+        <article class="card row src-hackernews" data-created="1785950605" data-brief-item>
+        <div class="kicker"><span class="badge">Hacker News</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.promptarmor.com/resources/atlassian-rovo-exfiltrates-data" data-title="Atlassian Rovo Exfiltrates Data, Bypassing Controls" data-source="hackernews" data-label="Hacker News" data-gist="Researchers show Atlassian&#x27;s Rovo can be tricked via prompt injection into leaking data and fetching attacker URLs, bypassing its own guardrails." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49185983"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.promptarmor.com/resources/atlassian-rovo-exfiltrates-data">Atlassian Rovo Exfiltrates Data, Bypassing Controls</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Researchers show Atlassian&#x27;s Rovo can be tricked via prompt injection into leaking data and fetching attacker URLs, bypassing its own guardrails.</p>
+        <div class="meta">▲ 268 · 115 comments · <span class="date">22h ago</span> · <span class="rtime">1 min read</span> · <a href="https://news.ycombinator.com/item?id=49185983">discuss →</a></div>
+      </article>
+        </div>
+        <div class="finish-line">End of <em>The Wire</em> &middot; 6 stories</div>
       </section>
       <section id="panel-learning" class="panel">
         <p class="panel-intro">Essays, ideas and new tech worth slowing down to understand.</p>
+        <article class="card lead src-reddit" data-created="1786007907" data-brief-item>
+        <div class="kicker"><span class="badge">r/fintechdev</span>
+          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/fintechdev/comments/1vh6dad/are_uploaded_bank_statements_enough/" data-title="Are uploaded bank statements enough?" data-source="reddit" data-label="r/fintechdev" data-gist="Fintech builders debate if a scanned bank statement alone is trustworthy enough for underwriting, or if bank-linked data is needed to avoid fraud." data-cat="learning" data-discuss="https://www.reddit.com/r/fintechdev/comments/1vh6dad/are_uploaded_bank_statements_enough/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.reddit.com/r/fintechdev/comments/1vh6dad/are_uploaded_bank_statements_enough/">Are uploaded bank statements enough?</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Fintech builders debate if a scanned bank statement alone is trustworthy enough for underwriting, or if bank-linked data is needed to avoid fraud.</p>
+        <div class="meta"><span class="date">6h ago</span> · <a href="https://www.reddit.com/r/fintechdev/comments/1vh6dad/are_uploaded_bank_statements_enough/">open →</a></div>
+      </article>
         <div class="grid">
-        <article class="card lead src-medium" data-created="1785976261">
-        <div class="kicker"><span class="badge">Medium · Towards AI</span>
-          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/i-wrote-a-game-in-machine-code-and-it-fits-in-about-300-bytes-86a219038c70?source=rss----98111c9905da---4" data-title="I Wrote a Game in Machine Code, and It Fits in About 300 Bytes" data-source="medium" data-label="Medium · Towards AI" data-gist="Debunks the &#x27;hand-typed binary game&#x27; legend and shows the real, disciplined technique behind fitting a working game into 300 bytes of raw machine code." data-cat="learning" data-discuss="https://pub.towardsai.net/i-wrote-a-game-in-machine-code-and-it-fits-in-about-300-bytes-86a219038c70?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://pub.towardsai.net/i-wrote-a-game-in-machine-code-and-it-fits-in-about-300-bytes-86a219038c70?source=rss----98111c9905da---4">I Wrote a Game in Machine Code, and It Fits in About 300 Bytes</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Debunks the &#x27;hand-typed binary game&#x27; legend and shows the real, disciplined technique behind fitting a working game into 300 bytes of raw machine code.</p>
-        <div class="meta">Yashraj Behera · <span class="date">2h ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/i-wrote-a-game-in-machine-code-and-it-fits-in-about-300-bytes-86a219038c70?source=rss----98111c9905da---4">read →</a></div>
-        <div class="rank-reason">from Medium · Towards AI</div>
-      </article>
-        <article class="card src-hackernews" data-created="1785927697">
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://openreview.net/challenge?redirect=%2Fforum%3Fid%3DklU4737opt" data-title="Position: LLMs Can&#x27;t Jump" data-source="hackernews" data-label="Hacker News" data-gist="A position paper argues LLMs lack the sensory grounding for creative leaps, but commenters counter that harness and environment limits are the real bottleneck." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49181083"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://openreview.net/challenge?redirect=%2Fforum%3Fid%3DklU4737opt">Position: LLMs Can&#x27;t Jump</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A position paper argues LLMs lack the sensory grounding for creative leaps, but commenters counter that harness and environment limits are the real bottleneck.</p>
-        <div class="meta">247 pts · 169 comments · <span class="date">15h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49181083">discuss →</a></div>
-        <div class="rank-reason">247 pts on HN · 169 comments</div>
-      </article>
-        <article class="card src-medium" data-created="1785974462">
-        <div class="kicker"><span class="badge">Medium · Towards AI</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/speculative-decoding-illustrated-why-generating-7-tokens-can-cost-the-same-as-1-bb91a9a45796?source=rss----98111c9905da---4" data-title="Speculative Decoding, Illustrated: Why Generating 7 Tokens Can Cost the Same as 1" data-source="medium" data-label="Medium · Towards AI" data-gist="An illustrated, math-optional explainer on speculative decoding — how a small guesser model paired with a big grader lets LLMs generate several tokens for the price of one." data-cat="learning" data-discuss="https://pub.towardsai.net/speculative-decoding-illustrated-why-generating-7-tokens-can-cost-the-same-as-1-bb91a9a45796?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://pub.towardsai.net/speculative-decoding-illustrated-why-generating-7-tokens-can-cost-the-same-as-1-bb91a9a45796?source=rss----98111c9905da---4">Speculative Decoding, Illustrated: Why Generating 7 Tokens Can Cost the Same as 1</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>An illustrated, math-optional explainer on speculative decoding — how a small guesser model paired with a big grader lets LLMs generate several tokens for the price of one.</p>
-        <div class="meta">Borui · <span class="date">2h ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/speculative-decoding-illustrated-why-generating-7-tokens-can-cost-the-same-as-1-bb91a9a45796?source=rss----98111c9905da---4">read →</a></div>
-        <div class="rank-reason">from Medium · Towards AI</div>
-      </article>
-        <article class="card src-hackernews" data-created="1785953936">
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://neon.com/blog/how-castform-neon-beats-frontier-models-on-price-and-efficiency" data-title="Beating GPT-5.6 Sol on retrieval with 100x cheaper open models" data-source="hackernews" data-label="Hacker News" data-gist="Purpose-built open models are beating GPT-5.6 Sol on retrieval at a fraction of the cost, fueling debate over whether frontier labs can defend their pricing." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49186762"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://neon.com/blog/how-castform-neon-beats-frontier-models-on-price-and-efficiency">Beating GPT-5.6 Sol on retrieval with 100x cheaper open models</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Purpose-built open models are beating GPT-5.6 Sol on retrieval at a fraction of the cost, fueling debate over whether frontier labs can defend their pricing.</p>
-        <div class="meta">229 pts · 54 comments · <span class="date">8h ago</span> · <span class="rtime">1 min read</span> · <a href="https://news.ycombinator.com/item?id=49186762">discuss →</a></div>
-        <div class="rank-reason">229 pts on HN · 54 comments</div>
-      </article>
-        <article class="card src-hackernews" data-created="1785959413">
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://runarcn.no/android-to-linux/" data-title="I&#x27;m switching my phone from Android to Linux" data-source="hackernews" data-label="Hacker News" data-gist="A daily-driver switch from Android to Linux mobile frames it as escaping Google&#x27;s &#x27;death by a thousand papercuts&#x27; AOSP tracking, not just tinkering." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49188022"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://runarcn.no/android-to-linux/">I&#x27;m switching my phone from Android to Linux</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A daily-driver switch from Android to Linux mobile frames it as escaping Google&#x27;s &#x27;death by a thousand papercuts&#x27; AOSP tracking, not just tinkering.</p>
-        <div class="meta">218 pts · 181 comments · <span class="date">6h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49188022">discuss →</a></div>
-        <div class="rank-reason">218 pts on HN · 181 comments</div>
-      </article>
-        <article class="card src-substack" data-created="1785924000">
+        <article class="card src-substack" data-created="1786009995" data-brief-item>
         <div class="kicker"><span class="badge">High Learning Rate</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://highlearningrate.substack.com/p/cyber-evals-crossed-the-line-2026" data-title="Cyber Evals Crossed the Line - 2026-08-05" data-source="substack" data-label="High Learning Rate" data-gist="This week&#x27;s cyber evals push into new territory — persistent agents, 10M-token context windows, and local reasoning models tested against real security boundaries." data-cat="learning" data-discuss="https://highlearningrate.substack.com/p/cyber-evals-crossed-the-line-2026"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://highlearningrate.substack.com/p/cyber-evals-crossed-the-line-2026">Cyber Evals Crossed the Line - 2026-08-05</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>This week&#x27;s cyber evals push into new territory — persistent agents, 10M-token context windows, and local reasoning models tested against real security boundaries.</p>
-        <div class="meta">HLR · <span class="date">16h ago</span> · <a href="https://highlearningrate.substack.com/p/cyber-evals-crossed-the-line-2026">read →</a></div>
-        <div class="rank-reason">from High Learning Rate</div>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://highlearningrate.substack.com/p/agent-systems-meet-real-tests-2026" data-title="Agent Systems Meet Real Tests - 2026-08-06" data-source="substack" data-label="High Learning Rate" data-gist="Autonomous research agents, programmable harnesses, and skill-compliance checks are moving from flashy demos toward measurable engineering." data-cat="learning" data-discuss="https://highlearningrate.substack.com/p/agent-systems-meet-real-tests-2026"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://highlearningrate.substack.com/p/agent-systems-meet-real-tests-2026">Agent Systems Meet Real Tests - 2026-08-06</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Autonomous research agents, programmable harnesses, and skill-compliance checks are moving from flashy demos toward measurable engineering.</p>
+        <div class="meta">HLR · <span class="date">5h ago</span> · <a href="https://highlearningrate.substack.com/p/agent-systems-meet-real-tests-2026">read →</a></div>
       </article>
-        <article class="card src-medium" data-created="1785972661">
+        <article class="card src-medium" data-created="1786028464" data-brief-item>
         <div class="kicker"><span class="badge">Medium · Towards AI</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/ai-prompt-log-security-protect-coding-agent-sessions-before-they-become-incident-evidence-54e3849a22a5?source=rss----98111c9905da---4" data-title="AI Prompt Log Security: Protect Coding-Agent Sessions Before They Become Incident Evidence" data-source="medium" data-label="Medium · Towards AI" data-gist="Coding-agent session logs from Claude Code, Codex, and Cursor quietly capture secrets and architecture details that ordinary security scanners never touch." data-cat="learning" data-discuss="https://pub.towardsai.net/ai-prompt-log-security-protect-coding-agent-sessions-before-they-become-incident-evidence-54e3849a22a5?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://pub.towardsai.net/ai-prompt-log-security-protect-coding-agent-sessions-before-they-become-incident-evidence-54e3849a22a5?source=rss----98111c9905da---4">AI Prompt Log Security: Protect Coding-Agent Sessions Before They Become Incident Evidence</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Coding-agent session logs from Claude Code, Codex, and Cursor quietly capture secrets and architecture details that ordinary security scanners never touch.</p>
-        <div class="meta">Anna Jey · <span class="date">3h ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/ai-prompt-log-security-protect-coding-agent-sessions-before-they-become-incident-evidence-54e3849a22a5?source=rss----98111c9905da---4">read →</a></div>
-        <div class="rank-reason">from Medium · Towards AI</div>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/the-origins-of-mean-squared-error-85e1427a66ec?source=rss----98111c9905da---4" data-title="The Origins of Mean Squared Error" data-source="medium" data-label="Medium · Towards AI" data-gist="Why mean squared error became regression&#x27;s default loss function, tracing the math logic behind squaring errors instead of just weighing them." data-cat="learning" data-discuss="https://pub.towardsai.net/the-origins-of-mean-squared-error-85e1427a66ec?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://pub.towardsai.net/the-origins-of-mean-squared-error-85e1427a66ec?source=rss----98111c9905da---4">The Origins of Mean Squared Error</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Why mean squared error became regression&#x27;s default loss function, tracing the math logic behind squaring errors instead of just weighing them.</p>
+        <div class="meta">Wuiii · <span class="date">24m ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/the-origins-of-mean-squared-error-85e1427a66ec?source=rss----98111c9905da---4">read →</a></div>
       </article>
-        <article class="card src-substack" data-created="1785922300">
-        <div class="kicker"><span class="badge">The Neural Maze</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://theneuralmaze.substack.com/p/the-complete-guide-to-modern-ocr" data-title="The Complete Guide to Modern OCR Systems" data-source="substack" data-label="The Neural Maze" data-gist="Second installment of a guide tracing OCR&#x27;s evolution from brittle heuristics to hybrid small-language-model and vision-model production pipelines." data-cat="learning" data-discuss="https://theneuralmaze.substack.com/p/the-complete-guide-to-modern-ocr"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://theneuralmaze.substack.com/p/the-complete-guide-to-modern-ocr">The Complete Guide to Modern OCR Systems</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Second installment of a guide tracing OCR&#x27;s evolution from brittle heuristics to hybrid small-language-model and vision-model production pipelines.</p>
-        <div class="meta">Miguel Otero Pedrido · <span class="date">17h ago</span> · <a href="https://theneuralmaze.substack.com/p/the-complete-guide-to-modern-ocr">read →</a></div>
-        <div class="rank-reason">from The Neural Maze</div>
-      </article>
-        <article class="card src-medium" data-created="1785970862">
+        <article class="card src-medium" data-created="1786028463" data-brief-item>
         <div class="kicker"><span class="badge">Medium · Towards AI</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/harnesses-part-2-cacheonomics-af9e6b92139e?source=rss----98111c9905da---4" data-title="Harnesses, Part 2: Cacheonomics" data-source="medium" data-label="Medium · Towards AI" data-gist="Argues that agent harness design isn&#x27;t really about eager-vs-JIT execution — it&#x27;s fundamentally a caching problem, and that reframing changes what to optimize." data-cat="learning" data-discuss="https://pub.towardsai.net/harnesses-part-2-cacheonomics-af9e6b92139e?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://pub.towardsai.net/harnesses-part-2-cacheonomics-af9e6b92139e?source=rss----98111c9905da---4">Harnesses, Part 2: Cacheonomics</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Argues that agent harness design isn&#x27;t really about eager-vs-JIT execution — it&#x27;s fundamentally a caching problem, and that reframing changes what to optimize.</p>
-        <div class="meta">Jordan Carson · <span class="date">3h ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/harnesses-part-2-cacheonomics-af9e6b92139e?source=rss----98111c9905da---4">read →</a></div>
-        <div class="rank-reason">from Medium · Towards AI</div>
-      </article>
-        <article class="card src-hackernews" data-created="1785950605">
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.promptarmor.com/resources/atlassian-rovo-exfiltrates-data" data-title="Atlassian Rovo Exfiltrates Data, Bypassing Controls" data-source="hackernews" data-label="Hacker News" data-gist="Researchers show Atlassian&#x27;s Rovo agent can be tricked via a hidden prompt injection in an uploaded file into exfiltrating data through an unrestricted URL-fetch tool." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49185983"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.promptarmor.com/resources/atlassian-rovo-exfiltrates-data">Atlassian Rovo Exfiltrates Data, Bypassing Controls</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Researchers show Atlassian&#x27;s Rovo agent can be tricked via a hidden prompt injection in an uploaded file into exfiltrating data through an unrestricted URL-fetch tool.</p>
-        <div class="meta">176 pts · 71 comments · <span class="date">9h ago</span> · <span class="rtime">1 min read</span> · <a href="https://news.ycombinator.com/item?id=49185983">discuss →</a></div>
-        <div class="rank-reason">176 pts on HN · 71 comments</div>
-      </article>
-        <article class="card src-hackernews" data-created="1785943326">
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://weli.dev/blog/the-valley-of-webhooks/" data-title="The Valley of Webhooks" data-source="hackernews" data-label="Hacker News" data-gist="Argues most webhook-based sync systems break down at scale because webhooks alone can&#x27;t guarantee delivery, ordering, or replay the way a proper log can." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49184216"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://weli.dev/blog/the-valley-of-webhooks/">The Valley of Webhooks</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Argues most webhook-based sync systems break down at scale because webhooks alone can&#x27;t guarantee delivery, ordering, or replay the way a proper log can.</p>
-        <div class="meta">156 pts · 73 comments · <span class="date">11h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49184216">discuss →</a></div>
-        <div class="rank-reason">156 pts on HN · 73 comments</div>
-      </article>
-        <article class="card src-substack" data-created="1785913315">
-        <div class="kicker"><span class="badge">Refactoring</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://refactoring.fm/p/summer-ai-coding-updates" data-title="Summer AI Coding Updates ☀️" data-source="substack" data-label="Refactoring" data-gist="Monthly roundup of one developer&#x27;s evolving AI coding workflow and their in-progress Tolaria project, tracking what&#x27;s actually changed in daily practice." data-cat="learning" data-discuss="https://refactoring.fm/p/summer-ai-coding-updates"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://refactoring.fm/p/summer-ai-coding-updates">Summer AI Coding Updates ☀️</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Monthly roundup of one developer&#x27;s evolving AI coding workflow and their in-progress Tolaria project, tracking what&#x27;s actually changed in daily practice.</p>
-        <div class="meta">Luca Rossi · <span class="date">19h ago</span> · <a href="https://refactoring.fm/p/summer-ai-coding-updates">read →</a></div>
-        <div class="rank-reason">from Refactoring</div>
-      </article>
-        <article class="card src-hackernews" data-created="1785955974">
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://zed.dev/deltadb" data-title="Zed DeltaDB" data-source="hackernews" data-label="Hacker News" data-gist="Zed&#x27;s new synced snapshot system for agent workflows helps track AI-driven edits, but reviewers worry it just hands managers a surveillance dial." data-cat="products" data-discuss="https://news.ycombinator.com/item?id=49187256"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://zed.dev/deltadb">Zed DeltaDB</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Zed&#x27;s new synced snapshot system for agent workflows helps track AI-driven edits, but reviewers worry it just hands managers a surveillance dial.</p>
-        <div class="meta">321 pts · 161 comments · <span class="date">7h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49187256">discuss →</a></div>
-        <div class="rank-reason">321 pts on HN · 161 comments</div>
-      </article>
-        <article class="card src-hackernews" data-created="1785957352">
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2" data-title="Muse Code and Muse Spark 1.2" data-source="hackernews" data-label="Hacker News" data-gist="Meta&#x27;s updated coding agents require a Facebook-linked login, and commenters are unsparing about trusting Meta with agentic access to their code." data-cat="products" data-discuss="https://news.ycombinator.com/item?id=49187575"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2">Muse Code and Muse Spark 1.2</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Meta&#x27;s updated coding agents require a Facebook-linked login, and commenters are unsparing about trusting Meta with agentic access to their code.</p>
-        <div class="meta">184 pts · 111 comments · <span class="date">7h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49187575">discuss →</a></div>
-        <div class="rank-reason">184 pts on HN · 111 comments</div>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/lai-137-where-ai-engineering-is-going-in-2026-7cea20e7be6a?source=rss----98111c9905da---4" data-title="LAI #137: Where AI Engineering Is Going in 2026" data-source="medium" data-label="Medium · Towards AI" data-gist="Building a prototype is easy now; 2026&#x27;s real AI-engineering challenge is persistent memory, agent infrastructure, and observability." data-cat="learning" data-discuss="https://pub.towardsai.net/lai-137-where-ai-engineering-is-going-in-2026-7cea20e7be6a?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://pub.towardsai.net/lai-137-where-ai-engineering-is-going-in-2026-7cea20e7be6a?source=rss----98111c9905da---4">LAI #137: Where AI Engineering Is Going in 2026</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Building a prototype is easy now; 2026&#x27;s real AI-engineering challenge is persistent memory, agent infrastructure, and observability.</p>
+        <div class="meta">Towards AI Editorial Team · <span class="date">24m ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/lai-137-where-ai-engineering-is-going-in-2026-7cea20e7be6a?source=rss----98111c9905da---4">read →</a></div>
       </article>
         </div>
+        <div class="tail-list">
+        <article class="card row src-hackernews" data-created="1785955069" data-brief-item>
+        <div class="kicker"><span class="badge">Hacker News</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://blog.fogus.me/llm/born-against.html" data-title="Born Against, or why hobby programming communities are against LLM usage" data-source="hackernews" data-label="Hacker News" data-gist="Hobby coders resist LLM-assisted programming because the point was never output-it&#x27;s the skill and joy of doing the work yourself, not shipping fast." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49187061"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://blog.fogus.me/llm/born-against.html">Born Against, or why hobby programming communities are against LLM usage</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Hobby coders resist LLM-assisted programming because the point was never output-it&#x27;s the skill and joy of doing the work yourself, not shipping fast.</p>
+        <div class="meta">▲ 342 · 382 comments · <span class="date">20h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49187061">discuss →</a></div>
+      </article>
+        <article class="card row src-reddit" data-created="1786002397" data-brief-item>
+        <div class="kicker"><span class="badge">r/fintechdev</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="/r/dotnetjobs/comments/1vh3z9k/payment_method_integration/" data-title="Payment method integration" data-source="reddit" data-label="r/fintechdev" data-gist="A fintech developer opens a thread on the practical pitfalls of integrating new payment methods, inviting others to share hard-won lessons." data-cat="learning" data-discuss="https://www.reddit.com/r/fintechdev/comments/1vh3zh3/payment_method_integration/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="/r/dotnetjobs/comments/1vh3z9k/payment_method_integration/">Payment method integration</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A fintech developer opens a thread on the practical pitfalls of integrating new payment methods, inviting others to share hard-won lessons.</p>
+        <div class="meta"><span class="date">7h ago</span> · <a href="https://www.reddit.com/r/fintechdev/comments/1vh3zh3/payment_method_integration/">open →</a></div>
+      </article>
+        <article class="card row src-substack" data-created="1786005031" data-brief-item>
+        <div class="kicker"><span class="badge">Hands On System Design - Distributed Systems Implementation </span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://sdcourse.substack.com/p/day-176-build-executive-dashboards" data-title="Day 176: Build Executive Dashboards for Business Metrics" data-source="substack" data-label="Hands On System Design - Distributed Systems Implementation " data-gist="Day 176 of a system-design series builds executive dashboards, turning raw log-processing pipelines into boardroom-ready business analytics." data-cat="learning" data-discuss="https://sdcourse.substack.com/p/day-176-build-executive-dashboards"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://sdcourse.substack.com/p/day-176-build-executive-dashboards">Day 176: Build Executive Dashboards for Business Metrics</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Day 176 of a system-design series builds executive dashboards, turning raw log-processing pipelines into boardroom-ready business analytics.</p>
+        <div class="meta">System Design Course · <span class="date">6h ago</span> · <a href="https://sdcourse.substack.com/p/day-176-build-executive-dashboards">read →</a></div>
+      </article>
+        <article class="card row src-hackernews" data-created="1786015493" data-brief-item>
+        <div class="kicker"><span class="badge">Hacker News</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.mayerowitz.io/blog/mario-meets-pareto" data-title="Mario Meets Pareto" data-source="hackernews" data-label="Hacker News" data-gist="Mario Kart speedrun strategy becomes a clear lens on the Pareto frontier — why engineers shouldn&#x27;t chase &#x27;optimal&#x27; without picking a tradeoff." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49195231"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.mayerowitz.io/blog/mario-meets-pareto">Mario Meets Pareto</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Mario Kart speedrun strategy becomes a clear lens on the Pareto frontier — why engineers shouldn&#x27;t chase &#x27;optimal&#x27; without picking a tradeoff.</p>
+        <div class="meta">▲ 330 · 60 comments · <span class="date">4h ago</span> · <span class="rtime">1 min read</span> · <a href="https://news.ycombinator.com/item?id=49195231">discuss →</a></div>
+      </article>
+        <article class="card row src-medium" data-created="1786027770" data-brief-item>
+        <div class="kicker"><span class="badge">Medium · Towards AI</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/chatgpt-pro-downgraded-to-mini-model-2026-troubleshooting-recovery-guide-21099f98ae68?source=rss----98111c9905da---4" data-title="ChatGPT Pro Downgraded to Mini Model? 2026 Troubleshooting &amp; Recovery Guide" data-source="medium" data-label="Medium · Towards AI" data-gist="A troubleshooting guide for Pro subscribers whose ChatGPT quietly downgrades to the mini model despite active billing, with recovery steps." data-cat="learning" data-discuss="https://pub.towardsai.net/chatgpt-pro-downgraded-to-mini-model-2026-troubleshooting-recovery-guide-21099f98ae68?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://pub.towardsai.net/chatgpt-pro-downgraded-to-mini-model-2026-troubleshooting-recovery-guide-21099f98ae68?source=rss----98111c9905da---4">ChatGPT Pro Downgraded to Mini Model? 2026 Troubleshooting &amp; Recovery Guide</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A troubleshooting guide for Pro subscribers whose ChatGPT quietly downgrades to the mini model despite active billing, with recovery steps.</p>
+        <div class="meta">Web Researcher · <span class="date">36m ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/chatgpt-pro-downgraded-to-mini-model-2026-troubleshooting-recovery-guide-21099f98ae68?source=rss----98111c9905da---4">read →</a></div>
+      </article>
+        <article class="card row src-reddit" data-created="1785997876" data-brief-item>
+        <div class="kicker"><span class="badge">r/python</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/Python/comments/1vh295u/2026_python_type_system_and_tooling_survey/" data-title="2026 Python Type System and Tooling Survey" data-source="reddit" data-label="r/python" data-gist="The 2026 Python survey digs into how far the community has pushed type hints and tooling adoption, tracking where static typing heads next." data-cat="learning" data-discuss="https://www.reddit.com/r/Python/comments/1vh295u/2026_python_type_system_and_tooling_survey/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.reddit.com/r/Python/comments/1vh295u/2026_python_type_system_and_tooling_survey/">2026 Python Type System and Tooling Survey</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>The 2026 Python survey digs into how far the community has pushed type hints and tooling adoption, tracking where static typing heads next.</p>
+        <div class="meta"><span class="date">8h ago</span> · <a href="https://www.reddit.com/r/Python/comments/1vh295u/2026_python_type_system_and_tooling_survey/">open →</a></div>
+      </article>
+        </div>
+        <div class="finish-line">End of <em>Deep Dives</em> &middot; 10 stories</div>
+      </section>
+      <section id="panel-products" class="panel">
+        <p class="panel-intro">Products, repos and apps to look out for and actually use.</p>
+        <article class="card lead src-hackernews" data-created="1785955974" data-brief-item>
+        <div class="kicker"><span class="badge">Hacker News</span>
+          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://zed.dev/deltadb" data-title="Zed DeltaDB" data-source="hackernews" data-label="Hacker News" data-gist="Zed&#x27;s DeltaDB syncs granular code snapshots for AI agents, but reviewers worry the same audit trail could enable micromanaging engineers." data-cat="products" data-discuss="https://news.ycombinator.com/item?id=49187256"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://zed.dev/deltadb">Zed DeltaDB</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Zed&#x27;s DeltaDB syncs granular code snapshots for AI agents, but reviewers worry the same audit trail could enable micromanaging engineers.</p>
+        <div class="meta">▲ 486 · 272 comments · <span class="date">20h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49187256">discuss →</a></div>
+      </article>
+        <div class="grid">
+        <article class="card src-reddit" data-created="1786007712" data-brief-item>
+        <div class="kicker"><span class="badge">r/fintechdev</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/fintechdev/comments/1vh6a26/fundamental_analysis_app/" data-title="Fundamental Analysis App" data-source="reddit" data-label="r/fintechdev" data-gist="A dev built a fundamental-analysis app for evaluating stocks and wants fintech-builder feedback on what features to add next." data-cat="products" data-discuss="https://www.reddit.com/r/fintechdev/comments/1vh6a26/fundamental_analysis_app/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.reddit.com/r/fintechdev/comments/1vh6a26/fundamental_analysis_app/">Fundamental Analysis App</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A dev built a fundamental-analysis app for evaluating stocks and wants fintech-builder feedback on what features to add next.</p>
+        <div class="meta"><span class="date">6h ago</span> · <a href="https://www.reddit.com/r/fintechdev/comments/1vh6a26/fundamental_analysis_app/">open →</a></div>
+      </article>
+        <article class="card src-hackernews" data-created="1785953936" data-brief-item>
+        <div class="kicker"><span class="badge">Hacker News</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://neon.com/blog/how-castform-neon-beats-frontier-models-on-price-and-efficiency" data-title="Beating GPT-5.6 Sol on retrieval with 100x cheaper open models" data-source="hackernews" data-label="Hacker News" data-gist="An open model claims to beat GPT-5.6 Sol on retrieval at 100x lower cost, though commenters note big labs still win on privacy and enterprise trust." data-cat="products" data-discuss="https://news.ycombinator.com/item?id=49186762"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://neon.com/blog/how-castform-neon-beats-frontier-models-on-price-and-efficiency">Beating GPT-5.6 Sol on retrieval with 100x cheaper open models</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>An open model claims to beat GPT-5.6 Sol on retrieval at 100x lower cost, though commenters note big labs still win on privacy and enterprise trust.</p>
+        <div class="meta">▲ 370 · 102 comments · <span class="date">21h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49186762">discuss →</a></div>
+      </article>
+        <article class="card src-reddit" data-created="1786004748" data-brief-item>
+        <div class="kicker"><span class="badge">r/fintechdev</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/fintechdev/comments/1vh4yfq/built_a_fairly_simple_calculator_and_would_love/" data-title="Built a fairly simple calculator and would love to take it a step further - feedback welcome" data-source="reddit" data-label="r/fintechdev" data-gist="A solo builder shares a basic fintech calculator and asks the community how to extend it into something more genuinely useful." data-cat="products" data-discuss="https://www.reddit.com/r/fintechdev/comments/1vh4yfq/built_a_fairly_simple_calculator_and_would_love/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.reddit.com/r/fintechdev/comments/1vh4yfq/built_a_fairly_simple_calculator_and_would_love/">Built a fairly simple calculator and would love to take it a step further - feedback welcome</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A solo builder shares a basic fintech calculator and asks the community how to extend it into something more genuinely useful.</p>
+        <div class="meta"><span class="date">7h ago</span> · <a href="https://www.reddit.com/r/fintechdev/comments/1vh4yfq/built_a_fairly_simple_calculator_and_would_love/">open →</a></div>
+      </article>
+        </div>
+        <div class="tail-list">
+        <article class="card row src-hackernews" data-created="1785957352" data-brief-item>
+        <div class="kicker"><span class="badge">Hacker News</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2" data-title="Muse Code and Muse Spark 1.2" data-source="hackernews" data-label="Hacker News" data-gist="Meta ships Muse Code and Muse Spark 1.2, but early users balk at mandatory Facebook logins and fine print limiting the advertised free credits." data-cat="products" data-discuss="https://news.ycombinator.com/item?id=49187575"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2">Muse Code and Muse Spark 1.2</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Meta ships Muse Code and Muse Spark 1.2, but early users balk at mandatory Facebook logins and fine print limiting the advertised free credits.</p>
+        <div class="meta">▲ 292 · 191 comments · <span class="date">20h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49187575">discuss →</a></div>
+      </article>
+        <article class="card row src-reddit" data-created="1785996794" data-brief-item>
+        <div class="kicker"><span class="badge">r/opensource</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/opensource/comments/1vh1v8q/basalt_an_open_source_minecraft_launcher/" data-title="Basalt: an open source Minecraft launcher" data-source="reddit" data-label="r/opensource" data-gist="Basalt is a new open-source Minecraft launcher for players wanting a lightweight, community-run alternative to official or paid launchers." data-cat="products" data-discuss="https://www.reddit.com/r/opensource/comments/1vh1v8q/basalt_an_open_source_minecraft_launcher/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.reddit.com/r/opensource/comments/1vh1v8q/basalt_an_open_source_minecraft_launcher/">Basalt: an open source Minecraft launcher</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>Basalt is a new open-source Minecraft launcher for players wanting a lightweight, community-run alternative to official or paid launchers.</p>
+        <div class="meta"><span class="date">9h ago</span> · <a href="https://www.reddit.com/r/opensource/comments/1vh1v8q/basalt_an_open_source_minecraft_launcher/">open →</a></div>
+      </article>
+        </div>
+        <div class="finish-line">End of <em>Worth a Try</em> &middot; 6 stories</div>
       </section>
       <section id="panel-personal" class="panel">
         <p class="panel-intro">Your world beyond tech — local, hobby and the rest of your personal feed.</p>
+        <article class="card lead src-reddit" data-created="1786007231" data-brief-item>
+        <div class="kicker"><span class="badge">r/thriftstorehauls</span>
+          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/gallery/1vh62g2" data-title="This gorgeous table" data-source="reddit" data-label="r/thriftstorehauls" data-gist="A thrift-store find worth celebrating: a striking table picked up secondhand, the kind of score that keeps hunters coming back to thrift shops." data-cat="personal" data-discuss="https://www.reddit.com/r/ThriftStoreHauls/comments/1vh62g2/this_gorgeous_table/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.reddit.com/gallery/1vh62g2">This gorgeous table</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A thrift-store find worth celebrating: a striking table picked up secondhand, the kind of score that keeps hunters coming back to thrift shops.</p>
+        <div class="meta"><span class="date">6h ago</span> · <a href="https://www.reddit.com/r/ThriftStoreHauls/comments/1vh62g2/this_gorgeous_table/">open →</a></div>
+      </article>
         <div class="grid">
-        <article class="card lead src-reddit" data-created="1785959202">
-        <div class="kicker"><span class="badge">r/dalalstreetbets</span>
-          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://youtu.be/kzdKxm7oq7s?si=ADKDOwv_AMeze11c" data-title="rajesh kazhipurath" data-source="reddit" data-label="r/dalalstreetbets" data-gist="A meme-y namedrop post lighting up India&#x27;s retail-trading subreddit — the kind of in-joke that needs no caption to land with regulars." data-cat="personal" data-discuss="https://www.reddit.com/r/dalalstreetbets/comments/1vgq22b/rajesh_kazhipurath/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://youtu.be/kzdKxm7oq7s?si=ADKDOwv_AMeze11c">rajesh kazhipurath</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A meme-y namedrop post lighting up India&#x27;s retail-trading subreddit — the kind of in-joke that needs no caption to land with regulars.</p>
-        <div class="meta"><span class="date">6h ago</span> · <a href="https://www.reddit.com/r/dalalstreetbets/comments/1vgq22b/rajesh_kazhipurath/">open →</a></div>
-        <div class="rank-reason">from r/dalalstreetbets</div>
-      </article>
-        <article class="card src-substack" data-created="1785948168">
-        <div class="kicker"><span class="badge">Feed Me</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.readfeedme.com/p/where-are-all-the-summer-interns" data-title="Where are all the summer interns?" data-source="substack" data-label="Feed Me" data-gist="A dispatch on the vanishing summer internship, and the uncomfortable power dynamics interns navigate when older industry contacts show interest." data-cat="personal" data-discuss="https://www.readfeedme.com/p/where-are-all-the-summer-interns"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.readfeedme.com/p/where-are-all-the-summer-interns">Where are all the summer interns?</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A dispatch on the vanishing summer internship, and the uncomfortable power dynamics interns navigate when older industry contacts show interest.</p>
-        <div class="meta">Emily Sundberg · <span class="date">9h ago</span> · <a href="https://www.readfeedme.com/p/where-are-all-the-summer-interns">read →</a></div>
-        <div class="rank-reason">from Feed Me</div>
-      </article>
-        <article class="card src-reddit" data-created="1785958754">
-        <div class="kicker"><span class="badge">r/india</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.newslaundry.com/2026/08/05/rs-23-crore-a-day-8-years-yogi-outspends-modi-when-it-comes-to-ads" data-title="Rs 2.3 crore a day, 8 years: Yogi govt outspends Modi govt when it comes to ads" data-source="reddit" data-label="r/india" data-gist="UP&#x27;s government has reportedly outspent the Centre on advertising by a wide margin over eight years, reigniting debate over public ad spending priorities." data-cat="personal" data-discuss="https://www.reddit.com/r/india/comments/1vgpw6w/rs_23_crore_a_day_8_years_yogi_govt_outspends/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.newslaundry.com/2026/08/05/rs-23-crore-a-day-8-years-yogi-outspends-modi-when-it-comes-to-ads">Rs 2.3 crore a day, 8 years: Yogi govt outspends Modi govt when it comes to ads</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>UP&#x27;s government has reportedly outspent the Centre on advertising by a wide margin over eight years, reigniting debate over public ad spending priorities.</p>
-        <div class="meta"><span class="date">6h ago</span> · <a href="https://www.reddit.com/r/india/comments/1vgpw6w/rs_23_crore_a_day_8_years_yogi_govt_outspends/">open →</a></div>
-        <div class="rank-reason">from r/india</div>
-      </article>
-        <article class="card src-reddit" data-created="1785957945">
-        <div class="kicker"><span class="badge">r/malefashionmarket</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="/r/malefashionadvice/comments/1vfjxvd/collar_chains/" data-title="[BUY] Atlanta GA, collar chains" data-source="reddit" data-label="r/malefashionmarket" data-gist="An Atlanta-based buy listing for collar chains on the menswear marketplace — the kind of niche accessory hunt that keeps this community active." data-cat="personal" data-discuss="https://www.reddit.com/r/MaleFashionMarket/comments/1vgpl3l/buy_atlanta_ga_collar_chains/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="/r/malefashionadvice/comments/1vfjxvd/collar_chains/">[BUY] Atlanta GA, collar chains</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>An Atlanta-based buy listing for collar chains on the menswear marketplace — the kind of niche accessory hunt that keeps this community active.</p>
-        <div class="meta"><span class="date">7h ago</span> · <a href="https://www.reddit.com/r/MaleFashionMarket/comments/1vgpl3l/buy_atlanta_ga_collar_chains/">open →</a></div>
-        <div class="rank-reason">from r/malefashionmarket</div>
-      </article>
-        <article class="card src-substack" data-created="1785930198">
-        <div class="kicker"><span class="badge">Compounding Dividends</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.compoundingdividends.net/p/what-the-tour-de-france-can-teach" data-title="What the Tour de France Can Teach You About Investing" data-source="substack" data-label="Compounding Dividends" data-gist="Draws a lesson from the Tour de France&#x27;s team tactics and pacing to argue that patient, unglamorous discipline beats chasing spectacular investing wins." data-cat="personal" data-discuss="https://www.compoundingdividends.net/p/what-the-tour-de-france-can-teach"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.compoundingdividends.net/p/what-the-tour-de-france-can-teach">What the Tour de France Can Teach You About Investing</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Draws a lesson from the Tour de France&#x27;s team tactics and pacing to argue that patient, unglamorous discipline beats chasing spectacular investing wins.</p>
-        <div class="meta">TJ Terwilliger · <span class="date">14h ago</span> · <a href="https://www.compoundingdividends.net/p/what-the-tour-de-france-can-teach">read →</a></div>
-        <div class="rank-reason">from Compounding Dividends</div>
-      </article>
-        <article class="card src-reddit" data-created="1785956809">
-        <div class="kicker"><span class="badge">r/malefashionadvice</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/gallery/1vgp5tu" data-title="Is my denim jacket too short?" data-source="reddit" data-label="r/malefashionadvice" data-gist="A reader crowdsources opinions on whether their new denim jacket runs too short, the perpetual fit-check ritual of the menswear subreddit." data-cat="personal" data-discuss="https://www.reddit.com/r/malefashionadvice/comments/1vgp5tu/is_my_denim_jacket_too_short/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/gallery/1vgp5tu">Is my denim jacket too short?</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A reader crowdsources opinions on whether their new denim jacket runs too short, the perpetual fit-check ritual of the menswear subreddit.</p>
-        <div class="meta"><span class="date">7h ago</span> · <a href="https://www.reddit.com/r/malefashionadvice/comments/1vgp5tu/is_my_denim_jacket_too_short/">open →</a></div>
-        <div class="rank-reason">from r/malefashionadvice</div>
-      </article>
-        <article class="card src-reddit" data-created="1785955235">
-        <div class="kicker"><span class="badge">r/books</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/books/comments/1vgokh2/anne_of_green_gables_is_a_wonderful_book_it/" data-title="Anne of green gables is a wonderful book. It practically felt like healing." data-source="reddit" data-label="r/books" data-gist="A reader reflects on Anne of Green Gables as a genuinely healing read, part of the sub&#x27;s ongoing thread on books that stick with you." data-cat="personal" data-discuss="https://www.reddit.com/r/books/comments/1vgokh2/anne_of_green_gables_is_a_wonderful_book_it/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/books/comments/1vgokh2/anne_of_green_gables_is_a_wonderful_book_it/">Anne of green gables is a wonderful book. It practically felt like healing.</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A reader reflects on Anne of Green Gables as a genuinely healing read, part of the sub&#x27;s ongoing thread on books that stick with you.</p>
-        <div class="meta"><span class="date">7h ago</span> · <a href="https://www.reddit.com/r/books/comments/1vgokh2/anne_of_green_gables_is_a_wonderful_book_it/">open →</a></div>
-        <div class="rank-reason">from r/books</div>
-      </article>
-        <article class="card src-reddit" data-created="1785946442">
-        <div class="kicker"><span class="badge">r/football</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/football/comments/1vgl0mn/infantino_remains_fifa_president_after_executive/" data-title="Infantino remains Fifa president after executive meeting" data-source="reddit" data-label="r/football" data-gist="Gianni Infantino secures another term as FIFA president after the latest executive meeting, extending his hold over global football&#x27;s governing body." data-cat="personal" data-discuss="https://www.reddit.com/r/football/comments/1vgl0mn/infantino_remains_fifa_president_after_executive/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/football/comments/1vgl0mn/infantino_remains_fifa_president_after_executive/">Infantino remains Fifa president after executive meeting</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Gianni Infantino secures another term as FIFA president after the latest executive meeting, extending his hold over global football&#x27;s governing body.</p>
-        <div class="meta"><span class="date">10h ago</span> · <a href="https://www.reddit.com/r/football/comments/1vgl0mn/infantino_remains_fifa_president_after_executive/">open →</a></div>
-        <div class="rank-reason">from r/football</div>
-      </article>
-        <article class="card src-reddit" data-created="1785943762">
-        <div class="kicker"><span class="badge">r/minimalism</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/minimalism/comments/1vgjuo5/getting_rid_of_the_impersonal_gifts/" data-title="Getting rid of the impersonal &quot;gifts&quot;" data-source="reddit" data-label="r/minimalism" data-gist="A minimalist reflects on cutting out impersonal, obligatory gift-giving in favor of exchanges that actually mean something to both sides." data-cat="personal" data-discuss="https://www.reddit.com/r/minimalism/comments/1vgjuo5/getting_rid_of_the_impersonal_gifts/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/minimalism/comments/1vgjuo5/getting_rid_of_the_impersonal_gifts/">Getting rid of the impersonal &quot;gifts&quot;</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A minimalist reflects on cutting out impersonal, obligatory gift-giving in favor of exchanges that actually mean something to both sides.</p>
-        <div class="meta"><span class="date">11h ago</span> · <a href="https://www.reddit.com/r/minimalism/comments/1vgjuo5/getting_rid_of_the_impersonal_gifts/">open →</a></div>
-        <div class="rank-reason">from r/minimalism</div>
-      </article>
-        <article class="card src-reddit" data-created="1785942815">
-        <div class="kicker"><span class="badge">r/findapath</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/findapath/comments/1vgjfn2/post_grad_unemployment_struggles/" data-title="Post grad unemployment struggles" data-source="reddit" data-label="r/findapath" data-gist="A recent graduate vents about the grinding struggle to land a first job, striking a chord with others stuck in the same post-grad limbo." data-cat="personal" data-discuss="https://www.reddit.com/r/findapath/comments/1vgjfn2/post_grad_unemployment_struggles/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/findapath/comments/1vgjfn2/post_grad_unemployment_struggles/">Post grad unemployment struggles</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A recent graduate vents about the grinding struggle to land a first job, striking a chord with others stuck in the same post-grad limbo.</p>
-        <div class="meta"><span class="date">11h ago</span> · <a href="https://www.reddit.com/r/findapath/comments/1vgjfn2/post_grad_unemployment_struggles/">open →</a></div>
-        <div class="rank-reason">from r/findapath</div>
-      </article>
-        <article class="card src-hackernews" data-created="1785965363">
+        <article class="card src-hackernews" data-created="1785991595" data-brief-item>
         <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://randsinrepose.com/archives/blade-runner-title-cards/" data-title="The title cards in Blade Runner are amazing" data-source="hackernews" data-label="Hacker News" data-gist="A close read of Blade Runner&#x27;s opening titles splits readers between genuine reverence for the sequence and pushback that it&#x27;s overwrought nostalgia." data-cat="personal" data-discuss="https://news.ycombinator.com/item?id=49189287"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://randsinrepose.com/archives/blade-runner-title-cards/">The title cards in Blade Runner are amazing</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A close read of Blade Runner&#x27;s opening titles splits readers between genuine reverence for the sequence and pushback that it&#x27;s overwrought nostalgia.</p>
-        <div class="meta">158 pts · 71 comments · <span class="date">5h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49189287">discuss →</a></div>
-        <div class="rank-reason">158 pts on HN · 71 comments</div>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.crimepaysbutbotanydoesnt.com/reading-list" data-title="Crime Pays but Botany Doesn&#x27;t" data-source="hackernews" data-label="Hacker News" data-gist="An essay traces the old saying that botany never paid, sparking a thread on class, grocery-store snobbery, and plant ID as a fading skill." data-cat="personal" data-discuss="https://news.ycombinator.com/item?id=49192566"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.crimepaysbutbotanydoesnt.com/reading-list">Crime Pays but Botany Doesn&#x27;t</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>An essay traces the old saying that botany never paid, sparking a thread on class, grocery-store snobbery, and plant ID as a fading skill.</p>
+        <div class="meta">▲ 430 · 132 comments · <span class="date">10h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49192566">discuss →</a></div>
       </article>
-        <article class="card src-reddit" data-created="1785941013">
-        <div class="kicker"><span class="badge">r/indiatax</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://i.redd.it/tsqayjnf6mhh1.jpeg" data-title="We are paying more tax than billionaires?" data-source="reddit" data-label="r/indiatax" data-gist="A viral claim that ordinary Indian taxpayers effectively pay more tax than billionaires reignites the recurring debate over India&#x27;s tax fairness." data-cat="personal" data-discuss="https://www.reddit.com/r/IndiaTax/comments/1vgim7t/we_are_paying_more_tax_than_billionaires/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://i.redd.it/tsqayjnf6mhh1.jpeg">We are paying more tax than billionaires?</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A viral claim that ordinary Indian taxpayers effectively pay more tax than billionaires reignites the recurring debate over India&#x27;s tax fairness.</p>
-        <div class="meta"><span class="date">11h ago</span> · <a href="https://www.reddit.com/r/IndiaTax/comments/1vgim7t/we_are_paying_more_tax_than_billionaires/">open →</a></div>
-        <div class="rank-reason">from r/indiatax</div>
+        <article class="card src-reddit" data-created="1786006602" data-brief-item>
+        <div class="kicker"><span class="badge">r/wholesomememes</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://i.redd.it/mcwawa8glrhh1.png" data-title="I know the feeling" data-source="reddit" data-label="r/wholesomememes" data-gist="A wholesome meme post that&#x27;s simply relatable — no tech angle, just the shared feeling everyone recognizes." data-cat="personal" data-discuss="https://www.reddit.com/r/wholesomememes/comments/1vh5sdb/i_know_the_feeling/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://i.redd.it/mcwawa8glrhh1.png">I know the feeling</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A wholesome meme post that&#x27;s simply relatable — no tech angle, just the shared feeling everyone recognizes.</p>
+        <div class="meta"><span class="date">6h ago</span> · <a href="https://www.reddit.com/r/wholesomememes/comments/1vh5sdb/i_know_the_feeling/">open →</a></div>
+      </article>
+        <article class="card src-hackernews" data-created="1785965363" data-brief-item>
+        <div class="kicker"><span class="badge">Hacker News</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://randsinrepose.com/archives/blade-runner-title-cards/" data-title="The title cards in Blade Runner are amazing" data-source="hackernews" data-label="Hacker News" data-gist="A deep dive into Blade Runner&#x27;s opening titles splits opinion — some call the off-center typography a masterstroke, others just see rough early design." data-cat="personal" data-discuss="https://news.ycombinator.com/item?id=49189287"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://randsinrepose.com/archives/blade-runner-title-cards/">The title cards in Blade Runner are amazing</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A deep dive into Blade Runner&#x27;s opening titles splits opinion — some call the off-center typography a masterstroke, others just see rough early design.</p>
+        <div class="meta">▲ 353 · 167 comments · <span class="date">17h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49189287">discuss →</a></div>
       </article>
         </div>
+        <div class="tail-list">
+        <article class="card row src-reddit" data-created="1786002216" data-brief-item>
+        <div class="kicker"><span class="badge">r/carsindia</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://i.redd.it/h3l3fa2f8rhh1.jpeg" data-title="My first and last car from Tata Motors." data-source="reddit" data-label="r/carsindia" data-gist="A first-hand account of buying — and swearing off — a Tata Motors car, the kind of ownership story that resonates with India&#x27;s car-buying crowd." data-cat="personal" data-discuss="https://www.reddit.com/r/CarsIndia/comments/1vh3wsg/my_first_and_last_car_from_tata_motors/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://i.redd.it/h3l3fa2f8rhh1.jpeg">My first and last car from Tata Motors.</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A first-hand account of buying — and swearing off — a Tata Motors car, the kind of ownership story that resonates with India&#x27;s car-buying crowd.</p>
+        <div class="meta"><span class="date">7h ago</span> · <a href="https://www.reddit.com/r/CarsIndia/comments/1vh3wsg/my_first_and_last_car_from_tata_motors/">open →</a></div>
+      </article>
+        <article class="card row src-reddit" data-created="1786001395" data-brief-item>
+        <div class="kicker"><span class="badge">r/nostupidquestions</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/NoStupidQuestions/comments/1vh3kr7/for_straight_women_when_youre_having_sex_do_some/" data-title="For straight women, When you&#x27;re having sex, do some penises feel good while others don&#x27;t?" data-source="reddit" data-label="r/nostupidquestions" data-gist="A candid, non-tech AskReddit-style thread on sexual pleasure and anatomy — pure personal-interest discussion, no tech angle." data-cat="personal" data-discuss="https://www.reddit.com/r/NoStupidQuestions/comments/1vh3kr7/for_straight_women_when_youre_having_sex_do_some/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.reddit.com/r/NoStupidQuestions/comments/1vh3kr7/for_straight_women_when_youre_having_sex_do_some/">For straight women, When you&#x27;re having sex, do some penises feel good while others don&#x27;t?</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A candid, non-tech AskReddit-style thread on sexual pleasure and anatomy — pure personal-interest discussion, no tech angle.</p>
+        <div class="meta"><span class="date">7h ago</span> · <a href="https://www.reddit.com/r/NoStupidQuestions/comments/1vh3kr7/for_straight_women_when_youre_having_sex_do_some/">open →</a></div>
+      </article>
+        <article class="card row src-reddit" data-created="1785996221" data-brief-item>
+        <div class="kicker"><span class="badge">r/indianfitness</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/indianfitness/comments/1vh1oa4/is_my_worksplit_good_as_i_want_to_introduce/" data-title="is my worksplit good as i want to introduce running in my workout aswell" data-source="reddit" data-label="r/indianfitness" data-gist="A lifter asks the community to critique their workout split before folding running into the mix — a personal fitness-planning question." data-cat="personal" data-discuss="https://www.reddit.com/r/indianfitness/comments/1vh1oa4/is_my_worksplit_good_as_i_want_to_introduce/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.reddit.com/r/indianfitness/comments/1vh1oa4/is_my_worksplit_good_as_i_want_to_introduce/">is my worksplit good as i want to introduce running in my workout aswell</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A lifter asks the community to critique their workout split before folding running into the mix — a personal fitness-planning question.</p>
+        <div class="meta"><span class="date">9h ago</span> · <a href="https://www.reddit.com/r/indianfitness/comments/1vh1oa4/is_my_worksplit_good_as_i_want_to_introduce/">open →</a></div>
+      </article>
+        <article class="card row src-substack" data-created="1785948168" data-brief-item>
+        <div class="kicker"><span class="badge">Feed Me</span>
+          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.readfeedme.com/p/where-are-all-the-summer-interns" data-title="Where are all the summer interns?" data-source="substack" data-label="Feed Me" data-gist="A newsletter riffs on the vanishing summer-intern culture, with a wry aside about young interns getting flirted with by older industry veterans." data-cat="personal" data-discuss="https://www.readfeedme.com/p/where-are-all-the-summer-interns"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
+        <a class="card-title" href="https://www.readfeedme.com/p/where-are-all-the-summer-interns">Where are all the summer interns?</a>
+        <p class="card-gist"><span class="ai-tag">AI gist</span>A newsletter riffs on the vanishing summer-intern culture, with a wry aside about young interns getting flirted with by older industry veterans.</p>
+        <div class="meta">Emily Sundberg · <span class="date">22h ago</span> · <a href="https://www.readfeedme.com/p/where-are-all-the-summer-interns">read →</a></div>
+      </article>
+        </div>
+        <div class="finish-line">End of <em>Off the Clock</em> &middot; 8 stories</div>
       </section>
-    </div>
-
-    <div class="caught-up" id="caughtUp" style="display:none">
-      You're <em>caught up</em> for today. Come back tomorrow.
     </div>
 
     <footer>
       <div class="provenance">Personalized from — Reddit: your home RSS · Substack: your subscriptions · Medium: your follows</div>
       Built from <a href="https://hn.algolia.com/api">Hacker News</a>,
       <a href="https://www.reddit.com">Reddit</a>, Substack &amp;
-      Medium · generated 06 Aug 2026, 08:00 · <a href="../archive.html">archive</a>
+      Medium · generated 06 Aug 2026, 20:54 · <a href="../archive.html">archive</a>
     </footer>
   </div>
 
@@ -541,191 +554,215 @@
   <script>
   (function () {
     "use strict";
-    var KEY = "db_bookmarks_v1", UNSORTED = "__unsorted__";
-    function load() {
-      try { var s = JSON.parse(localStorage.getItem(KEY)); if (s && s.items) { s.groups = s.groups || []; return s; } } catch (e) {}
-      return { groups: [], items: {} };
-    }
-    function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
-    var state = load();
 
-    var body = document.getElementById("bmBody");
-    var countEl = document.getElementById("bmCount");
-    var drawer = document.getElementById("bmDrawer");
-    var backdrop = document.getElementById("bmBackdrop");
-    var newName = document.getElementById("bmNewName");
-
-    function count() { return Object.keys(state.items).length; }
-    function groupsAll() { return [{ id: UNSORTED, name: "Unsorted" }].concat(state.groups); }
-    function itemsIn(gid) {
-      return Object.keys(state.items).map(function (k) { return state.items[k]; })
-        .filter(function (it) { return (it.group || UNSORTED) === gid; })
-        .sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
-    }
-    function updateCount() { countEl.textContent = count(); }
-    function syncButtons() {
-      var btns = document.querySelectorAll(".bm-btn");
-      for (var i = 0; i < btns.length; i++) {
-        btns[i].classList.toggle("on", !!state.items[btns[i].getAttribute("data-url")]);
-      }
-    }
-    function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-
-    function itemNode(it) {
-      var node = el("div", "bm-item");
-      var a = el("a", "t", it.title || it.url); a.href = it.url; a.target = "_blank"; a.rel = "noopener";
-      node.appendChild(a);
-      var row = el("div", "row");
-      row.appendChild(el("span", "src", it.label || it.source || ""));
-      var sel = el("select");
-      groupsAll().forEach(function (g) {
-        var o = el("option", null, g.name); o.value = g.id;
-        if ((it.group || UNSORTED) === g.id) o.selected = true;
-        sel.appendChild(o);
-      });
-      sel.onchange = function () { it.group = sel.value; save(); render(); };
-      row.appendChild(sel);
-      var rm = el("button", "rm", "×"); rm.title = "Remove";
-      rm.onclick = function () { delete state.items[it.url]; save(); render(); syncButtons(); updateCount(); };
-      row.appendChild(rm);
-      node.appendChild(row);
-      return node;
-    }
-
-    function render() {
-      body.innerHTML = "";
-      if (count() === 0) {
-        body.appendChild(el("div", "bm-empty", "No bookmarks yet. Tap the bookmark icon on any story to save it here."));
-        return;
-      }
-      groupsAll().forEach(function (g) {
-        var items = itemsIn(g.id);
-        if (g.id === UNSORTED && items.length === 0) return;
-        var wrap = el("div", "bm-group");
-        var h = el("div", "bm-group-h");
-        var name = el("span", "name"); name.textContent = g.name;
-        name.appendChild(el("span", "n", "  " + items.length));
-        h.appendChild(name);
-        if (g.id !== UNSORTED) {
-          var del = el("button", "bm-del-group", "delete");
-          del.onclick = function () {
-            state.groups = state.groups.filter(function (x) { return x.id !== g.id; });
-            Object.keys(state.items).forEach(function (k) { if (state.items[k].group === g.id) state.items[k].group = UNSORTED; });
-            save(); render();
-          };
-          h.appendChild(del);
-        }
-        wrap.appendChild(h);
-        items.forEach(function (it) { wrap.appendChild(itemNode(it)); });
-        body.appendChild(wrap);
-      });
-    }
-
-    function addGroup() {
-      var name = (newName.value || "").trim();
-      if (!name) return;
-      state.groups.push({ id: "g" + Date.now() + Math.floor(Math.random() * 1000), name: name });
-      newName.value = ""; save(); render();
-    }
-    document.getElementById("bmAddGroup").onclick = addGroup;
-    newName.addEventListener("keydown", function (e) { if (e.key === "Enter") addGroup(); });
-
-    function open() { drawer.classList.add("open"); backdrop.classList.add("open"); render(); }
-    function close() { drawer.classList.remove("open"); backdrop.classList.remove("open"); }
-    document.getElementById("bmTab").onclick = open;
-    document.getElementById("bmClose").onclick = close;
-    backdrop.onclick = close;
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
-
-    document.getElementById("bmExport").onclick = function () {
-      try {
-        var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-        var a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "daily-brief-bookmarks.json";
-        a.click();
-        URL.revokeObjectURL(a.href);
-      } catch (e) {}
-    };
-    document.getElementById("bmImportBtn").onclick = function () {
-      document.getElementById("bmImportFile").click();
-    };
-    document.getElementById("bmImportFile").onchange = function (e) {
-      var file = e.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function (ev) {
-        try {
-          var imported = JSON.parse(ev.target.result);
-          if (imported && imported.items) {
-            for (var k in imported.items) { state.items[k] = imported.items[k]; }
-            if (imported.groups) {
-              imported.groups.forEach(function (g) {
-                if (!state.groups.some(function (x) { return x.id === g.id; })) state.groups.push(g);
-              });
-            }
-            save(); render(); syncButtons(); updateCount();
-          }
-        } catch (err) { alert("Invalid bookmark file"); }
-      };
-      reader.readAsText(file);
-      e.target.value = "";
-    };
-
-    document.querySelectorAll(".bm-btn").forEach(function (btn) {
-      var u = btn.getAttribute("data-url");
-      if (!u) return;
-      btn.addEventListener("click", function () {
-        if (state.items[u]) { delete state.items[u]; btn.classList.remove("on"); }
-        else {
-          state.items[u] = {
-            url: u, title: btn.getAttribute("data-title"), source: btn.getAttribute("data-source"),
-            label: btn.getAttribute("data-label"), gist: btn.getAttribute("data-gist"),
-            cat: btn.getAttribute("data-cat"), discuss: btn.getAttribute("data-discuss"),
-            group: UNSORTED, savedAt: Date.now()
-          };
-          btn.classList.add("on");
-        }
-        save(); updateCount();
-        if (drawer.classList.contains("open")) render();
-      });
-    });
-
-    syncButtons(); updateCount();
-  })();
-
-  (function () {
-    "use strict";
-    var VISIT_KEY = "db_visit_state";
-    var now = Date.now();
-    var state;
-    try { state = JSON.parse(localStorage.getItem(VISIT_KEY)) || {}; } catch (e) { state = {}; }
-    var lastVisit = state.lastVisit || 0;
-    var seen = state.seen || {};
-
-    var cards = document.querySelectorAll(".card[data-created]");
-    var newCount = 0;
-    cards.forEach(function (card) {
-      var created = parseInt(card.getAttribute("data-created"), 10) * 1000;
-      var url = card.querySelector("a.card-title");
-      var key = url ? url.href : created;
-      if (seen[key]) {
-        card.classList.add("seen");
-      } else if (created > lastVisit && lastVisit > 0) {
-        card.classList.add("new-item");
-        newCount++;
-      }
-      seen[key] = true;
-    });
-
-    var caughtUp = document.getElementById("caughtUp");
-    if (caughtUp && cards.length > 0 && newCount === 0 && lastVisit > 0) {
-      caughtUp.style.display = "block";
-    }
-
+    /* ---- Bookmarks ---- */
     try {
-      localStorage.setItem(VISIT_KEY, JSON.stringify({ lastVisit: now, seen: seen }));
-    } catch (e) {}
+      var BM_KEY = "db_bookmarks_v1", UNSORTED = "__unsorted__";
+      function bmLoad() {
+        try { var s = JSON.parse(localStorage.getItem(BM_KEY)); if (s && s.items) { s.groups = s.groups || []; return s; } } catch (e) { console.error("[daily-brief] bmLoad", e); }
+        return { groups: [], items: {} };
+      }
+      function bmSave() { try { localStorage.setItem(BM_KEY, JSON.stringify(bmState)); } catch (e) { console.error("[daily-brief] bmSave", e); } }
+      var bmState = bmLoad();
+
+      var body = document.getElementById("bmBody");
+      var countEl = document.getElementById("bmCount");
+      var drawer = document.getElementById("bmDrawer");
+      var backdrop = document.getElementById("bmBackdrop");
+      var newName = document.getElementById("bmNewName");
+
+      function count() { return Object.keys(bmState.items).length; }
+      function groupsAll() { return [{ id: UNSORTED, name: "Unsorted" }].concat(bmState.groups); }
+      function itemsIn(gid) {
+        return Object.keys(bmState.items).map(function (k) { return bmState.items[k]; })
+          .filter(function (it) { return (it.group || UNSORTED) === gid; })
+          .sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
+      }
+      function updateCount() { countEl.textContent = count(); }
+      function syncButtons() {
+        var btns = document.querySelectorAll(".bm-btn");
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].classList.toggle("on", !!bmState.items[btns[i].getAttribute("data-url")]);
+        }
+      }
+      function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+      function itemNode(it) {
+        var node = el("div", "bm-item");
+        var a = el("a", "t", it.title || it.url); a.href = it.url; a.target = "_blank"; a.rel = "noopener";
+        node.appendChild(a);
+        var row = el("div", "row");
+        row.appendChild(el("span", "src", it.label || it.source || ""));
+        var sel = el("select");
+        groupsAll().forEach(function (g) {
+          var o = el("option", null, g.name); o.value = g.id;
+          if ((it.group || UNSORTED) === g.id) o.selected = true;
+          sel.appendChild(o);
+        });
+        sel.onchange = function () { it.group = sel.value; bmSave(); render(); };
+        row.appendChild(sel);
+        var rm = el("button", "rm", "×"); rm.title = "Remove";
+        rm.onclick = function () { delete bmState.items[it.url]; bmSave(); render(); syncButtons(); updateCount(); };
+        row.appendChild(rm);
+        node.appendChild(row);
+        return node;
+      }
+
+      function render() {
+        body.innerHTML = "";
+        if (count() === 0) {
+          body.appendChild(el("div", "bm-empty", "No bookmarks yet. Tap the bookmark icon on any story to save it here."));
+          return;
+        }
+        groupsAll().forEach(function (g) {
+          var items = itemsIn(g.id);
+          if (g.id === UNSORTED && items.length === 0) return;
+          var wrap = el("div", "bm-group");
+          var h = el("div", "bm-group-h");
+          var name = el("span", "name"); name.textContent = g.name;
+          name.appendChild(el("span", "n", "  " + items.length));
+          h.appendChild(name);
+          if (g.id !== UNSORTED) {
+            var del = el("button", "bm-del-group", "delete");
+            del.onclick = function () {
+              bmState.groups = bmState.groups.filter(function (x) { return x.id !== g.id; });
+              Object.keys(bmState.items).forEach(function (k) { if (bmState.items[k].group === g.id) bmState.items[k].group = UNSORTED; });
+              bmSave(); render();
+            };
+            h.appendChild(del);
+          }
+          wrap.appendChild(h);
+          items.forEach(function (it) { wrap.appendChild(itemNode(it)); });
+          body.appendChild(wrap);
+        });
+      }
+
+      function addGroup() {
+        var name = (newName.value || "").trim();
+        if (!name) return;
+        bmState.groups.push({ id: "g" + Date.now() + Math.floor(Math.random() * 1000), name: name });
+        newName.value = ""; bmSave(); render();
+      }
+      document.getElementById("bmAddGroup").onclick = addGroup;
+      newName.addEventListener("keydown", function (e) { if (e.key === "Enter") addGroup(); });
+
+      function open() { drawer.classList.add("open"); backdrop.classList.add("open"); render(); }
+      function close() { drawer.classList.remove("open"); backdrop.classList.remove("open"); }
+      document.getElementById("bmTab").onclick = open;
+      document.getElementById("bmClose").onclick = close;
+      backdrop.onclick = close;
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+
+      document.getElementById("bmExport").onclick = function () {
+        try {
+          var blob = new Blob([JSON.stringify(bmState, null, 2)], { type: "application/json" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "daily-brief-bookmarks.json";
+          a.click();
+          URL.revokeObjectURL(a.href);
+        } catch (e) { console.error("[daily-brief] bookmark export", e); }
+      };
+      document.getElementById("bmImportBtn").onclick = function () {
+        document.getElementById("bmImportFile").click();
+      };
+      document.getElementById("bmImportFile").onchange = function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          try {
+            var imported = JSON.parse(ev.target.result);
+            if (imported && imported.items) {
+              for (var k in imported.items) { bmState.items[k] = imported.items[k]; }
+              if (imported.groups) {
+                imported.groups.forEach(function (g) {
+                  if (!bmState.groups.some(function (x) { return x.id === g.id; })) bmState.groups.push(g);
+                });
+              }
+              bmSave(); render(); syncButtons(); updateCount();
+            }
+          } catch (err) { alert("Invalid bookmark file"); }
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+      };
+
+      document.querySelectorAll(".bm-btn").forEach(function (btn) {
+        var u = btn.getAttribute("data-url");
+        if (!u) return;
+        btn.addEventListener("click", function () {
+          if (bmState.items[u]) { delete bmState.items[u]; btn.classList.remove("on"); }
+          else {
+            bmState.items[u] = {
+              url: u, title: btn.getAttribute("data-title"), source: btn.getAttribute("data-source"),
+              label: btn.getAttribute("data-label"), gist: btn.getAttribute("data-gist"),
+              cat: btn.getAttribute("data-cat"), discuss: btn.getAttribute("data-discuss"),
+              group: UNSORTED, savedAt: Date.now()
+            };
+            btn.classList.add("on");
+          }
+          bmSave(); updateCount();
+          if (drawer.classList.contains("open")) render();
+        });
+      });
+
+      syncButtons(); updateCount();
+    } catch (e) { console.error("[daily-brief] bookmarks init failed", e); }
+
+    /* ---- Visit state (seen/new tracking, per-tab new counts) ---- */
+    try {
+      var VISIT_KEY = "db_visit_state";
+      var now = Date.now();
+      var visitState;
+      try { visitState = JSON.parse(localStorage.getItem(VISIT_KEY)) || {}; } catch (e) { visitState = {}; console.error("[daily-brief] visit-state load", e); }
+      var lastVisit = visitState.lastVisit || 0;
+      var seen = visitState.seen || {};
+
+      /* Migrate legacy seen entries (boolean true -> current timestamp) and
+         prune entries older than 14 days. Legacy boolean true coerced to 1
+         would otherwise exceed the TTL threshold and wipe all read history. */
+      var SEEN_TTL = 14 * 24 * 60 * 60 * 1000;
+      Object.keys(seen).forEach(function (key) {
+        if (typeof seen[key] !== "number") {
+          seen[key] = now;
+        }
+        if (now - seen[key] > SEEN_TTL) {
+          delete seen[key];
+        }
+      });
+
+      var tabNewCounts = {};
+      var items = document.querySelectorAll("[data-brief-item][data-created]");
+      items.forEach(function (card) {
+        var created = parseInt(card.getAttribute("data-created"), 10) * 1000;
+        var url = card.querySelector("a.card-title");
+        var key = url ? url.href : created;
+        if (seen[key]) {
+          card.classList.add("seen");
+        } else if (created > lastVisit && lastVisit > 0) {
+          card.classList.add("new-item");
+          var panel = card.closest(".panel");
+          if (panel) {
+            var panelId = panel.id.replace("panel-", "");
+            tabNewCounts[panelId] = (tabNewCounts[panelId] || 0) + 1;
+          }
+        }
+        seen[key] = now;
+      });
+
+      document.querySelectorAll(".new-count[data-tab-key]").forEach(function (el) {
+        var key = el.getAttribute("data-tab-key");
+        var n = tabNewCounts[key] || 0;
+        if (n > 0) {
+          el.textContent = n + " new";
+        }
+      });
+
+      try {
+        localStorage.setItem(VISIT_KEY, JSON.stringify({ lastVisit: now, seen: seen }));
+      } catch (e) { console.error("[daily-brief] visit-state save", e); }
+    } catch (e) { console.error("[daily-brief] visit-state init failed", e); }
   })();
   </script>
 </body>
