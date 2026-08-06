@@ -289,191 +289,215 @@
   <script>
   (function () {
     "use strict";
-    var KEY = "db_bookmarks_v1", UNSORTED = "__unsorted__";
-    function load() {
-      try { var s = JSON.parse(localStorage.getItem(KEY)); if (s && s.items) { s.groups = s.groups || []; return s; } } catch (e) {}
-      return { groups: [], items: {} };
-    }
-    function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
-    var state = load();
 
-    var body = document.getElementById("bmBody");
-    var countEl = document.getElementById("bmCount");
-    var drawer = document.getElementById("bmDrawer");
-    var backdrop = document.getElementById("bmBackdrop");
-    var newName = document.getElementById("bmNewName");
-
-    function count() { return Object.keys(state.items).length; }
-    function groupsAll() { return [{ id: UNSORTED, name: "Unsorted" }].concat(state.groups); }
-    function itemsIn(gid) {
-      return Object.keys(state.items).map(function (k) { return state.items[k]; })
-        .filter(function (it) { return (it.group || UNSORTED) === gid; })
-        .sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
-    }
-    function updateCount() { countEl.textContent = count(); }
-    function syncButtons() {
-      var btns = document.querySelectorAll(".bm-btn");
-      for (var i = 0; i < btns.length; i++) {
-        btns[i].classList.toggle("on", !!state.items[btns[i].getAttribute("data-url")]);
-      }
-    }
-    function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-
-    function itemNode(it) {
-      var node = el("div", "bm-item");
-      var a = el("a", "t", it.title || it.url); a.href = it.url; a.target = "_blank"; a.rel = "noopener";
-      node.appendChild(a);
-      var row = el("div", "row");
-      row.appendChild(el("span", "src", it.label || it.source || ""));
-      var sel = el("select");
-      groupsAll().forEach(function (g) {
-        var o = el("option", null, g.name); o.value = g.id;
-        if ((it.group || UNSORTED) === g.id) o.selected = true;
-        sel.appendChild(o);
-      });
-      sel.onchange = function () { it.group = sel.value; save(); render(); };
-      row.appendChild(sel);
-      var rm = el("button", "rm", "×"); rm.title = "Remove";
-      rm.onclick = function () { delete state.items[it.url]; save(); render(); syncButtons(); updateCount(); };
-      row.appendChild(rm);
-      node.appendChild(row);
-      return node;
-    }
-
-    function render() {
-      body.innerHTML = "";
-      if (count() === 0) {
-        body.appendChild(el("div", "bm-empty", "No bookmarks yet. Tap the bookmark icon on any story to save it here."));
-        return;
-      }
-      groupsAll().forEach(function (g) {
-        var items = itemsIn(g.id);
-        if (g.id === UNSORTED && items.length === 0) return;
-        var wrap = el("div", "bm-group");
-        var h = el("div", "bm-group-h");
-        var name = el("span", "name"); name.textContent = g.name;
-        name.appendChild(el("span", "n", "  " + items.length));
-        h.appendChild(name);
-        if (g.id !== UNSORTED) {
-          var del = el("button", "bm-del-group", "delete");
-          del.onclick = function () {
-            state.groups = state.groups.filter(function (x) { return x.id !== g.id; });
-            Object.keys(state.items).forEach(function (k) { if (state.items[k].group === g.id) state.items[k].group = UNSORTED; });
-            save(); render();
-          };
-          h.appendChild(del);
-        }
-        wrap.appendChild(h);
-        items.forEach(function (it) { wrap.appendChild(itemNode(it)); });
-        body.appendChild(wrap);
-      });
-    }
-
-    function addGroup() {
-      var name = (newName.value || "").trim();
-      if (!name) return;
-      state.groups.push({ id: "g" + Date.now() + Math.floor(Math.random() * 1000), name: name });
-      newName.value = ""; save(); render();
-    }
-    document.getElementById("bmAddGroup").onclick = addGroup;
-    newName.addEventListener("keydown", function (e) { if (e.key === "Enter") addGroup(); });
-
-    function open() { drawer.classList.add("open"); backdrop.classList.add("open"); render(); }
-    function close() { drawer.classList.remove("open"); backdrop.classList.remove("open"); }
-    document.getElementById("bmTab").onclick = open;
-    document.getElementById("bmClose").onclick = close;
-    backdrop.onclick = close;
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
-
-    document.getElementById("bmExport").onclick = function () {
-      try {
-        var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-        var a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "daily-brief-bookmarks.json";
-        a.click();
-        URL.revokeObjectURL(a.href);
-      } catch (e) {}
-    };
-    document.getElementById("bmImportBtn").onclick = function () {
-      document.getElementById("bmImportFile").click();
-    };
-    document.getElementById("bmImportFile").onchange = function (e) {
-      var file = e.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function (ev) {
-        try {
-          var imported = JSON.parse(ev.target.result);
-          if (imported && imported.items) {
-            for (var k in imported.items) { state.items[k] = imported.items[k]; }
-            if (imported.groups) {
-              imported.groups.forEach(function (g) {
-                if (!state.groups.some(function (x) { return x.id === g.id; })) state.groups.push(g);
-              });
-            }
-            save(); render(); syncButtons(); updateCount();
-          }
-        } catch (err) { alert("Invalid bookmark file"); }
-      };
-      reader.readAsText(file);
-      e.target.value = "";
-    };
-
-    document.querySelectorAll(".bm-btn").forEach(function (btn) {
-      var u = btn.getAttribute("data-url");
-      if (!u) return;
-      btn.addEventListener("click", function () {
-        if (state.items[u]) { delete state.items[u]; btn.classList.remove("on"); }
-        else {
-          state.items[u] = {
-            url: u, title: btn.getAttribute("data-title"), source: btn.getAttribute("data-source"),
-            label: btn.getAttribute("data-label"), gist: btn.getAttribute("data-gist"),
-            cat: btn.getAttribute("data-cat"), discuss: btn.getAttribute("data-discuss"),
-            group: UNSORTED, savedAt: Date.now()
-          };
-          btn.classList.add("on");
-        }
-        save(); updateCount();
-        if (drawer.classList.contains("open")) render();
-      });
-    });
-
-    syncButtons(); updateCount();
-  })();
-
-  (function () {
-    "use strict";
-    var VISIT_KEY = "db_visit_state";
-    var now = Date.now();
-    var state;
-    try { state = JSON.parse(localStorage.getItem(VISIT_KEY)) || {}; } catch (e) { state = {}; }
-    var lastVisit = state.lastVisit || 0;
-    var seen = state.seen || {};
-
-    var cards = document.querySelectorAll(".card[data-created]");
-    var newCount = 0;
-    cards.forEach(function (card) {
-      var created = parseInt(card.getAttribute("data-created"), 10) * 1000;
-      var url = card.querySelector("a.card-title");
-      var key = url ? url.href : created;
-      if (seen[key]) {
-        card.classList.add("seen");
-      } else if (created > lastVisit && lastVisit > 0) {
-        card.classList.add("new-item");
-        newCount++;
-      }
-      seen[key] = true;
-    });
-
-    var caughtUp = document.getElementById("caughtUp");
-    if (caughtUp && cards.length > 0 && newCount === 0 && lastVisit > 0) {
-      caughtUp.style.display = "block";
-    }
-
+    /* ---- Bookmarks ---- */
     try {
-      localStorage.setItem(VISIT_KEY, JSON.stringify({ lastVisit: now, seen: seen }));
-    } catch (e) {}
+      var BM_KEY = "db_bookmarks_v1", UNSORTED = "__unsorted__";
+      function bmLoad() {
+        try { var s = JSON.parse(localStorage.getItem(BM_KEY)); if (s && s.items) { s.groups = s.groups || []; return s; } } catch (e) { console.error("[daily-brief] bmLoad", e); }
+        return { groups: [], items: {} };
+      }
+      function bmSave() { try { localStorage.setItem(BM_KEY, JSON.stringify(bmState)); } catch (e) { console.error("[daily-brief] bmSave", e); } }
+      var bmState = bmLoad();
+
+      var body = document.getElementById("bmBody");
+      var countEl = document.getElementById("bmCount");
+      var drawer = document.getElementById("bmDrawer");
+      var backdrop = document.getElementById("bmBackdrop");
+      var newName = document.getElementById("bmNewName");
+
+      function count() { return Object.keys(bmState.items).length; }
+      function groupsAll() { return [{ id: UNSORTED, name: "Unsorted" }].concat(bmState.groups); }
+      function itemsIn(gid) {
+        return Object.keys(bmState.items).map(function (k) { return bmState.items[k]; })
+          .filter(function (it) { return (it.group || UNSORTED) === gid; })
+          .sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
+      }
+      function updateCount() { countEl.textContent = count(); }
+      function syncButtons() {
+        var btns = document.querySelectorAll(".bm-btn");
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].classList.toggle("on", !!bmState.items[btns[i].getAttribute("data-url")]);
+        }
+      }
+      function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+      function itemNode(it) {
+        var node = el("div", "bm-item");
+        var a = el("a", "t", it.title || it.url); a.href = it.url; a.target = "_blank"; a.rel = "noopener";
+        node.appendChild(a);
+        var row = el("div", "row");
+        row.appendChild(el("span", "src", it.label || it.source || ""));
+        var sel = el("select");
+        groupsAll().forEach(function (g) {
+          var o = el("option", null, g.name); o.value = g.id;
+          if ((it.group || UNSORTED) === g.id) o.selected = true;
+          sel.appendChild(o);
+        });
+        sel.onchange = function () { it.group = sel.value; bmSave(); render(); };
+        row.appendChild(sel);
+        var rm = el("button", "rm", "×"); rm.title = "Remove";
+        rm.onclick = function () { delete bmState.items[it.url]; bmSave(); render(); syncButtons(); updateCount(); };
+        row.appendChild(rm);
+        node.appendChild(row);
+        return node;
+      }
+
+      function render() {
+        body.innerHTML = "";
+        if (count() === 0) {
+          body.appendChild(el("div", "bm-empty", "No bookmarks yet. Tap the bookmark icon on any story to save it here."));
+          return;
+        }
+        groupsAll().forEach(function (g) {
+          var items = itemsIn(g.id);
+          if (g.id === UNSORTED && items.length === 0) return;
+          var wrap = el("div", "bm-group");
+          var h = el("div", "bm-group-h");
+          var name = el("span", "name"); name.textContent = g.name;
+          name.appendChild(el("span", "n", "  " + items.length));
+          h.appendChild(name);
+          if (g.id !== UNSORTED) {
+            var del = el("button", "bm-del-group", "delete");
+            del.onclick = function () {
+              bmState.groups = bmState.groups.filter(function (x) { return x.id !== g.id; });
+              Object.keys(bmState.items).forEach(function (k) { if (bmState.items[k].group === g.id) bmState.items[k].group = UNSORTED; });
+              bmSave(); render();
+            };
+            h.appendChild(del);
+          }
+          wrap.appendChild(h);
+          items.forEach(function (it) { wrap.appendChild(itemNode(it)); });
+          body.appendChild(wrap);
+        });
+      }
+
+      function addGroup() {
+        var name = (newName.value || "").trim();
+        if (!name) return;
+        bmState.groups.push({ id: "g" + Date.now() + Math.floor(Math.random() * 1000), name: name });
+        newName.value = ""; bmSave(); render();
+      }
+      document.getElementById("bmAddGroup").onclick = addGroup;
+      newName.addEventListener("keydown", function (e) { if (e.key === "Enter") addGroup(); });
+
+      function open() { drawer.classList.add("open"); backdrop.classList.add("open"); render(); }
+      function close() { drawer.classList.remove("open"); backdrop.classList.remove("open"); }
+      document.getElementById("bmTab").onclick = open;
+      document.getElementById("bmClose").onclick = close;
+      backdrop.onclick = close;
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+
+      document.getElementById("bmExport").onclick = function () {
+        try {
+          var blob = new Blob([JSON.stringify(bmState, null, 2)], { type: "application/json" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "daily-brief-bookmarks.json";
+          a.click();
+          URL.revokeObjectURL(a.href);
+        } catch (e) { console.error("[daily-brief] bookmark export", e); }
+      };
+      document.getElementById("bmImportBtn").onclick = function () {
+        document.getElementById("bmImportFile").click();
+      };
+      document.getElementById("bmImportFile").onchange = function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          try {
+            var imported = JSON.parse(ev.target.result);
+            if (imported && imported.items) {
+              for (var k in imported.items) { bmState.items[k] = imported.items[k]; }
+              if (imported.groups) {
+                imported.groups.forEach(function (g) {
+                  if (!bmState.groups.some(function (x) { return x.id === g.id; })) bmState.groups.push(g);
+                });
+              }
+              bmSave(); render(); syncButtons(); updateCount();
+            }
+          } catch (err) { alert("Invalid bookmark file"); }
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+      };
+
+      document.querySelectorAll(".bm-btn").forEach(function (btn) {
+        var u = btn.getAttribute("data-url");
+        if (!u) return;
+        btn.addEventListener("click", function () {
+          if (bmState.items[u]) { delete bmState.items[u]; btn.classList.remove("on"); }
+          else {
+            bmState.items[u] = {
+              url: u, title: btn.getAttribute("data-title"), source: btn.getAttribute("data-source"),
+              label: btn.getAttribute("data-label"), gist: btn.getAttribute("data-gist"),
+              cat: btn.getAttribute("data-cat"), discuss: btn.getAttribute("data-discuss"),
+              group: UNSORTED, savedAt: Date.now()
+            };
+            btn.classList.add("on");
+          }
+          bmSave(); updateCount();
+          if (drawer.classList.contains("open")) render();
+        });
+      });
+
+      syncButtons(); updateCount();
+    } catch (e) { console.error("[daily-brief] bookmarks init failed", e); }
+
+    /* ---- Visit state (seen/new tracking, per-tab new counts) ---- */
+    try {
+      var VISIT_KEY = "db_visit_state";
+      var now = Date.now();
+      var visitState;
+      try { visitState = JSON.parse(localStorage.getItem(VISIT_KEY)) || {}; } catch (e) { visitState = {}; console.error("[daily-brief] visit-state load", e); }
+      var lastVisit = visitState.lastVisit || 0;
+      var seen = visitState.seen || {};
+
+      /* Migrate legacy seen entries (boolean true -> current timestamp) and
+         prune entries older than 14 days. Legacy boolean true coerced to 1
+         would otherwise exceed the TTL threshold and wipe all read history. */
+      var SEEN_TTL = 14 * 24 * 60 * 60 * 1000;
+      Object.keys(seen).forEach(function (key) {
+        if (typeof seen[key] !== "number") {
+          seen[key] = now;
+        }
+        if (now - seen[key] > SEEN_TTL) {
+          delete seen[key];
+        }
+      });
+
+      var tabNewCounts = {};
+      var items = document.querySelectorAll("[data-brief-item][data-created]");
+      items.forEach(function (card) {
+        var created = parseInt(card.getAttribute("data-created"), 10) * 1000;
+        var url = card.querySelector("a.card-title");
+        var key = url ? url.href : created;
+        if (seen[key]) {
+          card.classList.add("seen");
+        } else if (created > lastVisit && lastVisit > 0) {
+          card.classList.add("new-item");
+          var panel = card.closest(".panel");
+          if (panel) {
+            var panelId = panel.id.replace("panel-", "");
+            tabNewCounts[panelId] = (tabNewCounts[panelId] || 0) + 1;
+          }
+        }
+        seen[key] = now;
+      });
+
+      document.querySelectorAll(".new-count[data-tab-key]").forEach(function (el) {
+        var key = el.getAttribute("data-tab-key");
+        var n = tabNewCounts[key] || 0;
+        if (n > 0) {
+          el.textContent = n + " new";
+        }
+      });
+
+      try {
+        localStorage.setItem(VISIT_KEY, JSON.stringify({ lastVisit: now, seen: seen }));
+      } catch (e) { console.error("[daily-brief] visit-state save", e); }
+    } catch (e) { console.error("[daily-brief] visit-state init failed", e); }
   })();
   </script>
 </body>
