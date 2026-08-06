@@ -118,7 +118,7 @@
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tabc) 45%, transparent); }
   @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .card { position: relative; border: 1px solid var(--line); border-radius: 14px;
     padding: 20px 22px; background: var(--panel);
     display: flex; flex-direction: column; gap: 12px; transition: border-color .15s, transform .15s; }
@@ -144,10 +144,11 @@
   .card.row .kicker { flex-shrink: 0; min-width: 0; }
   .card.row .badge { font-size: 9.5px; padding: 4px 7px; }
   .card.row .kicker-r { gap: 4px; }
-  .card.row a.card-title { font: 700 15px/1.3 Georgia, serif; flex: 1; min-width: 0; }
-  .card.row .card-gist { font-size: 13px; flex: 0 1 auto; overflow: hidden;
-    white-space: nowrap; text-overflow: ellipsis; max-width: 40ch; margin: 0; }
-  .card.row .meta { font-size: 11.5px; white-space: nowrap; flex-shrink: 0; }
+  .card.row a.card-title { font: 700 15px/1.3 Georgia, serif; flex: 1 1 50%; min-width: 0;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .card.row .card-gist { font-size: 13px; flex: 1 1 30ch; min-width: 0; overflow: hidden;
+    white-space: nowrap; text-overflow: ellipsis; margin: 0; }
+  .card.row .meta { font-size: 11.5px; white-space: nowrap; flex-shrink: 0; min-width: 0; }
   .card.row:hover { transform: none; }
 
   footer { color: var(--muted); font: 12px/1.6 ui-monospace, monospace; margin-top: 56px;
@@ -234,7 +235,9 @@
     .grid { grid-template-columns: 1fr; }
     .card.lead { padding: 22px 22px; }
     .card.row { flex-direction: column; gap: 6px; }
-    .card.row .card-gist { white-space: normal; max-width: 100%; }
+    .card.row .card-gist { white-space: normal; }
+    .card.row .meta { white-space: normal; }
+    .card.row a.card-title { -webkit-line-clamp: unset; }
     .bm-tab { top: auto; bottom: 16px; right: 16px; writing-mode: horizontal-tb;
       padding: 10px 14px; }
     .bm-tab .bm-count { display: inline-block; margin-top: 0; margin-left: 6px; }
