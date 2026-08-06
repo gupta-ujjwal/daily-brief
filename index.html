@@ -10,7 +10,11 @@
     --bg: #100f0c; --bg2: #0b0a08; --panel: #18160f; --panel2: #1f1c13;
     --ink: #f0ebdd; --ink-dim: #cfc8b6; --muted: #8d8676; --line: #2a271e;
     --hn: #ff8c42; --reddit: #ff5470; --substack: #2dd4bf; --medium: #e0b341;
-    --brand: #c97a3e; --accent: var(--brand);
+    /* --brand is the identity hue (masthead, mark, favicon). It doubles as the
+       default --accent for links, so it has to carry text contrast: #c97a3e read
+       at 5.8:1 on --bg and made the whole page look dull next to the old HN
+       orange (8.3:1). #e0894a keeps the copper identity at 7.2:1. */
+    --brand: #e0894a; --accent: var(--brand);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -67,7 +71,10 @@
   .ai-tag { display: inline-block; font: 600 9.5px/1 ui-monospace, monospace; text-transform: uppercase;
     letter-spacing: .1em; color: var(--muted); background: var(--panel2); padding: 2px 6px;
     border-radius: 4px; margin-right: 7px; vertical-align: middle; }
-  .card.seen { opacity: .5; }
+  /* Dim the newness signal, not the content. At .5 a revisited edition read as
+     washed-out, which is most of the page for a returning reader. */
+  .card.seen { opacity: .82; }
+  .card.seen .card-title { color: var(--ink-dim); }
   .card.new-item { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
   .card.new-item::after { content: "NEW"; position: absolute; top: 10px; right: 10px;
     font: 700 9px/1 ui-monospace, monospace; letter-spacing: .1em; color: var(--accent);
@@ -129,8 +136,11 @@
   .card-gist { color: var(--ink-dim); font-size: 14px; line-height: 1.55; margin: 0; flex: 1; }
   .card .meta { margin-top: 2px; }
 
-  /* lead card — first (top-ranked) item in each section, full width */
-  .card.lead { grid-column: 1 / -1; padding: 28px 30px;
+  /* lead card — first (top-ranked) item in each section, full width.
+     The lead is a SIBLING of .grid, not a child, so it needs its own bottom
+     margin: without it the lead sat flush against the deck at 0px and the two
+     tiers read as one block. Tier rhythm is 26px throughout. */
+  .card.lead { grid-column: 1 / -1; padding: 28px 30px; margin-bottom: 26px;
     background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%), var(--panel); }
   .card.lead::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
     border-radius: 14px 0 0 14px; background: var(--accent); }
@@ -138,7 +148,7 @@
   .card.lead .card-gist { font-size: 16px; max-width: 70ch; }
 
   /* tail rows — compact headline-list density (items 5+) */
-  .tail-list { display: flex; flex-direction: column; gap: 2px; margin-top: 18px; }
+  .tail-list { display: flex; flex-direction: column; gap: 6px; margin-top: 26px; }
   /* Row wraps to two lines: [badge · title · meta] then the gist full-width beneath.
      Keeping the gist on the headline line squeezed it to ~13 visible chars against
      real titles — the triage signal has to survive, so it gets its own line. */
@@ -301,14 +311,14 @@
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.ai-supremacy.com/p/the-year-ai-science-and-the-physical-ai-went-mainstream-humanoid-robotics" data-title="The Year AI Science and the Physical AI Industry Came Alive" data-source="substack" data-label="AI Supremacy " data-gist="Gemini Robotics 2 and robot IPOs mark physical AI going mainstream, even as compute costs, negative cash flow and circular revenue raise doubts." data-cat="industry" data-discuss="https://www.ai-supremacy.com/p/the-year-ai-science-and-the-physical-ai-went-mainstream-humanoid-robotics"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://www.ai-supremacy.com/p/the-year-ai-science-and-the-physical-ai-went-mainstream-humanoid-robotics">The Year AI Science and the Physical AI Industry Came Alive</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>Gemini Robotics 2 and robot IPOs mark physical AI going mainstream, even as compute costs, negative cash flow and circular revenue raise doubts.</p>
-        <div class="meta">Michael Spencer · <span class="date">5h ago</span> · <a href="https://www.ai-supremacy.com/p/the-year-ai-science-and-the-physical-ai-went-mainstream-humanoid-robotics">read →</a></div>
+        <div class="meta">Michael Spencer · <span class="date">6h ago</span> · <a href="https://www.ai-supremacy.com/p/the-year-ai-science-and-the-physical-ai-went-mainstream-humanoid-robotics">read →</a></div>
       </article>
         <article class="card src-medium" data-created="1786027929" data-brief-item>
         <div class="kicker"><span class="badge">Medium · Towards AI</span>
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/i-think-metas-muse-code-could-be-the-biggest-threat-to-cursor-yet-here-s-why-b82347eb8300?source=rss----98111c9905da---4" data-title="I Think Meta’s Muse Code Could Be the Biggest Threat to Cursor Yet. Here’s Why." data-source="medium" data-label="Medium · Towards AI" data-gist="A longtime paying Cursor user argues Meta&#x27;s free Muse Code could undercut Cursor&#x27;s business model, reshaping the AI coding-tool market." data-cat="industry" data-discuss="https://pub.towardsai.net/i-think-metas-muse-code-could-be-the-biggest-threat-to-cursor-yet-here-s-why-b82347eb8300?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://pub.towardsai.net/i-think-metas-muse-code-could-be-the-biggest-threat-to-cursor-yet-here-s-why-b82347eb8300?source=rss----98111c9905da---4">I Think Meta’s Muse Code Could Be the Biggest Threat to Cursor Yet. Here’s Why.</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>A longtime paying Cursor user argues Meta&#x27;s free Muse Code could undercut Cursor&#x27;s business model, reshaping the AI coding-tool market.</p>
-        <div class="meta">inprogrammer · <span class="date">33m ago</span> · <a href="https://pub.towardsai.net/i-think-metas-muse-code-could-be-the-biggest-threat-to-cursor-yet-here-s-why-b82347eb8300?source=rss----98111c9905da---4">read →</a></div>
+        <div class="meta">inprogrammer · <span class="date">45m ago</span> · <a href="https://pub.towardsai.net/i-think-metas-muse-code-could-be-the-biggest-threat-to-cursor-yet-here-s-why-b82347eb8300?source=rss----98111c9905da---4">read →</a></div>
       </article>
         </div>
         <div class="tail-list">
@@ -317,7 +327,7 @@
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.latent.space/p/ainews-jeff-sanjay-oriol-and-quoc" data-title="[AINews] Jeff, Sanjay, Oriol, and Quoc depart DeepMind; Demis to Chair; Koray to SVP — what is going on at GDM???" data-source="substack" data-label="Latent.Space" data-gist="Newsletter roundup confirms the DeepMind exodus is real: Jeff, Sanjay, Oriol and Quoc all out as Demis moves to Chair — an era at Google AI closing." data-cat="industry" data-discuss="https://www.latent.space/p/ainews-jeff-sanjay-oriol-and-quoc"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://www.latent.space/p/ainews-jeff-sanjay-oriol-and-quoc">[AINews] Jeff, Sanjay, Oriol, and Quoc depart DeepMind; Demis to Chair; Koray to SVP — what is going on at GDM???</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>Newsletter roundup confirms the DeepMind exodus is real: Jeff, Sanjay, Oriol and Quoc all out as Demis moves to Chair — an era at Google AI closing.</p>
-        <div class="meta">Latent.Space · <span class="date">10h ago</span> · <a href="https://www.latent.space/p/ainews-jeff-sanjay-oriol-and-quoc">read →</a></div>
+        <div class="meta">Latent.Space · <span class="date">11h ago</span> · <a href="https://www.latent.space/p/ainews-jeff-sanjay-oriol-and-quoc">read →</a></div>
       </article>
         <article class="card row src-hackernews" data-created="1785950605" data-brief-item>
         <div class="kicker"><span class="badge">Hacker News</span>
@@ -351,14 +361,14 @@
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/the-origins-of-mean-squared-error-85e1427a66ec?source=rss----98111c9905da---4" data-title="The Origins of Mean Squared Error" data-source="medium" data-label="Medium · Towards AI" data-gist="Why mean squared error became regression&#x27;s default loss function, tracing the math logic behind squaring errors instead of just weighing them." data-cat="learning" data-discuss="https://pub.towardsai.net/the-origins-of-mean-squared-error-85e1427a66ec?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://pub.towardsai.net/the-origins-of-mean-squared-error-85e1427a66ec?source=rss----98111c9905da---4">The Origins of Mean Squared Error</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>Why mean squared error became regression&#x27;s default loss function, tracing the math logic behind squaring errors instead of just weighing them.</p>
-        <div class="meta">Wuiii · <span class="date">24m ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/the-origins-of-mean-squared-error-85e1427a66ec?source=rss----98111c9905da---4">read →</a></div>
+        <div class="meta">Wuiii · <span class="date">36m ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/the-origins-of-mean-squared-error-85e1427a66ec?source=rss----98111c9905da---4">read →</a></div>
       </article>
         <article class="card src-medium" data-created="1786028463" data-brief-item>
         <div class="kicker"><span class="badge">Medium · Towards AI</span>
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/lai-137-where-ai-engineering-is-going-in-2026-7cea20e7be6a?source=rss----98111c9905da---4" data-title="LAI #137: Where AI Engineering Is Going in 2026" data-source="medium" data-label="Medium · Towards AI" data-gist="Building a prototype is easy now; 2026&#x27;s real AI-engineering challenge is persistent memory, agent infrastructure, and observability." data-cat="learning" data-discuss="https://pub.towardsai.net/lai-137-where-ai-engineering-is-going-in-2026-7cea20e7be6a?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://pub.towardsai.net/lai-137-where-ai-engineering-is-going-in-2026-7cea20e7be6a?source=rss----98111c9905da---4">LAI #137: Where AI Engineering Is Going in 2026</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>Building a prototype is easy now; 2026&#x27;s real AI-engineering challenge is persistent memory, agent infrastructure, and observability.</p>
-        <div class="meta">Towards AI Editorial Team · <span class="date">24m ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/lai-137-where-ai-engineering-is-going-in-2026-7cea20e7be6a?source=rss----98111c9905da---4">read →</a></div>
+        <div class="meta">Towards AI Editorial Team · <span class="date">36m ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/lai-137-where-ai-engineering-is-going-in-2026-7cea20e7be6a?source=rss----98111c9905da---4">read →</a></div>
       </article>
         </div>
         <div class="tail-list">
@@ -367,7 +377,7 @@
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://blog.fogus.me/llm/born-against.html" data-title="Born Against, or why hobby programming communities are against LLM usage" data-source="hackernews" data-label="Hacker News" data-gist="Hobby coders resist LLM-assisted programming because the point was never output-it&#x27;s the skill and joy of doing the work yourself, not shipping fast." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49187061"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://blog.fogus.me/llm/born-against.html">Born Against, or why hobby programming communities are against LLM usage</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>Hobby coders resist LLM-assisted programming because the point was never output-it&#x27;s the skill and joy of doing the work yourself, not shipping fast.</p>
-        <div class="meta">▲ 342 · 382 comments · <span class="date">20h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49187061">discuss →</a></div>
+        <div class="meta">▲ 342 · 382 comments · <span class="date">21h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49187061">discuss →</a></div>
       </article>
         <article class="card row src-reddit" data-created="1786002397" data-brief-item>
         <div class="kicker"><span class="badge">r/fintechdev</span>
@@ -381,7 +391,7 @@
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://sdcourse.substack.com/p/day-176-build-executive-dashboards" data-title="Day 176: Build Executive Dashboards for Business Metrics" data-source="substack" data-label="Hands On System Design - Distributed Systems Implementation " data-gist="Day 176 of a system-design series builds executive dashboards, turning raw log-processing pipelines into boardroom-ready business analytics." data-cat="learning" data-discuss="https://sdcourse.substack.com/p/day-176-build-executive-dashboards"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://sdcourse.substack.com/p/day-176-build-executive-dashboards">Day 176: Build Executive Dashboards for Business Metrics</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>Day 176 of a system-design series builds executive dashboards, turning raw log-processing pipelines into boardroom-ready business analytics.</p>
-        <div class="meta">System Design Course · <span class="date">6h ago</span> · <a href="https://sdcourse.substack.com/p/day-176-build-executive-dashboards">read →</a></div>
+        <div class="meta">System Design Course · <span class="date">7h ago</span> · <a href="https://sdcourse.substack.com/p/day-176-build-executive-dashboards">read →</a></div>
       </article>
         <article class="card row src-hackernews" data-created="1786015493" data-brief-item>
         <div class="kicker"><span class="badge">Hacker News</span>
@@ -395,14 +405,14 @@
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://pub.towardsai.net/chatgpt-pro-downgraded-to-mini-model-2026-troubleshooting-recovery-guide-21099f98ae68?source=rss----98111c9905da---4" data-title="ChatGPT Pro Downgraded to Mini Model? 2026 Troubleshooting &amp; Recovery Guide" data-source="medium" data-label="Medium · Towards AI" data-gist="A troubleshooting guide for Pro subscribers whose ChatGPT quietly downgrades to the mini model despite active billing, with recovery steps." data-cat="learning" data-discuss="https://pub.towardsai.net/chatgpt-pro-downgraded-to-mini-model-2026-troubleshooting-recovery-guide-21099f98ae68?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://pub.towardsai.net/chatgpt-pro-downgraded-to-mini-model-2026-troubleshooting-recovery-guide-21099f98ae68?source=rss----98111c9905da---4">ChatGPT Pro Downgraded to Mini Model? 2026 Troubleshooting &amp; Recovery Guide</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>A troubleshooting guide for Pro subscribers whose ChatGPT quietly downgrades to the mini model despite active billing, with recovery steps.</p>
-        <div class="meta">Web Researcher · <span class="date">36m ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/chatgpt-pro-downgraded-to-mini-model-2026-troubleshooting-recovery-guide-21099f98ae68?source=rss----98111c9905da---4">read →</a></div>
+        <div class="meta">Web Researcher · <span class="date">48m ago</span> · <span class="rtime">1 min read</span> · <a href="https://pub.towardsai.net/chatgpt-pro-downgraded-to-mini-model-2026-troubleshooting-recovery-guide-21099f98ae68?source=rss----98111c9905da---4">read →</a></div>
       </article>
         <article class="card row src-reddit" data-created="1785997876" data-brief-item>
         <div class="kicker"><span class="badge">r/python</span>
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/Python/comments/1vh295u/2026_python_type_system_and_tooling_survey/" data-title="2026 Python Type System and Tooling Survey" data-source="reddit" data-label="r/python" data-gist="The 2026 Python survey digs into how far the community has pushed type hints and tooling adoption, tracking where static typing heads next." data-cat="learning" data-discuss="https://www.reddit.com/r/Python/comments/1vh295u/2026_python_type_system_and_tooling_survey/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://www.reddit.com/r/Python/comments/1vh295u/2026_python_type_system_and_tooling_survey/">2026 Python Type System and Tooling Survey</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>The 2026 Python survey digs into how far the community has pushed type hints and tooling adoption, tracking where static typing heads next.</p>
-        <div class="meta"><span class="date">8h ago</span> · <a href="https://www.reddit.com/r/Python/comments/1vh295u/2026_python_type_system_and_tooling_survey/">open →</a></div>
+        <div class="meta"><span class="date">9h ago</span> · <a href="https://www.reddit.com/r/Python/comments/1vh295u/2026_python_type_system_and_tooling_survey/">open →</a></div>
       </article>
         </div>
         <div class="finish-line">End of <em>Deep Dives</em> &middot; 10 stories</div>
@@ -486,7 +496,7 @@
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://randsinrepose.com/archives/blade-runner-title-cards/" data-title="The title cards in Blade Runner are amazing" data-source="hackernews" data-label="Hacker News" data-gist="A deep dive into Blade Runner&#x27;s opening titles splits opinion — some call the off-center typography a masterstroke, others just see rough early design." data-cat="personal" data-discuss="https://news.ycombinator.com/item?id=49189287"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://randsinrepose.com/archives/blade-runner-title-cards/">The title cards in Blade Runner are amazing</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>A deep dive into Blade Runner&#x27;s opening titles splits opinion — some call the off-center typography a masterstroke, others just see rough early design.</p>
-        <div class="meta">▲ 353 · 167 comments · <span class="date">17h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49189287">discuss →</a></div>
+        <div class="meta">▲ 353 · 167 comments · <span class="date">18h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49189287">discuss →</a></div>
       </article>
         </div>
         <div class="tail-list">
@@ -502,7 +512,7 @@
           <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/NoStupidQuestions/comments/1vh3kr7/for_straight_women_when_youre_having_sex_do_some/" data-title="For straight women, When you&#x27;re having sex, do some penises feel good while others don&#x27;t?" data-source="reddit" data-label="r/nostupidquestions" data-gist="A candid, non-tech AskReddit-style thread on sexual pleasure and anatomy — pure personal-interest discussion, no tech angle." data-cat="personal" data-discuss="https://www.reddit.com/r/NoStupidQuestions/comments/1vh3kr7/for_straight_women_when_youre_having_sex_do_some/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
         <a class="card-title" href="https://www.reddit.com/r/NoStupidQuestions/comments/1vh3kr7/for_straight_women_when_youre_having_sex_do_some/">For straight women, When you&#x27;re having sex, do some penises feel good while others don&#x27;t?</a>
         <p class="card-gist"><span class="ai-tag">AI gist</span>A candid, non-tech AskReddit-style thread on sexual pleasure and anatomy — pure personal-interest discussion, no tech angle.</p>
-        <div class="meta"><span class="date">7h ago</span> · <a href="https://www.reddit.com/r/NoStupidQuestions/comments/1vh3kr7/for_straight_women_when_youre_having_sex_do_some/">open →</a></div>
+        <div class="meta"><span class="date">8h ago</span> · <a href="https://www.reddit.com/r/NoStupidQuestions/comments/1vh3kr7/for_straight_women_when_youre_having_sex_do_some/">open →</a></div>
       </article>
         <article class="card row src-reddit" data-created="1785996221" data-brief-item>
         <div class="kicker"><span class="badge">r/indianfitness</span>
