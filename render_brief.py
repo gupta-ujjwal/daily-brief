@@ -160,33 +160,11 @@ def reading_time(it):
     return f"{mins} min read"
 
 
-def rank_reason(it):
-    """A one-line 'why you're seeing this' string replacing the mystery meter."""
-    s = it.get("source")
-    parts = []
-    if s == "hackernews":
-        pts = it.get("points", 0)
-        cmts = it.get("num_comments", 0)
-        if pts:
-            parts.append(f"{pts} pts on HN")
-        if cmts:
-            parts.append(f"{cmts} comments")
-    elif s == "reddit":
-        sub = it.get("source_label", "")
-        parts.append(f"from {sub}" if sub else "from Reddit")
-    else:
-        parts.append(f"from {it.get('source_label', s or 'a feed')}")
-    if it.get("also_on"):
-        also = ", ".join(sorted(set(it["also_on"])))
-        parts.append(f"also on {also}")
-    return " · ".join(parts) if parts else ""
-
-
 def meta(it):
     s = it.get("source")
     parts = []
     if s == "hackernews":
-        parts.append(f"{it.get('points', 0)} pts · {it.get('num_comments', 0)} comments")
+        parts.append(f"▲ {it.get('points', 0)} · {it.get('num_comments', 0)} comments")
         link = "discuss →"
     elif s == "reddit":
         if it.get("num_comments"):
@@ -216,15 +194,12 @@ def card_block(it, lead=False):
     gist = f'<p class="card-gist">{ai_label}{esc(g)}</p>' if g else ""
     cls = "card lead" if lead else "card"
     right = '<span class="lead-tag">Top</span>' if lead else ""
-    reason = rank_reason(it)
-    reason_html = f'<div class="rank-reason">{esc(reason)}</div>' if reason else ""
-    return f'''<article class="{cls} src-{it['source']}" data-created="{it.get('created_at', 0)}">
+    return f'''<article class="{cls} src-{it['source']}" data-created="{it.get('created_at', 0)}" data-brief-item>
         <div class="kicker"><span class="badge">{esc(it['source_label'])}</span>
           <span class="kicker-r">{right}{bookmark_btn(it)}</span></div>
         <a class="card-title" href="{esc(it['url'])}">{esc(it['title'])}</a>
         {gist}
         <div class="meta">{meta(it)}</div>
-        {reason_html}
       </article>'''
 
 
