@@ -1,19 +1,21 @@
 # daily-brief
 
-A daily tech read that blends **Hacker News, Reddit, and Substack**, ranked across
-platforms and split across three clickable tabs — **The Wire** (industry),
-**Deep Dives** (learning) and **Worth a Try** (products) — as a single-file HTML
-magazine with a one-line gist per item.
+A daily tech read that blends **Hacker News, Reddit, Substack and Medium**,
+ranked across platforms and split across four clickable tabs — **The Wire**
+(industry), **Deep Dives** (learning), **Worth a Try** (products) and **Off the
+Clock** (personal) — as a single-file HTML magazine with a one-line AI gist per
+item.
 
 ## How it works
 
 ```
 fetch_sources.py  ──►  data.json  ──►  [Claude gists+tags]  ──►  render_brief.py  ──►  briefs/<date>.html
-  (HN API, Reddit       (one ranked     (gist + category per      (groups into 3        (self-contained,
-   RSS, Substack RSS)     feed)           item, via the skill)      three CSS tabs)       magazine layout)
+  (HN API, Reddit       (one ranked     (gist + category per      (groups into 4        (self-contained,
+   RSS, Substack RSS,     feed)           item, via the skill)      CSS tabs)             magazine layout)
+   Medium RSS)
 ```
 
-- **`fetch_sources.py`** — pulls from three platforms, normalizes each one's
+- **`fetch_sources.py`** — pulls from four platforms, normalizes each one's
   signals onto a common 0–1 scale, and merges everything into a **single ranked
   feed**. Sources fail independently, so a blocked or quiet source just
   contributes fewer items.
@@ -24,10 +26,12 @@ fetch_sources.py  ──►  data.json  ──►  [Claude gists+tags]  ──�
     IP-blocked). Ranked by feed position; no vote/comment counts.
   - **Substack** — a curated list of newsletters via RSS, over a wider window
     (newsletters publish weekly, not daily).
+  - **Medium** — curated follows (publications, authors, tags) via RSS, over a
+    wider window.
 - **`sources.json`** — all tuning: subreddits, Substack feeds, ranking weights,
   per-source `keep`, window. Edit this to make the brief yours.
 - **`render_brief.py`** — deterministic renderer. Reads `data.json` (with a `gist`
-  and `category` per item), splits items across the three tabs (pure-CSS, no JS),
+  and `category` per item), splits items across the four tabs (pure-CSS, no JS),
   and emits the magazine HTML, so layout never depends on the model hand-writing markup.
 - **`.claude/skills/daily-brief/`** — the skill Claude runs: fetch → gist →
   render → save to `briefs/`.
@@ -39,13 +43,29 @@ Points aren't comparable across platforms, so each source is normalized
 independently: a blend of **feed position** (percentile) and **engagement**
 (log-scaled points + comments), times a per-source weight. The results are merged,
 deduped by URL, and ranked into one feed. Claude then tags each item with a
-**category** — `industry` / `learning` / `products` — and the renderer lays them
-out under three clickable tabs (**The Wire**, **Deep Dives**, **Worth a Try**),
-ranked within each (top item as a full-width lead). Tune the weights in
-`sources.json → ranking`; rename tabs in `render_brief.py → CATEGORIES`.
+**category** — `industry` / `learning` / `products` / `personal` — and the renderer
+lays them out under four clickable tabs (**The Wire**, **Deep Dives**, **Worth a
+Try**, **Off the Clock**), ranked within each (top item as a full-width lead).
+Tune the weights in `sources.json → ranking`; rename tabs in
+`render_brief.py → CATEGORIES`.
 
 Recurring non-article Substack posts (e.g. "Open Thread") are filtered via
 `substack.skip_patterns` so they don't headline a section.
+
+## Features
+
+- **One-line AI gist** per item — what the thread is arguing about, not a
+  restatement of the title. Labelled with a small ✦ AI-gist tag.
+- **Read-state tracking** — cards you've already seen dim to 50% opacity; new
+  items since your last visit get a NEW badge. State persists in localStorage
+  and is pruned after 14 days.
+- **Bookmarks** — save any item to a slide-out drawer, organise into custom
+  groups, export/import as JSON. All client-side, no backend.
+- **Provenance footer** — shows which tier served each personal source (home
+  feed vs. curated fallback), so a stale cookie is visible at a glance.
+- **Per-tab finish line** — each tab ends with an unconditional "End of Deep
+  Dives · 14 stories" line so the reading ritual has closure.
+- **Responsive** — single-column on mobile, two-column grid on desktop.
 
 ## Customize your sources
 
