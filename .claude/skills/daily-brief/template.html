@@ -4,12 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Daily Brief · {{DATE}}</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2C9 6 7 9 7 13a5 5 0 0 0 10 0c0-2-1-4-2-5-1 2-2 3-3 3 0-3 1-6 0-9z' fill='%23c97a3e'/></svg>">
 <style>
   :root {
     --bg: #100f0c; --bg2: #0b0a08; --panel: #18160f; --panel2: #1f1c13;
     --ink: #f0ebdd; --ink-dim: #cfc8b6; --muted: #8d8676; --line: #2a271e;
     --hn: #ff8c42; --reddit: #ff5470; --substack: #2dd4bf; --medium: #e0b341;
-    --accent: var(--hn);
+    --brand: #c97a3e; --accent: var(--brand);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -18,7 +19,7 @@
     font: 16px/1.65 -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     background-image:
-      radial-gradient(900px 500px at 85% -10%, rgba(255,140,66,.10), transparent 60%),
+      radial-gradient(900px 500px at 85% -10%, rgba(201,122,62,.10), transparent 60%),
       radial-gradient(700px 500px at 5% 0%, rgba(45,212,191,.06), transparent 55%);
     background-attachment: fixed;
   }
@@ -66,17 +67,16 @@
   .ai-tag { display: inline-block; font: 600 9.5px/1 ui-monospace, monospace; text-transform: uppercase;
     letter-spacing: .1em; color: var(--muted); background: var(--panel2); padding: 2px 6px;
     border-radius: 4px; margin-right: 7px; vertical-align: middle; }
-  .rank-reason { color: var(--muted); font: 500 11.5px/1.4 ui-monospace, monospace;
-    margin-top: 2px; }
   .card.seen { opacity: .5; }
   .card.new-item { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
   .card.new-item::after { content: "NEW"; position: absolute; top: 10px; right: 10px;
     font: 700 9px/1 ui-monospace, monospace; letter-spacing: .1em; color: var(--accent);
     background: color-mix(in srgb, var(--accent) 15%, transparent); padding: 3px 6px;
     border-radius: 4px; }
-  .caught-up { text-align: center; padding: 40px 20px; color: var(--muted);
-    font: 600 14px/1.5 ui-monospace, monospace; }
-  .caught-up em { color: var(--accent); font-style: normal; }
+  .finish-line { text-align: center; padding: 28px 20px 8px; color: var(--muted);
+    font: 600 13px/1.5 ui-monospace, monospace; border-top: 1px solid var(--line);
+    margin-top: 24px; }
+  .finish-line em { color: var(--brand); font-style: normal; }
 
   /* ---- Tabs (pure CSS: hidden radios + labels, no JS) ---- */
   .tabs { margin-top: 30px; }
@@ -91,6 +91,10 @@
     background: var(--tabc, var(--muted)); }
   .tab .count { font: 700 11px/1 ui-monospace, monospace; color: var(--muted);
     background: var(--panel2); padding: 3px 7px; border-radius: 999px; }
+  .tab .new-count { font: 700 10px/1 ui-monospace, monospace; color: var(--brand);
+    background: color-mix(in srgb, var(--brand) 15%, transparent); padding: 3px 7px;
+    border-radius: 999px; }
+  .tab .new-count:empty { display: none; }
   .tab:hover { color: var(--ink-dim); }
   .tab-industry { --tabc: #e2703a; }
   .tab-learning { --tabc: #7c9eff; }
@@ -130,8 +134,21 @@
     background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%), var(--panel); }
   .card.lead::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
     border-radius: 14px 0 0 14px; background: var(--accent); }
-  .card.lead a.card-title { font: 800 clamp(22px, 3vw, 31px)/1.14 Georgia, serif; letter-spacing: -.02em; }
+  .card.lead a.card-title { font: 800 clamp(28px, 4vw, 42px)/1.14 Georgia, serif; letter-spacing: -.02em; }
   .card.lead .card-gist { font-size: 16px; max-width: 70ch; }
+
+  /* tail rows — compact headline-list density (items 5+) */
+  .tail-list { display: flex; flex-direction: column; gap: 2px; margin-top: 18px; }
+  .card.row { flex-direction: row; align-items: flex-start; gap: 14px; padding: 12px 16px;
+    border-radius: 10px; }
+  .card.row .kicker { flex-shrink: 0; min-width: 0; }
+  .card.row .badge { font-size: 9.5px; padding: 4px 7px; }
+  .card.row .kicker-r { gap: 4px; }
+  .card.row a.card-title { font: 700 15px/1.3 Georgia, serif; flex: 1; min-width: 0; }
+  .card.row .card-gist { font-size: 13px; flex: 0 1 auto; overflow: hidden;
+    white-space: nowrap; text-overflow: ellipsis; max-width: 40ch; margin: 0; }
+  .card.row .meta { font-size: 11.5px; white-space: nowrap; flex-shrink: 0; }
+  .card.row:hover { transform: none; }
 
   footer { color: var(--muted); font: 12px/1.6 ui-monospace, monospace; margin-top: 56px;
     padding-top: 22px; border-top: 1px solid var(--line); text-align: center; }
@@ -216,6 +233,8 @@
     .wrap { padding: 28px 18px 72px; }
     .grid { grid-template-columns: 1fr; }
     .card.lead { padding: 22px 22px; }
+    .card.row { flex-direction: column; gap: 6px; }
+    .card.row .card-gist { white-space: normal; max-width: 100%; }
     .bm-tab { top: auto; bottom: 16px; right: 16px; writing-mode: horizontal-tb;
       padding: 10px 14px; }
     .bm-tab .bm-count { display: inline-block; margin-top: 0; margin-left: 6px; }
@@ -224,7 +243,7 @@
 </head>
 <body>
   <div class="wrap">
-    <header class="masthead src-hackernews">
+    <header class="masthead">
       <div class="eyebrow">
         <span class="dot"></span> Daily Brief
         <span class="sep">/</span> {{DATE}}
@@ -238,10 +257,6 @@
     </header>
 
     {{SECTIONS}}
-
-    <div class="caught-up" id="caughtUp" style="display:none">
-      You're <em>caught up</em> for today. Come back tomorrow.
-    </div>
 
     <footer>
       {{PROVENANCE}}
