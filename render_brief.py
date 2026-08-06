@@ -3,10 +3,10 @@
 
 The model's only job is to add a one-line "gist" and a "category" to each item in
 data.json (see the daily-brief skill). This script does the rest deterministically:
-groups items into the three category sections, renders a lead card + card grid per
-section (ranked within), builds source badges and score meters, and fills
-template.html. Keeping layout in code (not hand-built each run) makes scheduled
-runs reliable.
+groups items into four category sections, renders a 3-tier editorial layout per
+section (lead card, secondary card grid, compact tail rows), builds source badges
+and meta lines, and fills template.html. Keeping layout in code (not hand-built
+each run) makes scheduled runs reliable.
 
     python3 render_brief.py --data data.json --date "25 June 2026" \
         --out briefs/2026-06-25.html
@@ -220,6 +220,8 @@ def row_block(it):
 
 def panel_block(key, name, intro, items):
     n = len(items)
+    if n == 0:
+        return ""
     lead_html = card_block(items[0], lead=True)
     secondary = items[1:4]
     tail = items[4:]
@@ -230,7 +232,8 @@ def panel_block(key, name, intro, items):
     if tail:
         tail_rows = "\n        ".join(row_block(it) for it in tail)
         parts.append(f'<div class="tail-list">\n        {tail_rows}\n        </div>')
-    finish = f'<div class="finish-line">End of {esc(name)} &middot; {n} stories</div>'
+    noun = "story" if n == 1 else "stories"
+    finish = f'<div class="finish-line">End of <em>{esc(name)}</em> &middot; {n} {noun}</div>'
     parts.append(finish)
     inner = "\n        ".join(parts)
     return f'''<section id="panel-{key}" class="panel">
