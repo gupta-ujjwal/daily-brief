@@ -31,8 +31,11 @@ fetch_sources.py  ──►  data.json  ──►  [Claude gists+tags]  ──�
 - **`sources.json`** — all tuning: subreddits, Substack feeds, ranking weights,
   per-source `keep`, window. Edit this to make the brief yours.
 - **`render_brief.py`** — deterministic renderer. Reads `data.json` (with a `gist`
-  and `category` per item), splits items across the four tabs (pure-CSS, no JS),
-  and emits the magazine HTML, so layout never depends on the model hand-writing markup.
+  and `category` per item), splits items across four CSS-only tabs (The Wire opens
+  first by editorial priority, not volume), and emits a single self-contained HTML
+  file with a sticky masthead, labelled action rows, a Show budget control,
+  multi-select source filter, and a per-tab completion block. Layout never depends
+  on the model hand-writing markup.
 - **`.claude/skills/daily-brief/`** — the skill Claude runs: fetch → gist →
   render → save to `briefs/`.
 - **`briefs/`** — dated output, one HTML file per day.
@@ -55,17 +58,38 @@ Recurring non-article Substack posts (e.g. "Open Thread") are filtered via
 ## Features
 
 - **One-line AI gist** per item — what the thread is arguing about, not a
-  restatement of the title. Labelled with a small ✦ AI-gist tag.
-- **Read-state tracking** — cards you've already seen dim to 50% opacity; new
-  items since your last visit get a NEW badge. State persists in localStorage
-  and is pruned after 14 days.
-- **Bookmarks** — save any item to a slide-out drawer, organise into custom
+  restatement of the title. Stated once as a page note; each gist carries a
+  small ✦ glyph for per-item provenance.
+- **Labelled action rows** — every card has Read / Discuss / Save buttons (40px+
+  targets, AA-contrast). Save flips to a filled "Saved" state with a count in
+  the masthead.
+- **Show budget** — a `Top 3 · Top 8 · Everything` control trims each section to
+  the top stories by rank. An honest `≈ N min` readout follows the budget, and a
+  "Showing the top N of M" line with a Show everything escape hatch appears when
+  trimmed.
+- **Multi-select source filter** — toggle HN, Reddit, Substack and/or Medium
+  (compose any combination). Non-matching stories are hidden (not dimmed) and
+  removed from the keyboard tab order. Session-scoped persistence.
+- **Read-state tracking** — seen stories get a "· read" marker on the source
+  kicker; new items since your last visit get a "· NEW" marker and a count in
+  the masthead. State persists in localStorage and is pruned after 14 days.
+- **Saved drawer** — save any item to a slide-out drawer, organise into custom
   groups, export/import as JSON. All client-side, no backend.
+- **Sticky masthead** — logo, tabs and Saved count stay reachable while scrolling.
+  Tabs are CSS-only (radio-driven) and work without JavaScript.
+- **Designed completion block** — each tab ends with "You're caught up." showing
+  the story count and saved count, with links to review saved items and earlier
+  editions. The payoff of a finite product.
 - **Provenance footer** — shows which tier served each personal source (home
   feed vs. curated fallback), so a stale cookie is visible at a glance.
-- **Per-tab finish line** — each tab ends with an unconditional "End of Deep
-  Dives · 14 stories" line so the reading ritual has closure.
-- **Responsive** — single-column on mobile, two-column grid on desktop.
+- **Full-bleed sheet** — white content area runs edge-to-edge, closing the black
+  void. A black footer band closes the composition.
+- **Accessible** — `:focus-visible` rings on every interactive element (including
+  the tab labels whose radios are visually hidden). All text and actions meet
+  WCAG AA contrast (lowest ratio 4.5:1). Degrades gracefully without JavaScript.
+- **Responsive** — single-column on mobile, three-column grid on desktop. Hero
+  compresses to a one-line stat glance on phones to keep the first headline
+  above the fold.
 
 ## Customize your sources
 
