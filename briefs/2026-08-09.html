@@ -4,552 +4,720 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Daily Brief · 9 August 2026</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2C9 6 7 9 7 13a5 5 0 0 0 10 0c0-2-1-4-2-5-1 2-2 3-3 3 0-3 1-6 0-9z' fill='%23c97a3e'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect x='4' y='4' width='16' height='16' fill='none' stroke='%23E85A4F' stroke-width='2.5'/><circle cx='12' cy='12' r='3.5' fill='%23E85A4F'/></svg>">
 <style>
+  /* Switchboard v2 — sticky masthead, compact hero + glance stats, "Show" budget,
+     labelled action rows, full-bleed sheet. Two accent tokens: the bright coral
+     only on black (5.7:1), a darker coral on white (4.6:1) so every action passes AA. */
   :root {
-    --bg: #100f0c; --bg2: #0b0a08; --panel: #18160f; --panel2: #1f1c13;
-    --ink: #f0ebdd; --ink-dim: #cfc8b6; --muted: #8d8676; --line: #2a271e;
-    --hn: #ff8c42; --reddit: #ff5470; --substack: #2dd4bf; --medium: #e0b341;
-    /* --brand is the identity hue (masthead, mark, favicon). It doubles as the
-       default --accent for links, so it has to carry text contrast: #c97a3e read
-       at 5.8:1 on --bg and made the whole page look dull next to the old HN
-       orange (8.3:1). #e0894a keeps the copper identity at 7.2:1. */
-    --brand: #e0894a; --accent: var(--brand);
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px; --s8: 64px;
+    --canvas: #0A0A0A; --hero-ink: #F5F5F5; --hero-gray: #A6A6A6; --hero-dim: #8A8A8A;
+    --sheet: #FFFFFF; --ink: #111111; --ink-soft: #3D3D3D; --gray: #6B6B6B;
+    --line: #E4E4E4; --hairline: #EDEDED;
+    --panel-dark: #171717; --panel-dark2: #202020;
+    --accent: #E85A4F;            /* on black only */
+    --accent-ink: #C8412F;        /* on white — 4.6:1 */
+    --accent-deep: #B23929;       /* on the tinted --accent-soft ground — 5.25:1 */
+    --accent-soft: rgba(200,65,47,.09);
+    --font-body: "Inter", -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    --topbar-h: 56px;
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; }
   html { scroll-behavior: smooth; }
-  body {
-    margin: 0; background: var(--bg); color: var(--ink);
-    font: 16px/1.65 -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    background-image:
-      radial-gradient(900px 500px at 85% -10%, rgba(201,122,62,.10), transparent 60%),
-      radial-gradient(700px 500px at 5% 0%, rgba(45,212,191,.06), transparent 55%);
-    background-attachment: fixed;
-  }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 28px 96px; }
+  body { background: var(--canvas); color: var(--ink); font: 15.5px/1.55 var(--font-body);
+    -webkit-font-smoothing: antialiased; }
+  .in { max-width: 1180px; margin: 0 auto; padding: 0 var(--s5); }
 
-  /* ---- Masthead ---- */
-  .masthead { border-bottom: 2px solid var(--line); padding-bottom: 22px; margin-bottom: 8px; }
-  .eyebrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-    font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-    text-transform: uppercase; letter-spacing: .16em; color: var(--accent); }
-  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
-    box-shadow: 0 0 12px var(--accent); }
-  .eyebrow .sep { color: var(--muted); }
-  h1.title { font: 800 clamp(34px, 6vw, 60px)/1.02 Georgia, "Times New Roman", serif;
-    margin: 14px 0 4px; letter-spacing: -.025em; }
-  h1.title em { color: var(--accent); font-style: italic; }
-  .standfirst { color: var(--muted); font-size: 15px; max-width: 62ch; margin: 6px 0 0; }
-  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px;
-    font: 600 12px/1 ui-monospace, monospace; }
-  .legend span { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-dim); }
-  .legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+  /* Every interactive thing gets a visible focus ring (was 1 rule in 122). */
+  :focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; border-radius: 3px; }
+  .topbar :focus-visible, .hero :focus-visible { outline-color: var(--accent); }
+  .skip { position: absolute; left: -9999px; top: 0; z-index: 200; background: #FFF; color: var(--ink);
+    padding: 10px 16px; font: 600 14px/1 var(--font-body); border-radius: 0 0 8px 0; }
+  .skip:focus { left: 0; }
 
-  /* ---- source theming (per-item accent) ---- */
-  .src-hackernews { --accent: var(--hn); }
-  .src-reddit { --accent: var(--reddit); }
-  .src-substack { --accent: var(--substack); }
-  .src-medium { --accent: var(--medium); }
-  .legend i.hn { background: var(--hn); }
-  .legend i.reddit { background: var(--reddit); }
-  .legend i.substack { background: var(--substack); }
-  .legend i.medium { background: var(--medium); }
+  /* ---- Sticky masthead ---- */
+  .topbar { position: sticky; top: 0; z-index: 40; background: rgba(10,10,10,.92);
+    backdrop-filter: blur(12px); border-bottom: 1px solid #232323; }
+  .topbar .in { display: flex; align-items: center; gap: var(--s5); height: var(--topbar-h); }
+  .logo { display: flex; align-items: center; gap: 9px; color: var(--hero-ink);
+    text-decoration: none; flex: none; }
+  .logo .mark { width: 26px; height: 26px; border: 2.2px solid var(--hero-ink);
+    display: grid; place-items: center; font: 800 11px/1 var(--font-mono); }
+  .logo span.wm { font: 700 13.5px/1 var(--font-body); letter-spacing: .02em; }
 
-  .badge { display: inline-flex; align-items: center; gap: 6px;
-    font: 700 10.5px/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .1em;
-    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
-    padding: 5px 9px; border-radius: 999px; white-space: nowrap; }
-  .lead-tag { font: 700 10.5px/1 ui-monospace, monospace; text-transform: uppercase;
-    letter-spacing: .2em; color: var(--muted); }
-  .meta { color: var(--muted); font: 500 12.5px/1.5 ui-monospace, monospace; }
-  .meta a { color: var(--accent); text-decoration: none; }
-  .meta a:hover { text-decoration: underline; }
-  .meta .also { color: var(--muted); }
-  .meta .date, .meta .rtime { color: var(--muted); }
-  .ai-tag { display: inline-block; font: 600 9.5px/1 ui-monospace, monospace; text-transform: uppercase;
-    letter-spacing: .1em; color: var(--muted); background: var(--panel2); padding: 2px 6px;
-    border-radius: 4px; margin-right: 7px; vertical-align: middle; }
-  /* Dim the newness signal, not the content. At .5 a revisited edition read as
-     washed-out, which is most of the page for a returning reader. */
-  .card.seen { opacity: .82; }
-  .card.seen .card-title { color: var(--ink-dim); }
-  .card.new-item { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
-  .card.new-item::after { content: "NEW"; position: absolute; top: 10px; right: 10px;
-    font: 700 9px/1 ui-monospace, monospace; letter-spacing: .1em; color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 15%, transparent); padding: 3px 6px;
-    border-radius: 4px; }
-  .finish-line { text-align: center; padding: 28px 20px 8px; color: var(--muted);
-    font: 600 13px/1.5 ui-monospace, monospace; border-top: 1px solid var(--line);
-    margin-top: 24px; }
-  .finish-line em { color: var(--brand); font-style: normal; }
-
-  /* ---- Tabs (pure CSS: hidden radios + labels, no JS) ---- */
-  .tabs { margin-top: 30px; }
   .tabinput { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-  .tabbar { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 30px; padding: 6px;
-    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; max-width: 100%; }
-  .tab { cursor: pointer; user-select: none; padding: 10px 16px; border-radius: 9px;
-    font: 700 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .03em;
-    color: var(--muted); display: inline-flex; align-items: center; gap: 9px;
-    border: 1px solid transparent; transition: color .15s, background .15s, box-shadow .15s; }
-  .tab::before { content: ""; width: 9px; height: 9px; border-radius: 3px;
-    background: var(--tabc, var(--muted)); }
-  .tab .count { font: 700 11px/1 ui-monospace, monospace; color: var(--muted);
-    background: var(--panel2); padding: 3px 7px; border-radius: 999px; }
-  .tab .new-count { font: 700 10px/1 ui-monospace, monospace; color: var(--brand);
-    background: color-mix(in srgb, var(--brand) 15%, transparent); padding: 3px 7px;
-    border-radius: 999px; }
+  .tabbar { display: flex; gap: var(--s1); flex: 1; min-width: 0; overflow-x: auto;
+    scrollbar-width: none; }
+  .tabbar::-webkit-scrollbar { display: none; }
+  .tab { font: 600 13.5px/1 var(--font-body); color: var(--hero-gray); padding: 9px 13px;
+    border-radius: 8px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center;
+    white-space: nowrap; transition: color .12s, background .12s; user-select: none; }
+  .tab .n { font: 600 11px/1 var(--font-mono); opacity: .65; }
+  .tab .new-count { font: 700 10px/1 var(--font-mono); color: var(--accent);
+    background: rgba(232,90,79,.14); padding: 3px 6px; border-radius: 999px; }
   .tab .new-count:empty { display: none; }
-  .tab:hover { color: var(--ink-dim); }
-  .tab-industry { --tabc: #e2703a; }
-  .tab-learning { --tabc: #7c9eff; }
-  .tab-products { --tabc: #34d399; }
-  .tab-personal { --tabc: #c084fc; }
-  .tabinput:focus-visible + .tabbar .tab { outline: none; }
+  .tab:hover { color: #FFFFFF; background: var(--panel-dark); }
+  #tab-industry:checked ~ .topbar .tab-industry,
+  #tab-learning:checked ~ .topbar .tab-learning,
+  #tab-products:checked ~ .topbar .tab-products,
+  #tab-personal:checked ~ .topbar .tab-personal {
+    background: #FFFFFF; color: #111111; }
+  #tab-industry:focus-visible ~ .topbar .tab-industry,
+  #tab-learning:focus-visible ~ .topbar .tab-learning,
+  #tab-products:focus-visible ~ .topbar .tab-products,
+  #tab-personal:focus-visible ~ .topbar .tab-personal {
+    outline: 2px solid var(--accent); outline-offset: 2px; }
 
+  .saved-btn { flex: none; display: inline-flex; align-items: center; gap: 7px;
+    min-height: 38px; padding: 0 14px; border-radius: 9px; cursor: pointer;
+    background: var(--panel-dark); border: 1px solid #2E2E2E; color: #E4E4E4;
+    font: 600 13px/1 var(--font-body); transition: border-color .12s, color .12s; }
+  .saved-btn:hover { border-color: #5A5A5A; color: #FFFFFF; }
+  .saved-btn svg { fill: none; stroke: currentColor; stroke-width: 1.8; }
+  .saved-btn .n { font: 700 11.5px/1 var(--font-mono); color: var(--accent); }
+  .saved-btn.has svg { fill: var(--accent); stroke: var(--accent); }
+
+  /* ---- Hero (compact) ---- */
+  .hero { color: var(--hero-ink); padding: var(--s6) 0 var(--s6); }
+  .hero .in { display: grid; grid-template-columns: minmax(0,1fr) auto;
+    gap: var(--s6); align-items: start; }
+  .hero h1 { font: 800 clamp(30px, 4.4vw, 46px)/1.05 var(--font-body);
+    letter-spacing: -.035em; max-width: 20ch; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .dateline { color: var(--hero-gray); font: 500 13px/1.4 var(--font-mono); margin-top: var(--s3); }
+  /* Phone-only stand-in for the big-number stat panel, which costs too much
+     vertical space above the fold on a 390px screen. */
+  .glance { display: none; color: var(--hero-gray); font: 500 13px/1.4 var(--font-mono);
+    margin-top: var(--s2); }
+  .glance b { color: var(--hero-ink); font-weight: 700; }
+  .glance .new { color: var(--accent); font-weight: 700; }
+
+  .controls { display: grid; gap: var(--s3); margin-top: var(--s5); }
+  .ctl { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+  .ctl-label { font: 650 10px/1.2 var(--font-mono); letter-spacing: .14em;
+    color: var(--hero-dim); text-transform: uppercase; margin-right: var(--s1); min-width: 52px; }
+  .seg { display: inline-flex; gap: var(--s1); background: var(--panel-dark);
+    border: 1px solid #262626; border-radius: 10px; padding: 3px; }
+  .seg button { font: 600 12.5px/1 var(--font-body); color: var(--hero-gray);
+    background: none; border: none; border-radius: 7px; padding: 9px 13px; cursor: pointer;
+    min-height: 34px; transition: background .12s, color .12s; }
+  .seg button:hover { color: #FFFFFF; }
+  .seg button.on { background: #FFFFFF; color: #111111; }
+  .readout { font: 600 12px/1 var(--font-mono); color: var(--accent); padding-left: var(--s2); }
+
+  .chip { font: 600 12.5px/1 var(--font-body); color: #C8C8C8; background: var(--panel-dark);
+    border: 1px solid #2C2C2C; border-radius: 8px; padding: 0 13px; cursor: pointer;
+    min-height: 36px; display: inline-flex; align-items: center; gap: 6px;
+    transition: background .12s, border-color .12s, color .12s; }
+  .chip .n { font: 600 11px/1 var(--font-mono); opacity: .6; }
+  .chip:hover { border-color: #5A5A5A; color: #FFFFFF; }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+  .chip.on .n { opacity: .85; }
+  .chip-clear { background: none; border: none; color: var(--hero-gray); cursor: pointer;
+    font: 600 12px/1 var(--font-mono); text-decoration: underline; padding: 8px; min-height: 34px; }
+  .chip-clear:hover { color: #FFFFFF; }
+  .chip-clear[hidden] { display: none; }
+
+  /* glance stats — fills what used to be dead space */
+  .stats { display: flex; gap: var(--s6); border-left: 1px solid #262626;
+    padding-left: var(--s6); }
+  .stat { display: grid; gap: 5px; }
+  .stat b { font: 800 30px/1 var(--font-body); letter-spacing: -.02em; color: var(--hero-ink); }
+  .stat b.accent { color: var(--accent); }
+  .stat span { font: 600 10.5px/1.3 var(--font-mono); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--hero-dim); max-width: 11ch; }
+  .stat[hidden] { display: none; }
+
+  /* ---- Sheet (full-bleed white, closes the void) ---- */
+  .sheet { background: var(--sheet); padding: var(--s5) 0 var(--s8); }
+  .ai-note { font: 500 11.5px/1.5 var(--font-mono); color: var(--gray);
+    border-bottom: 1px solid var(--hairline); padding-bottom: var(--s3); margin-bottom: var(--s4); }
+  .ai-note b { color: var(--ink-soft); }
   .panel { display: none; }
-  .panel-intro { color: var(--muted); font-size: 14px; margin: -8px 0 22px; max-width: 70ch; }
-
-  /* show the panel + light up the tab matching the checked radio */
-  #tab-industry:checked ~ #panel-industry,
-  #tab-learning:checked ~ #panel-learning,
-  #tab-products:checked ~ #panel-products,
-  #tab-personal:checked ~ #panel-personal { display: block; animation: panel-in .22s ease both; }
-  #tab-industry:checked ~ .tabbar .tab-industry,
-  #tab-learning:checked ~ .tabbar .tab-learning,
-  #tab-products:checked ~ .tabbar .tab-products,
-  #tab-personal:checked ~ .tabbar .tab-personal {
-    color: var(--ink); background: color-mix(in srgb, var(--tabc) 15%, var(--panel2));
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tabc) 45%, transparent); }
+  #tab-industry:checked ~ .sheet #panel-industry,
+  #tab-learning:checked ~ .sheet #panel-learning,
+  #tab-products:checked ~ .sheet #panel-products,
+  #tab-personal:checked ~ .sheet #panel-personal {
+    display: block; animation: panel-in .22s ease both; }
   @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  .panel-intro { color: var(--gray); font: 500 13.5px/1.5 var(--font-mono); margin-bottom: var(--s5); }
 
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  .card { position: relative; border: 1px solid var(--line); border-radius: 14px;
-    padding: 20px 22px; background: var(--panel);
-    display: flex; flex-direction: column; gap: 12px; transition: border-color .15s, transform .15s; }
-  .card:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); transform: translateY(-2px); }
-  .card .kicker { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  a.card-title { color: var(--ink); text-decoration: none; font: 700 19px/1.28 Georgia, serif; }
-  a.card-title:hover { color: var(--accent); }
-  .card-gist { color: var(--ink-dim); font-size: 14px; line-height: 1.55; margin: 0; flex: 1; }
-  .card .meta { margin-top: 2px; }
+  .trim { font: 600 12.5px/1.5 var(--font-mono); color: var(--ink-soft);
+    background: var(--accent-soft); border-radius: 8px; padding: 10px var(--s4);
+    margin-bottom: var(--s5); display: flex; gap: var(--s3); align-items: center; flex-wrap: wrap; }
+  .trim[hidden] { display: none; }
+  .trim button { background: none; border: none; color: var(--accent-deep); cursor: pointer;
+    font: 700 12.5px/1 var(--font-mono); text-decoration: underline; padding: 6px 2px; }
 
-  /* lead card — first (top-ranked) item in each section, full width.
-     The lead is a SIBLING of .grid, not a child, so it needs its own bottom
-     margin: without it the lead sat flush against the deck at 0px and the two
-     tiers read as one block. Tier rhythm is 26px throughout. */
-  .card.lead { grid-column: 1 / -1; padding: 28px 30px; margin-bottom: 26px;
-    background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%), var(--panel); }
-  .card.lead::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-    border-radius: 14px 0 0 14px; background: var(--accent); }
-  .card.lead a.card-title { font: 800 clamp(28px, 4vw, 42px)/1.14 Georgia, serif; letter-spacing: -.02em; }
-  .card.lead .card-gist { font-size: 16px; max-width: 70ch; }
+  .src-kicker { font: 700 10px/1.3 var(--font-mono); letter-spacing: .14em;
+    text-transform: uppercase; color: #5F5F5F; white-space: nowrap; }
+  .meta { font: 500 12px/1.5 var(--font-mono); color: var(--gray); display: flex;
+    gap: 9px; align-items: center; flex-wrap: wrap; }
+  .meta .also { color: var(--gray); }
+  /* AI provenance: one glyph, not a badge on all 30 items */
+  .gm { color: var(--accent-ink); font-size: 12px; margin-right: 5px; cursor: help; }
 
-  /* tail rows — compact headline-list density (items 5+) */
-  .tail-list { display: flex; flex-direction: column; gap: 6px; margin-top: 26px; }
-  /* Row wraps to two lines: [badge · title · meta] then the gist full-width beneath.
-     Keeping the gist on the headline line squeezed it to ~13 visible chars against
-     real titles — the triage signal has to survive, so it gets its own line. */
-  .card.row { flex-direction: row; flex-wrap: wrap; align-items: flex-start;
-    gap: 5px 14px; padding: 12px 16px; border-radius: 10px; }
-  .card.row .kicker { flex-shrink: 0; min-width: 0; order: 1; }
-  .card.row .badge { font-size: 9.5px; padding: 4px 7px; }
-  .card.row .kicker-r { gap: 4px; }
-  .card.row a.card-title { font: 700 15px/1.3 Georgia, serif; flex: 1 1 auto; min-width: 0;
-    order: 2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-    overflow: hidden; }
-  .card.row .meta { font-size: 11.5px; white-space: nowrap; flex-shrink: 0; min-width: 0;
-    order: 3; margin-left: auto; }
-  .card.row .card-gist { font-size: 13px; flex: 1 0 100%; min-width: 0; order: 4;
-    overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin: 0; }
-  .card.row:hover { transform: none; }
-
-  footer { color: var(--muted); font: 12px/1.6 ui-monospace, monospace; margin-top: 56px;
-    padding-top: 22px; border-top: 1px solid var(--line); text-align: center; }
-  footer a { color: var(--accent); }
-  .provenance { font: 500 11.5px/1.5 ui-monospace, monospace; color: var(--ink-dim);
-    margin-bottom: 10px; }
-  .provenance.degraded { color: var(--reddit); }
-
-  /* ---- Bookmarks ---- */
-  .kicker-r { display: inline-flex; align-items: center; gap: 8px; }
-  .bm-btn { display: inline-flex; align-items: center; justify-content: center;
-    padding: 3px; border: none; background: none; cursor: pointer; color: var(--muted);
-    border-radius: 6px; transition: color .15s, transform .1s; }
-  .bm-btn:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
-  .bm-btn:active { transform: scale(.86); }
-  .bm-btn svg { fill: none; stroke: currentColor; stroke-width: 1.7; }
-  .bm-btn.on { color: var(--accent); }
+  /* ---- Action rows — labelled, 40px+ targets ---- */
+  .actions { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: center; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    min-height: 40px; padding: 0 16px; border-radius: 9px; cursor: pointer;
+    font: 650 13.5px/1 var(--font-body); text-decoration: none; white-space: nowrap;
+    background: #FFFFFF; color: var(--ink-soft); border: 1px solid var(--line);
+    transition: border-color .12s, color .12s, background .12s, transform .1s; }
+  .btn:hover { border-color: #B9B9B9; color: var(--ink); }
+  .btn:active { transform: scale(.98); }
+  .btn-primary { background: var(--accent-ink); border-color: var(--accent-ink); color: #FFFFFF; }
+  .btn-primary:hover { background: #B23929; border-color: #B23929; color: #FFFFFF; }
+  .btn-sm { min-height: 38px; padding: 0 13px; font-size: 13px; }
+  .btn svg { fill: none; stroke: currentColor; stroke-width: 1.8; flex: none; }
+  .bm-btn.on { border-color: var(--accent-ink); color: var(--accent-ink); background: var(--accent-soft); }
   .bm-btn.on svg { fill: currentColor; }
 
-  /* side tab handle */
-  .bm-tab { position: fixed; right: 0; top: 46%; transform: translateY(-50%); z-index: 50;
-    writing-mode: vertical-rl; text-orientation: mixed;
-    background: var(--panel2); color: var(--ink-dim); border: 1px solid var(--line);
-    border-right: none; border-radius: 10px 0 0 10px; padding: 16px 9px; cursor: pointer;
-    font: 700 11.5px/1 ui-monospace, monospace; letter-spacing: .16em; text-transform: uppercase;
-    box-shadow: -4px 0 18px rgba(0,0,0,.35); transition: color .15s, background .15s; }
-  .bm-tab:hover { color: var(--accent); background: var(--panel); }
-  .bm-tab .bm-count { display: inline-block; margin-top: 8px; color: var(--accent); }
+  /* ---- Lead ---- */
+  .lead { position: relative; border: 1px solid var(--line); border-left: 5px solid var(--accent-ink);
+    border-radius: 14px; padding: var(--s5) var(--s6) var(--s5) var(--s5); margin-bottom: var(--s5);
+    box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 12px 34px rgba(0,0,0,.07);
+    display: grid; gap: var(--s3); }
+  .lead .top-row { display: flex; justify-content: space-between; align-items: center;
+    gap: var(--s3); flex-wrap: wrap; }
+  .lead .top-row .src-kicker { color: var(--accent-ink); }
+  .tag { font: 700 9.5px/1 var(--font-mono); letter-spacing: .13em; text-transform: uppercase;
+    color: var(--accent-deep); background: var(--accent-soft); padding: 6px 9px; border-radius: 5px; }
+  .lead h2 { font: 800 clamp(24px, 3.1vw, 33px)/1.16 var(--font-body); letter-spacing: -.025em; }
+  .lead h2 a { color: inherit; text-decoration: none; }
+  .lead h2 a:hover { color: var(--accent-ink); }
+  .lead .gist { font-size: 16px; line-height: 1.6; color: var(--ink-soft); max-width: 66ch; }
+  .lead .actions { margin-top: var(--s2); }
 
+  /* ---- Secondary cards ---- */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+  .grid[hidden] { display: none; }
+  .story { border: 1px solid var(--line); border-radius: 14px; padding: var(--s4);
+    display: flex; flex-direction: column; gap: var(--s3); background: #FFFFFF;
+    transition: transform .14s, box-shadow .14s; }
+  .story:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,.09); }
+  .story h3 { font: 700 17px/1.3 var(--font-body); letter-spacing: -.012em; }
+  .story h3 a { color: inherit; text-decoration: none; }
+  .story h3 a:hover { color: var(--accent-ink); }
+  .story .gist { font-size: 13.5px; line-height: 1.58; color: #4A4A4A; flex: 1; }
+  .story .actions { margin-top: auto; padding-top: var(--s1); }
+
+  /* ---- Tail rows — title first, hard left ---- */
+  .tail { margin-top: var(--s6); border-top: 1px solid var(--line); }
+  .tail[hidden] { display: none; }
+  .row { display: flex; gap: var(--s4); align-items: flex-start; justify-content: space-between;
+    padding: var(--s4) 2px; border-bottom: 1px solid var(--hairline); }
+  .row:hover { background: #FCFCFC; }
+  .row-main { min-width: 0; display: grid; gap: 7px; }
+  .row-title { font: 700 16px/1.35 var(--font-body); letter-spacing: -.01em; }
+  .row-title a { color: inherit; text-decoration: none; }
+  .row:hover .row-title a { color: var(--accent-ink); }
+  .row .gist { font-size: 13.5px; line-height: 1.5; color: #565656; max-width: 78ch; }
+  .row .actions { flex: none; }
+
+  .item.is-hidden { display: none; }
+  /* Read-state marks the *status*, not the content — greying the headline of an
+     already-read story makes revisiting it harder for no gain. */
+  .item.seen .gist { color: var(--gray); }
+  .item.seen .src-kicker::after { content: " · read"; color: #8A8A8A;
+    text-transform: none; letter-spacing: 0; font-weight: 500; }
+  .item.new-item .src-kicker::after { content: " · NEW"; color: var(--accent-ink); }
+
+  /* ---- Completion state — the payoff of a finite product ---- */
+  .done { margin-top: var(--s8); border-top: 2px solid var(--ink); padding-top: var(--s6);
+    text-align: center; display: grid; gap: var(--s3); justify-items: center; }
+  .done-h { font: 800 clamp(24px, 3vw, 32px)/1.15 var(--font-body); letter-spacing: -.03em; }
+  .done-sub { font: 500 14.5px/1.5 var(--font-body); color: var(--gray); }
+  .done-sub b { color: var(--ink); font-weight: 700; }
+  .done .actions { margin-top: var(--s3); justify-content: center; }
+  .done-next { font: 600 11px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase;
+    color: var(--gray); margin-top: var(--s3); }
+
+  /* ---- Footer (black band closes the composition) ---- */
+  .foot { background: var(--canvas); color: var(--hero-gray); padding: var(--s7) 0;
+    text-align: center; font: 500 12.5px/1.9 var(--font-mono); }
+  .foot a { color: var(--accent); text-decoration: none; }
+  .foot a:hover { text-decoration: underline; }
+  .provenance { color: #CFCFCF; margin-bottom: var(--s2); }
+  .provenance.degraded { color: var(--accent); font-weight: 600; }
+
+  /* ---- Saved drawer ---- */
   .bm-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 59;
     opacity: 0; visibility: hidden; transition: opacity .2s, visibility .2s; }
   .bm-backdrop.open { opacity: 1; visibility: visible; }
-
-  .bm-drawer { position: fixed; top: 0; right: 0; height: 100%; width: min(400px, 94vw);
-    background: var(--bg2); border-left: 1px solid var(--line); z-index: 60;
-    transform: translateX(100%); transition: transform .26s cubic-bezier(.4,0,.2,1);
-    display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,.5); }
-  .bm-drawer.open { transform: none; }
+  /* Closed drawer is visibility:hidden — otherwise its shadow bleeds a grey band
+     down the right edge of the page and its controls stay in the tab order. */
+  .bm-drawer { position: fixed; top: 0; right: 0; height: 100%; width: min(420px, 94vw);
+    background: #FFFFFF; z-index: 60; transform: translateX(100%); visibility: hidden;
+    transition: transform .26s cubic-bezier(.4,0,.2,1), visibility .26s;
+    display: flex; flex-direction: column; }
+  .bm-drawer.open { transform: none; visibility: visible;
+    box-shadow: -20px 0 50px rgba(0,0,0,.5); }
   .bm-head { display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 22px 14px; border-bottom: 1px solid var(--line); }
-  .bm-head h2 { margin: 0; font: 800 20px/1 Georgia, serif; letter-spacing: -.01em; }
-  .bm-head h2 em { color: var(--accent); font-style: normal; }
+    padding: var(--s5) var(--s5) var(--s3); border-bottom: 1px solid var(--line); }
+  .bm-head h2 { font: 800 20px/1 var(--font-body); letter-spacing: -.01em; }
   .bm-head-actions { display: flex; align-items: center; gap: 6px; }
-  .bm-export, .bm-import-btn { background: none; border: 1px solid var(--line); color: var(--ink-dim);
-    font: 600 11px/1 ui-monospace, monospace; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
-  .bm-export:hover, .bm-import-btn:hover { color: var(--accent); border-color: var(--accent); }
-  .bm-close { background: none; border: none; color: var(--muted); font-size: 24px;
-    cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 6px; }
+  .bm-export, .bm-import-btn { background: none; border: 1px solid var(--line); color: var(--ink-soft);
+    font: 600 11px/1 var(--font-mono); padding: 9px 11px; border-radius: 7px; cursor: pointer; }
+  .bm-export:hover, .bm-import-btn:hover { color: var(--accent-ink); border-color: var(--accent-ink); }
+  .bm-close { background: none; border: none; color: var(--gray); font-size: 24px;
+    cursor: pointer; line-height: 1; padding: 4px 9px; border-radius: 6px; }
   .bm-close:hover { color: var(--ink); }
-  .bm-newgroup { display: flex; gap: 8px; padding: 14px 22px; border-bottom: 1px solid var(--line); }
-  .bm-newgroup input { flex: 1; background: var(--panel); border: 1px solid var(--line);
-    border-radius: 8px; color: var(--ink); padding: 8px 11px; font: 13px/1 inherit; }
-  .bm-newgroup input:focus { outline: none; border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
-  .bm-newgroup button { background: var(--accent); color: #100f0c; border: none; border-radius: 8px;
-    padding: 0 14px; font: 700 13px/1 ui-monospace, monospace; cursor: pointer; }
-  .bm-newgroup button:hover { filter: brightness(1.08); }
-  .bm-body { overflow-y: auto; padding: 8px 22px 40px; flex: 1; }
-  .bm-empty { color: var(--muted); font-size: 14px; text-align: center; padding: 40px 10px; }
-  .bm-group { margin-top: 18px; }
-  .bm-group-h { display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px dashed var(--line); }
-  .bm-group-h .name { font: 700 12px/1 ui-monospace, monospace; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--ink-dim); }
-  .bm-group-h .name .n { color: var(--muted); }
-  .bm-del-group { background: none; border: none; color: var(--muted); cursor: pointer;
-    font: 11px/1 ui-monospace, monospace; padding: 3px 5px; border-radius: 5px; }
-  .bm-del-group:hover { color: var(--reddit); }
-  .bm-item { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
-    padding: 11px 12px; margin-bottom: 9px; }
-  .bm-item .t { display: block; color: var(--ink); text-decoration: none; font: 600 14px/1.32 Georgia, serif; }
-  .bm-item .t:hover { color: var(--accent); }
-  .bm-item .row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-  .bm-item .src { font: 500 11px/1 ui-monospace, monospace; color: var(--muted);
+  .bm-newgroup { display: flex; gap: var(--s2); padding: var(--s3) var(--s5); border-bottom: 1px solid var(--line); }
+  .bm-newgroup input { flex: 1; background: #FAFAF9; border: 1px solid var(--line);
+    border-radius: 8px; color: var(--ink); padding: 10px 11px; font: 13px/1 inherit; }
+  .bm-newgroup input:focus { outline: none; border-color: var(--accent-ink); }
+  .bm-newgroup button { background: var(--accent-ink); color: #FFFFFF; border: none;
+    border-radius: 8px; padding: 0 15px; font: 700 13px/1 var(--font-mono); cursor: pointer; }
+  .bm-body { overflow-y: auto; padding: var(--s2) var(--s5) var(--s6); flex: 1; }
+  .bm-empty { color: var(--gray); font-size: 14px; text-align: center; padding: var(--s6) var(--s3); }
+  .bm-group { margin-top: var(--s4); }
+  .bm-group-h { display: flex; align-items: center; justify-content: space-between; gap: var(--s2);
+    padding-bottom: var(--s2); margin-bottom: var(--s2); border-bottom: 1px dashed var(--line); }
+  .bm-group-h .name { font: 700 12px/1 var(--font-mono); letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-soft); }
+  .bm-group-h .name .n { color: var(--gray); }
+  .bm-del-group { background: none; border: none; color: var(--gray); cursor: pointer;
+    font: 11px/1 var(--font-mono); padding: 6px 7px; border-radius: 5px; }
+  .bm-del-group:hover { color: var(--accent-ink); }
+  .bm-item { background: #FAFAF9; border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px; margin-bottom: 9px; }
+  .bm-item .t { display: block; color: var(--ink); text-decoration: none; font: 600 14px/1.32 var(--font-body); }
+  .bm-item .t:hover { color: var(--accent-ink); }
+  .bm-item .row2 { display: flex; align-items: center; gap: var(--s2); margin-top: var(--s2); }
+  .bm-item .src { font: 500 11px/1 var(--font-mono); color: var(--gray);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
-  .bm-item select { margin-left: auto; background: var(--panel2); color: var(--ink-dim);
-    border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font: 11px/1 inherit; cursor: pointer; }
-  .bm-item .rm { background: none; border: none; color: var(--muted); cursor: pointer;
-    font-size: 15px; padding: 2px 5px; border-radius: 5px; }
-  .bm-item .rm:hover { color: var(--reddit); }
+  .bm-item select { margin-left: auto; background: #FFFFFF; color: var(--ink-soft);
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px; font: 11px/1 inherit; cursor: pointer; }
+  .bm-item .rm { background: none; border: none; color: var(--gray); cursor: pointer;
+    font-size: 15px; padding: 5px 7px; border-radius: 5px; }
+  .bm-item .rm:hover { color: var(--accent-ink); }
 
+  @media (max-width: 1000px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 860px) {
+    .hero .in { grid-template-columns: 1fr; gap: var(--s5); }
+    .stats { border-left: none; padding-left: 0; border-top: 1px solid #262626;
+      padding-top: var(--s4); gap: var(--s7); }
+    .stat b { font-size: 24px; }
+  }
   @media (max-width: 720px) {
-    .wrap { padding: 28px 18px 72px; }
+    .in { padding: 0 var(--s4); }
+    .topbar .in { gap: var(--s3); }
+    .logo span.wm { display: none; }
+    .tab { padding: 13px; }
+    .hero { padding: var(--s5) 0 var(--s5); }
+    .hero h1 { font-size: 29px; }
+    /* Swap the stat panel for a one-line glance, and let each control row scroll
+       sideways instead of wrapping — together this lifts the first headline
+       roughly 300px up the page. */
+    .stats { display: none; }
+    .glance { display: block; }
+    .gen { display: none; }
+    .controls { gap: var(--s2); margin-top: var(--s4); }
+    .ctl { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .ctl::-webkit-scrollbar { display: none; }
+    .ctl-label { min-width: 0; flex: none; }
+    .seg, .chip, .chip-clear, .readout { flex: none; }
     .grid { grid-template-columns: 1fr; }
-    .card.lead { padding: 22px 22px; }
-    .card.row { flex-direction: column; gap: 6px; }
-    .card.row > * { order: 0; margin-left: 0; }
-    .card.row .card-gist { white-space: normal; }
-    .card.row .meta { white-space: normal; }
-    .card.row a.card-title { -webkit-line-clamp: unset; }
-    .bm-tab { top: auto; bottom: 16px; right: 16px; writing-mode: horizontal-tb;
-      padding: 10px 14px; }
-    .bm-tab .bm-count { display: inline-block; margin-top: 0; margin-left: 6px; }
+    .sheet { padding: var(--s5) 0 var(--s7); }
+    .lead { padding: var(--s4); }
+    .row { flex-direction: column; gap: var(--s3); }
+    .row .actions { width: 100%; }
+    .btn { flex: 1 1 auto; }
+    .stats { gap: var(--s5); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    html { scroll-behavior: auto; }
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="masthead">
-      <div class="eyebrow">
-        <span class="dot"></span> Daily Brief
-        <span class="sep">/</span> 9 August 2026
-        <span class="sep">/</span> last 24h, across platforms
-      </div>
-      <h1 class="title">The day in <em>tech</em>, distilled</h1>
-      <p class="standfirst">Hacker News, Reddit, Substack and Medium — ranked across platforms, split across tabs, with the gist of each. Bookmark what's worth keeping — it's saved in your browser, organised into your own groups.</p>
-      <div class="legend">
-        <span><i class="hn"></i>Hacker News · 26</span>
-        <span><i class="reddit"></i>Reddit · 24</span>
-        <span><i class="substack"></i>Substack · 10</span>
-        <span><i class="medium"></i>Medium · 10</span>
-      </div>
-    </header>
+  <a class="skip" href="#content">Skip to today's stories</a>
+  <input type="radio" name="brieftab" id="tab-industry" class="tabinput" checked>
+  <input type="radio" name="brieftab" id="tab-learning" class="tabinput">
+  <input type="radio" name="brieftab" id="tab-products" class="tabinput">
+  <input type="radio" name="brieftab" id="tab-personal" class="tabinput">
 
-    <div class="tabs">
-      <input type="radio" name="brieftab" id="tab-industry" class="tabinput">
-      <input type="radio" name="brieftab" id="tab-learning" class="tabinput">
-      <input type="radio" name="brieftab" id="tab-products" class="tabinput">
-      <input type="radio" name="brieftab" id="tab-personal" class="tabinput" checked>
-      <nav class="tabbar">
-        <label for="tab-industry" class="tab tab-industry">The Wire <span class="count">6</span><span class="new-count" data-tab-key="industry"></span></label>
-        <label for="tab-learning" class="tab tab-learning">Deep Dives <span class="count">8</span><span class="new-count" data-tab-key="learning"></span></label>
-        <label for="tab-products" class="tab tab-products">Worth a Try <span class="count">5</span><span class="new-count" data-tab-key="products"></span></label>
-        <label for="tab-personal" class="tab tab-personal">Off the Clock <span class="count">11</span><span class="new-count" data-tab-key="personal"></span></label>
+  <div class="topbar">
+    <div class="in">
+      <a class="logo" href="#content"><span class="mark">DB</span><span class="wm">Daily Brief</span></a>
+      <nav class="tabbar" aria-label="Sections">
+        <label for="tab-industry" class="tab tab-industry">The Wire <span class="n">6</span><span class="new-count" data-tab-key="industry"></span></label>
+        <label for="tab-learning" class="tab tab-learning">Deep Dives <span class="n">8</span><span class="new-count" data-tab-key="learning"></span></label>
+        <label for="tab-products" class="tab tab-products">Worth a Try <span class="n">5</span><span class="new-count" data-tab-key="products"></span></label>
+        <label for="tab-personal" class="tab tab-personal">Off the Clock <span class="n">11</span><span class="new-count" data-tab-key="personal"></span></label>
       </nav>
+      <button class="saved-btn" id="bmTab" type="button" aria-label="Open your saved stories">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>
+        Saved <span class="n" id="bmCount">0</span>
+      </button>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="in">
+      <div>
+        <h1>The day in <em>tech</em>, distilled.</h1>
+        <p class="dateline">Sunday, 9 August 2026<span class="gen"> · generated 09 Aug 2026, 08:00</span></p>
+        <p class="glance"><b>30</b> stories · <b>~5 min</b> to skim<span id="glanceNew"></span></p>
+        <div class="controls">
+          <div class="ctl">
+            <span class="ctl-label">Show</span>
+            <div class="seg" id="budget" role="group" aria-label="How many stories per section">
+              <button type="button" data-budget="3">Top 3</button>
+              <button type="button" data-budget="8">Top 8</button>
+              <button type="button" data-budget="0" class="on">Everything</button>
+            </div>
+            <span class="readout" id="readout"></span>
+          </div>
+          <div class="ctl" id="chips">
+            <span class="ctl-label">Sources</span>
+            <button class="chip" type="button" data-src="hackernews">HN<span class="n">26</span></button>
+          <button class="chip" type="button" data-src="reddit">Reddit<span class="n">24</span></button>
+          <button class="chip" type="button" data-src="substack">Substack<span class="n">10</span></button>
+          <button class="chip" type="button" data-src="medium">Medium<span class="n">10</span></button>
+            <button class="chip-clear" id="chipClear" type="button" hidden>clear</button>
+          </div>
+        </div>
+      </div>
+      <aside class="stats" aria-label="Today at a glance">
+        <div class="stat"><b>30</b><span>stories today</span></div>
+        <div class="stat"><b>~5</b><span>min to skim</span></div>
+        <div class="stat" id="newStat" hidden><b class="accent" id="newNum">0</b><span>new since last visit</span></div>
+      </aside>
+    </div>
+  </header>
+
+  <main class="sheet" id="content">
+    <div class="in">
+      <p class="ai-note"><span class="gm" aria-hidden="true">&#10022;</span> marks an <b>AI-written</b> one-line summary · headlines and links are the originals</p>
       <section id="panel-industry" class="panel">
         <p class="panel-intro">What's moving across the industry — funding, deals, launches and power plays.</p>
-        <article class="card lead src-hackernews" data-created="1786180730" data-brief-item>
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://deepmind.google/blog/weathernext-ai-model-achieves-breakthrough-in-forecasting-cyclones/" data-title="DeepMind&#x27;s WeatherNext model achieves breakthrough forecasting cyclones" data-source="hackernews" data-label="Hacker News" data-gist="DeepMind&#x27;s WeatherNext beats traditional cyclone forecasts, fueling debate that specialized AI models matter more than the LLM hype cycle." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49220126"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://deepmind.google/blog/weathernext-ai-model-achieves-breakthrough-in-forecasting-cyclones/">DeepMind&#x27;s WeatherNext model achieves breakthrough forecasting cyclones</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>DeepMind&#x27;s WeatherNext beats traditional cyclone forecasts, fueling debate that specialized AI models matter more than the LLM hype cycle.</p>
-        <div class="meta">▲ 393 · 118 comments · <span class="date">17h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49220126">discuss →</a></div>
+        <p class="trim" hidden><span class="trim-text"></span><button type="button" data-show-all>Show everything →</button></p>
+        <article class="item lead" data-src="hackernews" data-created="1786180730" data-rank="0" data-brief-item>
+        <div class="top-row">
+          <span class="src-kicker">Hacker News</span>
+          <span class="tag">Top story · most discussed</span>
+        </div>
+        <h2><a href="https://deepmind.google/blog/weathernext-ai-model-achieves-breakthrough-in-forecasting-cyclones/">DeepMind&#x27;s WeatherNext model achieves breakthrough forecasting cyclones</a></h2>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>DeepMind&#x27;s WeatherNext beats traditional cyclone forecasts, fueling debate that specialized AI models matter more than the LLM hype cycle.</p>
+        <div class="meta">▲ 393 · 118 comments · 1d ago</div>
+        <div class="actions"><a class="btn btn-primary" href="https://deepmind.google/blog/weathernext-ai-model-achieves-breakthrough-in-forecasting-cyclones/">Read the story →</a><a class="btn" href="https://news.ycombinator.com/item?id=49220126">118 comments</a><button class="btn bm-btn" type="button" aria-pressed="false" data-url="https://deepmind.google/blog/weathernext-ai-model-achieves-breakthrough-in-forecasting-cyclones/" data-title="DeepMind&#x27;s WeatherNext model achieves breakthrough forecasting cyclones" data-source="hackernews" data-label="Hacker News" data-gist="DeepMind&#x27;s WeatherNext beats traditional cyclone forecasts, fueling debate that specialized AI models matter more than the LLM hype cycle." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49220126"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
         <div class="grid">
-        <article class="card src-hackernews" data-created="1786186664" data-brief-item>
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://simonwillison.net/2026/Aug/7/openai-timeline/" data-title="Timeline of the OpenAI accidental attack against Hugging Face" data-source="hackernews" data-label="Hacker News" data-gist="A timeline shows OpenAI&#x27;s agents accidentally attacked Hugging Face — an incident critics note conveniently doubles as a capability demo." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49220609"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://simonwillison.net/2026/Aug/7/openai-timeline/">Timeline of the OpenAI accidental attack against Hugging Face</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A timeline shows OpenAI&#x27;s agents accidentally attacked Hugging Face — an incident critics note conveniently doubles as a capability demo.</p>
-        <div class="meta">▲ 347 · 355 comments · <span class="date">15h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49220609">discuss →</a></div>
+        <article class="item story" data-src="hackernews" data-created="1786186664" data-rank="1" data-brief-item>
+        <span class="src-kicker">Hacker News</span>
+        <h3><a href="https://simonwillison.net/2026/Aug/7/openai-timeline/">Timeline of the OpenAI accidental attack against Hugging Face</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A timeline shows OpenAI&#x27;s agents accidentally attacked Hugging Face — an incident critics note conveniently doubles as a capability demo.</p>
+        <div class="meta">▲ 347 · 355 comments · 1d ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://simonwillison.net/2026/Aug/7/openai-timeline/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=49220609">355 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://simonwillison.net/2026/Aug/7/openai-timeline/" data-title="Timeline of the OpenAI accidental attack against Hugging Face" data-source="hackernews" data-label="Hacker News" data-gist="A timeline shows OpenAI&#x27;s agents accidentally attacked Hugging Face — an incident critics note conveniently doubles as a capability demo." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49220609"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
-        <article class="card src-hackernews" data-created="1786183465" data-brief-item>
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.bloomberg.com/news/articles/2026-08-06/us-military-s-cyber-command-unit-grapples-with-cluster-of-deaths-by-suicide" data-title="US Military&#x27;s cyber command unit grapples with cluster of deaths by suicide" data-source="hackernews" data-label="Hacker News" data-gist="A troubling cluster of suicides in US Cyber Command raises questions about the toll of secretive, high-stakes cyber operations work." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49220339"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.bloomberg.com/news/articles/2026-08-06/us-military-s-cyber-command-unit-grapples-with-cluster-of-deaths-by-suicide">US Military&#x27;s cyber command unit grapples with cluster of deaths by suicide</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A troubling cluster of suicides in US Cyber Command raises questions about the toll of secretive, high-stakes cyber operations work.</p>
-        <div class="meta">▲ 253 · 400 comments · <span class="date">16h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49220339">discuss →</a></div>
+        <article class="item story" data-src="hackernews" data-created="1786183465" data-rank="2" data-brief-item>
+        <span class="src-kicker">Hacker News</span>
+        <h3><a href="https://www.bloomberg.com/news/articles/2026-08-06/us-military-s-cyber-command-unit-grapples-with-cluster-of-deaths-by-suicide">US Military&#x27;s cyber command unit grapples with cluster of deaths by suicide</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A troubling cluster of suicides in US Cyber Command raises questions about the toll of secretive, high-stakes cyber operations work.</p>
+        <div class="meta">▲ 253 · 400 comments · 1d ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.bloomberg.com/news/articles/2026-08-06/us-military-s-cyber-command-unit-grapples-with-cluster-of-deaths-by-suicide">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=49220339">400 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.bloomberg.com/news/articles/2026-08-06/us-military-s-cyber-command-unit-grapples-with-cluster-of-deaths-by-suicide" data-title="US Military&#x27;s cyber command unit grapples with cluster of deaths by suicide" data-source="hackernews" data-label="Hacker News" data-gist="A troubling cluster of suicides in US Cyber Command raises questions about the toll of secretive, high-stakes cyber operations work." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49220339"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
-        <article class="card src-hackernews" data-created="1786205076" data-brief-item>
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://hackaday.com/2026/08/08/want-energy-efficiency-dude-youre-getting-a-dell/" data-title="Can Intel finally beat ARM on performance per Watt?" data-source="hackernews" data-label="Hacker News" data-gist="Intel narrows the performance-per-watt gap with ARM, but commenters argue the real yardstick now is Apple Silicon, not ARM in general." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49223079"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://hackaday.com/2026/08/08/want-energy-efficiency-dude-youre-getting-a-dell/">Can Intel finally beat ARM on performance per Watt?</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Intel narrows the performance-per-watt gap with ARM, but commenters argue the real yardstick now is Apple Silicon, not ARM in general.</p>
-        <div class="meta">▲ 171 · 104 comments · <span class="date">10h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49223079">discuss →</a></div>
-      </article>
-        </div>
-        <div class="tail-list">
-        <article class="card row src-substack" data-created="1786183090" data-brief-item>
-        <div class="kicker"><span class="badge">High Learning Rate</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://highlearningrate.substack.com/p/claude-replaces-permission-clicking" data-title="Claude Replaces Permission Clicking - 2026-08-08" data-source="substack" data-label="High Learning Rate" data-gist="Anthropic rolls out finer-grained permission controls for Claude Code to cut prompt fatigue, plus multi-agent handoff and role-aware RL updates." data-cat="industry" data-discuss="https://highlearningrate.substack.com/p/claude-replaces-permission-clicking"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://highlearningrate.substack.com/p/claude-replaces-permission-clicking">Claude Replaces Permission Clicking - 2026-08-08</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Anthropic rolls out finer-grained permission controls for Claude Code to cut prompt fatigue, plus multi-agent handoff and role-aware RL updates.</p>
-        <div class="meta">HLR · <span class="date">16h ago</span> · <a href="https://highlearningrate.substack.com/p/claude-replaces-permission-clicking">read →</a></div>
-      </article>
-        <article class="card row src-reddit" data-created="1786197251" data-brief-item>
-        <div class="kicker"><span class="badge">r/fintechdev</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/fintechdev/comments/1vj4ov7/lead_fraud_risk_analyst_bengaluru_toast_5_yoe/" data-title="Lead Fraud Risk Analyst — Bengaluru | Toast | 5+ YOE" data-source="reddit" data-label="r/fintechdev" data-gist="A senior fraud risk analyst opening at Toast in Bengaluru, requiring 5+ years of experience in fintech risk." data-cat="industry" data-discuss="https://www.reddit.com/r/fintechdev/comments/1vj4ov7/lead_fraud_risk_analyst_bengaluru_toast_5_yoe/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/fintechdev/comments/1vj4ov7/lead_fraud_risk_analyst_bengaluru_toast_5_yoe/">Lead Fraud Risk Analyst — Bengaluru | Toast | 5+ YOE</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A senior fraud risk analyst opening at Toast in Bengaluru, requiring 5+ years of experience in fintech risk.</p>
-        <div class="meta"><span class="date">12h ago</span> · <a href="https://www.reddit.com/r/fintechdev/comments/1vj4ov7/lead_fraud_risk_analyst_bengaluru_toast_5_yoe/">open →</a></div>
+        <article class="item story" data-src="hackernews" data-created="1786205076" data-rank="3" data-brief-item>
+        <span class="src-kicker">Hacker News</span>
+        <h3><a href="https://hackaday.com/2026/08/08/want-energy-efficiency-dude-youre-getting-a-dell/">Can Intel finally beat ARM on performance per Watt?</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Intel narrows the performance-per-watt gap with ARM, but commenters argue the real yardstick now is Apple Silicon, not ARM in general.</p>
+        <div class="meta">▲ 171 · 104 comments · 1d ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://hackaday.com/2026/08/08/want-energy-efficiency-dude-youre-getting-a-dell/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=49223079">104 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://hackaday.com/2026/08/08/want-energy-efficiency-dude-youre-getting-a-dell/" data-title="Can Intel finally beat ARM on performance per Watt?" data-source="hackernews" data-label="Hacker News" data-gist="Intel narrows the performance-per-watt gap with ARM, but commenters argue the real yardstick now is Apple Silicon, not ARM in general." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=49223079"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
         </div>
-        <div class="finish-line">End of <em>The Wire</em> &middot; 6 stories</div>
+        <div class="tail">
+        <article class="item row" data-src="substack" data-created="1786183090" data-rank="4" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://highlearningrate.substack.com/p/claude-replaces-permission-clicking">Claude Replaces Permission Clicking - 2026-08-08</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Anthropic rolls out finer-grained permission controls for Claude Code to cut prompt fatigue, plus multi-agent handoff and role-aware RL updates.</p>
+          <div class="meta"><span class="src-kicker">High Learning Rate</span> · HLR · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://highlearningrate.substack.com/p/claude-replaces-permission-clicking">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://highlearningrate.substack.com/p/claude-replaces-permission-clicking" data-title="Claude Replaces Permission Clicking - 2026-08-08" data-source="substack" data-label="High Learning Rate" data-gist="Anthropic rolls out finer-grained permission controls for Claude Code to cut prompt fatigue, plus multi-agent handoff and role-aware RL updates." data-cat="industry" data-discuss="https://highlearningrate.substack.com/p/claude-replaces-permission-clicking"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1786197251" data-rank="5" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.reddit.com/r/fintechdev/comments/1vj4ov7/lead_fraud_risk_analyst_bengaluru_toast_5_yoe/">Lead Fraud Risk Analyst — Bengaluru | Toast | 5+ YOE</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A senior fraud risk analyst opening at Toast in Bengaluru, requiring 5+ years of experience in fintech risk.</p>
+          <div class="meta"><span class="src-kicker">r/fintechdev</span> · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/fintechdev/comments/1vj4ov7/lead_fraud_risk_analyst_bengaluru_toast_5_yoe/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/fintechdev/comments/1vj4ov7/lead_fraud_risk_analyst_bengaluru_toast_5_yoe/" data-title="Lead Fraud Risk Analyst — Bengaluru | Toast | 5+ YOE" data-source="reddit" data-label="r/fintechdev" data-gist="A senior fraud risk analyst opening at Toast in Bengaluru, requiring 5+ years of experience in fintech risk." data-cat="industry" data-discuss="https://www.reddit.com/r/fintechdev/comments/1vj4ov7/lead_fraud_risk_analyst_bengaluru_toast_5_yoe/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        </div>
+        <div class="done">
+          <p class="done-h">You're caught up.</p>
+          <p class="done-sub"><b class="doneCount">6</b> <span class="doneNoun">stories</span> in The Wire · <b class="doneSaved">0</b> saved today</p>
+          <div class="actions">
+            <button class="btn" type="button" data-open-saved>Review what you saved</button>
+            <a class="btn" href="../archive.html">Earlier editions</a>
+          </div>
+          <p class="done-next">Next edition tomorrow, 8:00</p>
+        </div>
       </section>
       <section id="panel-learning" class="panel">
         <p class="panel-intro">Essays, ideas and new tech worth slowing down to understand.</p>
-        <article class="card lead src-hackernews" data-created="1786199553" data-brief-item>
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://blog.senko.net/code-was-never-the-hard-part-is-an-insult-to-all-programmers" data-title="“Code was never the hard part” is an insult to all programmers" data-source="hackernews" data-label="Hacker News" data-gist="Commenters reject the claim coding was never hard: design, reading code, and understanding systems were the real skill AI hasn&#x27;t replaced." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49222189"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://blog.senko.net/code-was-never-the-hard-part-is-an-insult-to-all-programmers">“Code was never the hard part” is an insult to all programmers</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Commenters reject the claim coding was never hard: design, reading code, and understanding systems were the real skill AI hasn&#x27;t replaced.</p>
-        <div class="meta">▲ 591 · 368 comments · <span class="date">11h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49222189">discuss →</a></div>
+        <p class="trim" hidden><span class="trim-text"></span><button type="button" data-show-all>Show everything →</button></p>
+        <article class="item lead" data-src="hackernews" data-created="1786199553" data-rank="0" data-brief-item>
+        <div class="top-row">
+          <span class="src-kicker">Hacker News</span>
+          <span class="tag">Top story · most discussed</span>
+        </div>
+        <h2><a href="https://blog.senko.net/code-was-never-the-hard-part-is-an-insult-to-all-programmers">“Code was never the hard part” is an insult to all programmers</a></h2>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Commenters reject the claim coding was never hard: design, reading code, and understanding systems were the real skill AI hasn&#x27;t replaced.</p>
+        <div class="meta">▲ 591 · 368 comments · 1d ago</div>
+        <div class="actions"><a class="btn btn-primary" href="https://blog.senko.net/code-was-never-the-hard-part-is-an-insult-to-all-programmers">Read the story →</a><a class="btn" href="https://news.ycombinator.com/item?id=49222189">368 comments</a><button class="btn bm-btn" type="button" aria-pressed="false" data-url="https://blog.senko.net/code-was-never-the-hard-part-is-an-insult-to-all-programmers" data-title="“Code was never the hard part” is an insult to all programmers" data-source="hackernews" data-label="Hacker News" data-gist="Commenters reject the claim coding was never hard: design, reading code, and understanding systems were the real skill AI hasn&#x27;t replaced." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49222189"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
         <div class="grid">
-        <article class="card src-hackernews" data-created="1786212571" data-brief-item>
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://mezha.net/eng/bukvy/ca117584_denmark_requires_oral/" data-title="Danish high schoolers will have to verbally defend written assignments" data-source="hackernews" data-label="Hacker News" data-gist="Denmark will make students orally defend written work to catch AI-written essays; commenters wish US schools required the same accountability." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49224294"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://mezha.net/eng/bukvy/ca117584_denmark_requires_oral/">Danish high schoolers will have to verbally defend written assignments</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Denmark will make students orally defend written work to catch AI-written essays; commenters wish US schools required the same accountability.</p>
-        <div class="meta">▲ 519 · 246 comments · <span class="date">8h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49224294">discuss →</a></div>
+        <article class="item story" data-src="hackernews" data-created="1786212571" data-rank="1" data-brief-item>
+        <span class="src-kicker">Hacker News</span>
+        <h3><a href="https://mezha.net/eng/bukvy/ca117584_denmark_requires_oral/">Danish high schoolers will have to verbally defend written assignments</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Denmark will make students orally defend written work to catch AI-written essays; commenters wish US schools required the same accountability.</p>
+        <div class="meta">▲ 519 · 246 comments · 23h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://mezha.net/eng/bukvy/ca117584_denmark_requires_oral/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=49224294">246 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://mezha.net/eng/bukvy/ca117584_denmark_requires_oral/" data-title="Danish high schoolers will have to verbally defend written assignments" data-source="hackernews" data-label="Hacker News" data-gist="Denmark will make students orally defend written work to catch AI-written essays; commenters wish US schools required the same accountability." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49224294"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
-        <article class="card src-substack" data-created="1786216409" data-brief-item>
-        <div class="kicker"><span class="badge">Agentic AI </span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://kenhuangus.substack.com/p/coding-agent-security-lessons-from" data-title="Coding Agent Security: Lessons from Claude Code, Cowork, Codex, and Copilot in the Wild" data-source="substack" data-label="Agentic AI " data-gist="A deep-dive on real security incidents from Claude Code, Cowork, Codex, and Copilot in production, showing where coding agents actually get exploited." data-cat="learning" data-discuss="https://kenhuangus.substack.com/p/coding-agent-security-lessons-from"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://kenhuangus.substack.com/p/coding-agent-security-lessons-from">Coding Agent Security: Lessons from Claude Code, Cowork, Codex, and Copilot in the Wild</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A deep-dive on real security incidents from Claude Code, Cowork, Codex, and Copilot in production, showing where coding agents actually get exploited.</p>
-        <div class="meta">Ken Huang · <span class="date">7h ago</span> · <a href="https://kenhuangus.substack.com/p/coding-agent-security-lessons-from">read →</a></div>
+        <article class="item story" data-src="substack" data-created="1786216409" data-rank="2" data-brief-item>
+        <span class="src-kicker">Agentic AI </span>
+        <h3><a href="https://kenhuangus.substack.com/p/coding-agent-security-lessons-from">Coding Agent Security: Lessons from Claude Code, Cowork, Codex, and Copilot in the Wild</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A deep-dive on real security incidents from Claude Code, Cowork, Codex, and Copilot in production, showing where coding agents actually get exploited.</p>
+        <div class="meta">Ken Huang · 22h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://kenhuangus.substack.com/p/coding-agent-security-lessons-from">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://kenhuangus.substack.com/p/coding-agent-security-lessons-from" data-title="Coding Agent Security: Lessons from Claude Code, Cowork, Codex, and Copilot in the Wild" data-source="substack" data-label="Agentic AI " data-gist="A deep-dive on real security incidents from Claude Code, Cowork, Codex, and Copilot in production, showing where coding agents actually get exploited." data-cat="learning" data-discuss="https://kenhuangus.substack.com/p/coding-agent-security-lessons-from"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
-        <article class="card src-hackernews" data-created="1786195611" data-brief-item>
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://specification.website/spec/foundations/for-sale-dns/" data-title="_for-sale DNS records" data-source="hackernews" data-label="Hacker News" data-gist="The new _for-sale DNS record lets sellers list domains right in DNS, but commenters debate trademark exposure and why its inventor barely uses it." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49221668"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://specification.website/spec/foundations/for-sale-dns/">_for-sale DNS records</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>The new _for-sale DNS record lets sellers list domains right in DNS, but commenters debate trademark exposure and why its inventor barely uses it.</p>
-        <div class="meta">▲ 356 · 133 comments · <span class="date">13h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49221668">discuss →</a></div>
-      </article>
-        </div>
-        <div class="tail-list">
-        <article class="card row src-hackernews" data-created="1786172691" data-brief-item>
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://github.com/xoreaxeaxeax/rosenbridge" data-title="Hardware backdoors in some x86 CPUs" data-source="hackernews" data-label="Hacker News" data-gist="A deep look at documented hardware backdoors in x86 CPUs, and why growing chip complexity makes closed-source silicon harder to fully trust." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49219508"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://github.com/xoreaxeaxeax/rosenbridge">Hardware backdoors in some x86 CPUs</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A deep look at documented hardware backdoors in x86 CPUs, and why growing chip complexity makes closed-source silicon harder to fully trust.</p>
-        <div class="meta">▲ 350 · 94 comments · <span class="date">19h ago</span> · <span class="rtime">1 min read</span> · <a href="https://news.ycombinator.com/item?id=49219508">discuss →</a></div>
-      </article>
-        <article class="card row src-reddit" data-created="1786199285" data-brief-item>
-        <div class="kicker"><span class="badge">r/indiatech</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://v.redd.it/y8igvqmei7ih1" data-title="Ai has ruined us" data-source="reddit" data-label="r/indiatech" data-gist="An Indian tech worker argues AI has hollowed out the craft and job security programmers once had, striking a nerve in the comments." data-cat="learning" data-discuss="https://www.reddit.com/r/IndiaTech/comments/1vj5hee/ai_has_ruined_us/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://v.redd.it/y8igvqmei7ih1">Ai has ruined us</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>An Indian tech worker argues AI has hollowed out the craft and job security programmers once had, striking a nerve in the comments.</p>
-        <div class="meta"><span class="date">12h ago</span> · <a href="https://www.reddit.com/r/IndiaTech/comments/1vj5hee/ai_has_ruined_us/">open →</a></div>
-      </article>
-        <article class="card row src-medium" data-created="1786117665" data-brief-item>
-        <div class="kicker"><span class="badge">Medium · Level Up Coding</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://levelup.gitconnected.com/openais-agents-hacked-their-own-infrastructure-nobody-told-them-to-9fd5ffdf86e5?source=rss----5517fd7b58a6---4" data-title="OpenAI’s Agents Hacked Their Own Infrastructure. Nobody Told Them To." data-source="medium" data-label="Medium · Level Up Coding" data-gist="An analysis argues an accidental attack by OpenAI&#x27;s own agents is more alarming than a deliberate one — nobody chose it, which is the scary part." data-cat="learning" data-discuss="https://levelup.gitconnected.com/openais-agents-hacked-their-own-infrastructure-nobody-told-them-to-9fd5ffdf86e5?source=rss----5517fd7b58a6---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://levelup.gitconnected.com/openais-agents-hacked-their-own-infrastructure-nobody-told-them-to-9fd5ffdf86e5?source=rss----5517fd7b58a6---4">OpenAI’s Agents Hacked Their Own Infrastructure. Nobody Told Them To.</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>An analysis argues an accidental attack by OpenAI&#x27;s own agents is more alarming than a deliberate one — nobody chose it, which is the scary part.</p>
-        <div class="meta">Noah Byteforge · <span class="date">1d ago</span> · <a href="https://levelup.gitconnected.com/openais-agents-hacked-their-own-infrastructure-nobody-told-them-to-9fd5ffdf86e5?source=rss----5517fd7b58a6---4">read →</a></div>
-      </article>
-        <article class="card row src-substack" data-created="1786170648" data-brief-item>
-        <div class="kicker"><span class="badge">Hands On System Design - Distributed Systems Implementation </span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://sdcourse.substack.com/p/week-5-message-queues-for-log-processing" data-title="Week 5: Message Queues for Log Processing" data-source="substack" data-label="Hands On System Design - Distributed Systems Implementation " data-gist="Part five of a distributed systems series reframes log processing as fundamentally a messaging problem, walking through queue-based architecture." data-cat="learning" data-discuss="https://sdcourse.substack.com/p/week-5-message-queues-for-log-processing"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://sdcourse.substack.com/p/week-5-message-queues-for-log-processing">Week 5: Message Queues for Log Processing</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Part five of a distributed systems series reframes log processing as fundamentally a messaging problem, walking through queue-based architecture.</p>
-        <div class="meta">System Design Course · <span class="date">20h ago</span> · <a href="https://sdcourse.substack.com/p/week-5-message-queues-for-log-processing">read →</a></div>
+        <article class="item story" data-src="hackernews" data-created="1786195611" data-rank="3" data-brief-item>
+        <span class="src-kicker">Hacker News</span>
+        <h3><a href="https://specification.website/spec/foundations/for-sale-dns/">_for-sale DNS records</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>The new _for-sale DNS record lets sellers list domains right in DNS, but commenters debate trademark exposure and why its inventor barely uses it.</p>
+        <div class="meta">▲ 356 · 133 comments · 1d ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://specification.website/spec/foundations/for-sale-dns/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=49221668">133 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://specification.website/spec/foundations/for-sale-dns/" data-title="_for-sale DNS records" data-source="hackernews" data-label="Hacker News" data-gist="The new _for-sale DNS record lets sellers list domains right in DNS, but commenters debate trademark exposure and why its inventor barely uses it." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49221668"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
         </div>
-        <div class="finish-line">End of <em>Deep Dives</em> &middot; 8 stories</div>
+        <div class="tail">
+        <article class="item row" data-src="hackernews" data-created="1786172691" data-rank="4" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://github.com/xoreaxeaxeax/rosenbridge">Hardware backdoors in some x86 CPUs</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A deep look at documented hardware backdoors in x86 CPUs, and why growing chip complexity makes closed-source silicon harder to fully trust.</p>
+          <div class="meta"><span class="src-kicker">Hacker News</span> · ▲ 350 · 94 comments · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://github.com/xoreaxeaxeax/rosenbridge">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=49219508">94 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://github.com/xoreaxeaxeax/rosenbridge" data-title="Hardware backdoors in some x86 CPUs" data-source="hackernews" data-label="Hacker News" data-gist="A deep look at documented hardware backdoors in x86 CPUs, and why growing chip complexity makes closed-source silicon harder to fully trust." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=49219508"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1786199285" data-rank="5" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://v.redd.it/y8igvqmei7ih1">Ai has ruined us</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>An Indian tech worker argues AI has hollowed out the craft and job security programmers once had, striking a nerve in the comments.</p>
+          <div class="meta"><span class="src-kicker">r/indiatech</span> · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://v.redd.it/y8igvqmei7ih1">Read →</a><a class="btn btn-sm" href="https://www.reddit.com/r/IndiaTech/comments/1vj5hee/ai_has_ruined_us/">Discuss</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://v.redd.it/y8igvqmei7ih1" data-title="Ai has ruined us" data-source="reddit" data-label="r/indiatech" data-gist="An Indian tech worker argues AI has hollowed out the craft and job security programmers once had, striking a nerve in the comments." data-cat="learning" data-discuss="https://www.reddit.com/r/IndiaTech/comments/1vj5hee/ai_has_ruined_us/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="medium" data-created="1786117665" data-rank="6" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://levelup.gitconnected.com/openais-agents-hacked-their-own-infrastructure-nobody-told-them-to-9fd5ffdf86e5?source=rss----5517fd7b58a6---4">OpenAI’s Agents Hacked Their Own Infrastructure. Nobody Told Them To.</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>An analysis argues an accidental attack by OpenAI&#x27;s own agents is more alarming than a deliberate one — nobody chose it, which is the scary part.</p>
+          <div class="meta"><span class="src-kicker">Medium · Level Up Coding</span> · Noah Byteforge · 2d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://levelup.gitconnected.com/openais-agents-hacked-their-own-infrastructure-nobody-told-them-to-9fd5ffdf86e5?source=rss----5517fd7b58a6---4">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://levelup.gitconnected.com/openais-agents-hacked-their-own-infrastructure-nobody-told-them-to-9fd5ffdf86e5?source=rss----5517fd7b58a6---4" data-title="OpenAI’s Agents Hacked Their Own Infrastructure. Nobody Told Them To." data-source="medium" data-label="Medium · Level Up Coding" data-gist="An analysis argues an accidental attack by OpenAI&#x27;s own agents is more alarming than a deliberate one — nobody chose it, which is the scary part." data-cat="learning" data-discuss="https://levelup.gitconnected.com/openais-agents-hacked-their-own-infrastructure-nobody-told-them-to-9fd5ffdf86e5?source=rss----5517fd7b58a6---4"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="substack" data-created="1786170648" data-rank="7" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://sdcourse.substack.com/p/week-5-message-queues-for-log-processing">Week 5: Message Queues for Log Processing</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Part five of a distributed systems series reframes log processing as fundamentally a messaging problem, walking through queue-based architecture.</p>
+          <div class="meta"><span class="src-kicker">Hands On System Design - Distributed Systems Implementation </span> · System Design Course · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://sdcourse.substack.com/p/week-5-message-queues-for-log-processing">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://sdcourse.substack.com/p/week-5-message-queues-for-log-processing" data-title="Week 5: Message Queues for Log Processing" data-source="substack" data-label="Hands On System Design - Distributed Systems Implementation " data-gist="Part five of a distributed systems series reframes log processing as fundamentally a messaging problem, walking through queue-based architecture." data-cat="learning" data-discuss="https://sdcourse.substack.com/p/week-5-message-queues-for-log-processing"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        </div>
+        <div class="done">
+          <p class="done-h">You're caught up.</p>
+          <p class="done-sub"><b class="doneCount">8</b> <span class="doneNoun">stories</span> in Deep Dives · <b class="doneSaved">0</b> saved today</p>
+          <div class="actions">
+            <button class="btn" type="button" data-open-saved>Review what you saved</button>
+            <a class="btn" href="../archive.html">Earlier editions</a>
+          </div>
+          <p class="done-next">Next edition tomorrow, 8:00</p>
+        </div>
       </section>
       <section id="panel-products" class="panel">
         <p class="panel-intro">Products, repos and apps to look out for and actually use.</p>
-        <article class="card lead src-medium" data-created="1786117697" data-brief-item>
-        <div class="kicker"><span class="badge">Medium · Level Up Coding</span>
-          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://levelup.gitconnected.com/how-to-run-kimi-k3-locally-without-terabytes-of-ram-ddad7803e6a5?source=rss----5517fd7b58a6---4" data-title="How to Run Kimi K3 Locally Without Terabytes of RAM" data-source="medium" data-label="Medium · Level Up Coding" data-gist="Three practical ways to run Kimi K3 locally without terabytes of RAM — from a bounded-memory C engine to Unsloth&#x27;s shrunk 594GB checkpoint." data-cat="products" data-discuss="https://levelup.gitconnected.com/how-to-run-kimi-k3-locally-without-terabytes-of-ram-ddad7803e6a5?source=rss----5517fd7b58a6---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://levelup.gitconnected.com/how-to-run-kimi-k3-locally-without-terabytes-of-ram-ddad7803e6a5?source=rss----5517fd7b58a6---4">How to Run Kimi K3 Locally Without Terabytes of RAM</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Three practical ways to run Kimi K3 locally without terabytes of RAM — from a bounded-memory C engine to Unsloth&#x27;s shrunk 594GB checkpoint.</p>
-        <div class="meta">Youssef Hosni · <span class="date">1d ago</span> · <a href="https://levelup.gitconnected.com/how-to-run-kimi-k3-locally-without-terabytes-of-ram-ddad7803e6a5?source=rss----5517fd7b58a6---4">read →</a></div>
+        <p class="trim" hidden><span class="trim-text"></span><button type="button" data-show-all>Show everything →</button></p>
+        <article class="item lead" data-src="medium" data-created="1786117697" data-rank="0" data-brief-item>
+        <div class="top-row">
+          <span class="src-kicker">Medium · Level Up Coding</span>
+          <span class="tag">Top story</span>
+        </div>
+        <h2><a href="https://levelup.gitconnected.com/how-to-run-kimi-k3-locally-without-terabytes-of-ram-ddad7803e6a5?source=rss----5517fd7b58a6---4">How to Run Kimi K3 Locally Without Terabytes of RAM</a></h2>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Three practical ways to run Kimi K3 locally without terabytes of RAM — from a bounded-memory C engine to Unsloth&#x27;s shrunk 594GB checkpoint.</p>
+        <div class="meta">Youssef Hosni · 2d ago</div>
+        <div class="actions"><a class="btn btn-primary" href="https://levelup.gitconnected.com/how-to-run-kimi-k3-locally-without-terabytes-of-ram-ddad7803e6a5?source=rss----5517fd7b58a6---4">Read the post →</a><button class="btn bm-btn" type="button" aria-pressed="false" data-url="https://levelup.gitconnected.com/how-to-run-kimi-k3-locally-without-terabytes-of-ram-ddad7803e6a5?source=rss----5517fd7b58a6---4" data-title="How to Run Kimi K3 Locally Without Terabytes of RAM" data-source="medium" data-label="Medium · Level Up Coding" data-gist="Three practical ways to run Kimi K3 locally without terabytes of RAM — from a bounded-memory C engine to Unsloth&#x27;s shrunk 594GB checkpoint." data-cat="products" data-discuss="https://levelup.gitconnected.com/how-to-run-kimi-k3-locally-without-terabytes-of-ram-ddad7803e6a5?source=rss----5517fd7b58a6---4"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
         <div class="grid">
-        <article class="card src-medium" data-created="1786117686" data-brief-item>
-        <div class="kicker"><span class="badge">Medium · Level Up Coding</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://levelup.gitconnected.com/10-c-c-alternatives-most-programmers-have-never-heard-of-2edcf2b36d92?source=rss----5517fd7b58a6---4" data-title="10 C/C++ Alternatives Most Programmers Have Never Heard Of" data-source="medium" data-label="Medium · Level Up Coding" data-gist="A rundown of obscure C/C++ alternative languages beyond the usual Zig, Nim, and Odin suspects, for anyone curious what else compiles close to metal." data-cat="products" data-discuss="https://levelup.gitconnected.com/10-c-c-alternatives-most-programmers-have-never-heard-of-2edcf2b36d92?source=rss----5517fd7b58a6---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://levelup.gitconnected.com/10-c-c-alternatives-most-programmers-have-never-heard-of-2edcf2b36d92?source=rss----5517fd7b58a6---4">10 C/C++ Alternatives Most Programmers Have Never Heard Of</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A rundown of obscure C/C++ alternative languages beyond the usual Zig, Nim, and Odin suspects, for anyone curious what else compiles close to metal.</p>
-        <div class="meta">Shalitha Suranga · <span class="date">1d ago</span> · <a href="https://levelup.gitconnected.com/10-c-c-alternatives-most-programmers-have-never-heard-of-2edcf2b36d92?source=rss----5517fd7b58a6---4">read →</a></div>
+        <article class="item story" data-src="medium" data-created="1786117686" data-rank="1" data-brief-item>
+        <span class="src-kicker">Medium · Level Up Coding</span>
+        <h3><a href="https://levelup.gitconnected.com/10-c-c-alternatives-most-programmers-have-never-heard-of-2edcf2b36d92?source=rss----5517fd7b58a6---4">10 C/C++ Alternatives Most Programmers Have Never Heard Of</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A rundown of obscure C/C++ alternative languages beyond the usual Zig, Nim, and Odin suspects, for anyone curious what else compiles close to metal.</p>
+        <div class="meta">Shalitha Suranga · 2d ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://levelup.gitconnected.com/10-c-c-alternatives-most-programmers-have-never-heard-of-2edcf2b36d92?source=rss----5517fd7b58a6---4">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://levelup.gitconnected.com/10-c-c-alternatives-most-programmers-have-never-heard-of-2edcf2b36d92?source=rss----5517fd7b58a6---4" data-title="10 C/C++ Alternatives Most Programmers Have Never Heard Of" data-source="medium" data-label="Medium · Level Up Coding" data-gist="A rundown of obscure C/C++ alternative languages beyond the usual Zig, Nim, and Odin suspects, for anyone curious what else compiles close to metal." data-cat="products" data-discuss="https://levelup.gitconnected.com/10-c-c-alternatives-most-programmers-have-never-heard-of-2edcf2b36d92?source=rss----5517fd7b58a6---4"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
-        <article class="card src-hackernews" data-created="1786205091" data-brief-item>
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.fastmail.com/blog/fastmail-offers-eu-data-region/" data-title="Fastmail offers EU data region" data-source="hackernews" data-label="Hacker News" data-gist="Fastmail now offers an EU-hosted data region, though commenters caution it&#x27;s no guarantee against US or Australian legal reach over your data." data-cat="products" data-discuss="https://news.ycombinator.com/item?id=49223082"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.fastmail.com/blog/fastmail-offers-eu-data-region/">Fastmail offers EU data region</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Fastmail now offers an EU-hosted data region, though commenters caution it&#x27;s no guarantee against US or Australian legal reach over your data.</p>
-        <div class="meta">▲ 328 · 154 comments · <span class="date">10h ago</span> · <span class="rtime">2 min read</span> · <a href="https://news.ycombinator.com/item?id=49223082">discuss →</a></div>
+        <article class="item story" data-src="hackernews" data-created="1786205091" data-rank="2" data-brief-item>
+        <span class="src-kicker">Hacker News</span>
+        <h3><a href="https://www.fastmail.com/blog/fastmail-offers-eu-data-region/">Fastmail offers EU data region</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Fastmail now offers an EU-hosted data region, though commenters caution it&#x27;s no guarantee against US or Australian legal reach over your data.</p>
+        <div class="meta">▲ 328 · 154 comments · 1d ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.fastmail.com/blog/fastmail-offers-eu-data-region/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=49223082">154 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.fastmail.com/blog/fastmail-offers-eu-data-region/" data-title="Fastmail offers EU data region" data-source="hackernews" data-label="Hacker News" data-gist="Fastmail now offers an EU-hosted data region, though commenters caution it&#x27;s no guarantee against US or Australian legal reach over your data." data-cat="products" data-discuss="https://news.ycombinator.com/item?id=49223082"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
-        <article class="card src-medium" data-created="1786117676" data-brief-item>
-        <div class="kicker"><span class="badge">Medium · Level Up Coding</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://levelup.gitconnected.com/how-to-use-kimi-k3-with-claude-code-b1899fb44da5?source=rss----5517fd7b58a6---4" data-title="How to Use Kimi K3 with Claude Code" data-source="medium" data-label="Medium · Level Up Coding" data-gist="A guide to pairing Claude Code with Kimi K3, routing cheaper tasks to the open-weight model instead of paying frontier prices for everything." data-cat="products" data-discuss="https://levelup.gitconnected.com/how-to-use-kimi-k3-with-claude-code-b1899fb44da5?source=rss----5517fd7b58a6---4"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://levelup.gitconnected.com/how-to-use-kimi-k3-with-claude-code-b1899fb44da5?source=rss----5517fd7b58a6---4">How to Use Kimi K3 with Claude Code</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A guide to pairing Claude Code with Kimi K3, routing cheaper tasks to the open-weight model instead of paying frontier prices for everything.</p>
-        <div class="meta">Arindam Majumder · <span class="date">1d ago</span> · <span class="rtime">1 min read</span> · <a href="https://levelup.gitconnected.com/how-to-use-kimi-k3-with-claude-code-b1899fb44da5?source=rss----5517fd7b58a6---4">read →</a></div>
-      </article>
-        </div>
-        <div class="tail-list">
-        <article class="card row src-hackernews" data-created="1786195986" data-brief-item>
-        <div class="kicker"><span class="badge">Hacker News</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://blog.getutm.app/2026/introducing-triton-directx-11-driver-for-qemu/" data-title="Triton: DirectX 11 Driver for QEMU" data-source="hackernews" data-label="Hacker News" data-gist="Triton brings a working DirectX 11 driver to QEMU, finally giving open-source Windows VMs decent 3D acceleration without proprietary blobs." data-cat="products" data-discuss="https://news.ycombinator.com/item?id=49221711"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://blog.getutm.app/2026/introducing-triton-directx-11-driver-for-qemu/">Triton: DirectX 11 Driver for QEMU</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Triton brings a working DirectX 11 driver to QEMU, finally giving open-source Windows VMs decent 3D acceleration without proprietary blobs.</p>
-        <div class="meta">▲ 140 · 25 comments · <span class="date">12h ago</span> · <span class="rtime">1 min read</span> · <a href="https://news.ycombinator.com/item?id=49221711">discuss →</a></div>
+        <article class="item story" data-src="medium" data-created="1786117676" data-rank="3" data-brief-item>
+        <span class="src-kicker">Medium · Level Up Coding</span>
+        <h3><a href="https://levelup.gitconnected.com/how-to-use-kimi-k3-with-claude-code-b1899fb44da5?source=rss----5517fd7b58a6---4">How to Use Kimi K3 with Claude Code</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A guide to pairing Claude Code with Kimi K3, routing cheaper tasks to the open-weight model instead of paying frontier prices for everything.</p>
+        <div class="meta">Arindam Majumder · 2d ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://levelup.gitconnected.com/how-to-use-kimi-k3-with-claude-code-b1899fb44da5?source=rss----5517fd7b58a6---4">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://levelup.gitconnected.com/how-to-use-kimi-k3-with-claude-code-b1899fb44da5?source=rss----5517fd7b58a6---4" data-title="How to Use Kimi K3 with Claude Code" data-source="medium" data-label="Medium · Level Up Coding" data-gist="A guide to pairing Claude Code with Kimi K3, routing cheaper tasks to the open-weight model instead of paying frontier prices for everything." data-cat="products" data-discuss="https://levelup.gitconnected.com/how-to-use-kimi-k3-with-claude-code-b1899fb44da5?source=rss----5517fd7b58a6---4"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
         </div>
-        <div class="finish-line">End of <em>Worth a Try</em> &middot; 5 stories</div>
+        <div class="tail">
+        <article class="item row" data-src="hackernews" data-created="1786195986" data-rank="4" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://blog.getutm.app/2026/introducing-triton-directx-11-driver-for-qemu/">Triton: DirectX 11 Driver for QEMU</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Triton brings a working DirectX 11 driver to QEMU, finally giving open-source Windows VMs decent 3D acceleration without proprietary blobs.</p>
+          <div class="meta"><span class="src-kicker">Hacker News</span> · ▲ 140 · 25 comments · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://blog.getutm.app/2026/introducing-triton-directx-11-driver-for-qemu/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=49221711">25 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://blog.getutm.app/2026/introducing-triton-directx-11-driver-for-qemu/" data-title="Triton: DirectX 11 Driver for QEMU" data-source="hackernews" data-label="Hacker News" data-gist="Triton brings a working DirectX 11 driver to QEMU, finally giving open-source Windows VMs decent 3D acceleration without proprietary blobs." data-cat="products" data-discuss="https://news.ycombinator.com/item?id=49221711"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        </div>
+        <div class="done">
+          <p class="done-h">You're caught up.</p>
+          <p class="done-sub"><b class="doneCount">5</b> <span class="doneNoun">stories</span> in Worth a Try · <b class="doneSaved">0</b> saved today</p>
+          <div class="actions">
+            <button class="btn" type="button" data-open-saved>Review what you saved</button>
+            <a class="btn" href="../archive.html">Earlier editions</a>
+          </div>
+          <p class="done-next">Next edition tomorrow, 8:00</p>
+        </div>
       </section>
       <section id="panel-personal" class="panel">
         <p class="panel-intro">Your world beyond tech — local, hobby and the rest of your personal feed.</p>
-        <article class="card lead src-reddit" data-created="1786215803" data-brief-item>
-        <div class="kicker"><span class="badge">r/homelabporn</span>
-          <span class="kicker-r"><span class="lead-tag">Top</span><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://i.redd.it/pom6ar14v8ih1.jpeg" data-title="Forget Labporn, show me some slutracks." data-source="reddit" data-label="r/homelabporn" data-gist="A tongue-in-cheek ask for network switch and rack porn instead of full homelab builds — pure hobbyist humor for gearheads." data-cat="personal" data-discuss="https://www.reddit.com/r/HomeLabPorn/comments/1vjbn2u/forget_labporn_show_me_some_slutracks/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://i.redd.it/pom6ar14v8ih1.jpeg">Forget Labporn, show me some slutracks.</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A tongue-in-cheek ask for network switch and rack porn instead of full homelab builds — pure hobbyist humor for gearheads.</p>
-        <div class="meta"><span class="date">7h ago</span> · <a href="https://www.reddit.com/r/HomeLabPorn/comments/1vjbn2u/forget_labporn_show_me_some_slutracks/">open →</a></div>
+        <p class="trim" hidden><span class="trim-text"></span><button type="button" data-show-all>Show everything →</button></p>
+        <article class="item lead" data-src="reddit" data-created="1786215803" data-rank="0" data-brief-item>
+        <div class="top-row">
+          <span class="src-kicker">r/homelabporn</span>
+          <span class="tag">Top story</span>
+        </div>
+        <h2><a href="https://i.redd.it/pom6ar14v8ih1.jpeg">Forget Labporn, show me some slutracks.</a></h2>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A tongue-in-cheek ask for network switch and rack porn instead of full homelab builds — pure hobbyist humor for gearheads.</p>
+        <div class="meta">22h ago</div>
+        <div class="actions"><a class="btn btn-primary" href="https://i.redd.it/pom6ar14v8ih1.jpeg">Read the story →</a><a class="btn" href="https://www.reddit.com/r/HomeLabPorn/comments/1vjbn2u/forget_labporn_show_me_some_slutracks/">Discuss</a><button class="btn bm-btn" type="button" aria-pressed="false" data-url="https://i.redd.it/pom6ar14v8ih1.jpeg" data-title="Forget Labporn, show me some slutracks." data-source="reddit" data-label="r/homelabporn" data-gist="A tongue-in-cheek ask for network switch and rack porn instead of full homelab builds — pure hobbyist humor for gearheads." data-cat="personal" data-discuss="https://www.reddit.com/r/HomeLabPorn/comments/1vjbn2u/forget_labporn_show_me_some_slutracks/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
         <div class="grid">
-        <article class="card src-reddit" data-created="1786211215" data-brief-item>
-        <div class="kicker"><span class="badge">r/homeautomation</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/homeautomation/comments/1vja0py/automating_sleep_and_recovery_at_home_without_it/" data-title="Automating sleep and recovery at home without it feeling like a science experiment" data-source="reddit" data-label="r/homeautomation" data-gist="A home automation build for tracking sleep and recovery that stays usable day-to-day instead of turning into an over-engineered science project." data-cat="personal" data-discuss="https://www.reddit.com/r/homeautomation/comments/1vja0py/automating_sleep_and_recovery_at_home_without_it/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/homeautomation/comments/1vja0py/automating_sleep_and_recovery_at_home_without_it/">Automating sleep and recovery at home without it feeling like a science experiment</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A home automation build for tracking sleep and recovery that stays usable day-to-day instead of turning into an over-engineered science project.</p>
-        <div class="meta"><span class="date">8h ago</span> · <a href="https://www.reddit.com/r/homeautomation/comments/1vja0py/automating_sleep_and_recovery_at_home_without_it/">open →</a></div>
+        <article class="item story" data-src="reddit" data-created="1786211215" data-rank="1" data-brief-item>
+        <span class="src-kicker">r/homeautomation</span>
+        <h3><a href="https://www.reddit.com/r/homeautomation/comments/1vja0py/automating_sleep_and_recovery_at_home_without_it/">Automating sleep and recovery at home without it feeling like a science experiment</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A home automation build for tracking sleep and recovery that stays usable day-to-day instead of turning into an over-engineered science project.</p>
+        <div class="meta">23h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/homeautomation/comments/1vja0py/automating_sleep_and_recovery_at_home_without_it/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/homeautomation/comments/1vja0py/automating_sleep_and_recovery_at_home_without_it/" data-title="Automating sleep and recovery at home without it feeling like a science experiment" data-source="reddit" data-label="r/homeautomation" data-gist="A home automation build for tracking sleep and recovery that stays usable day-to-day instead of turning into an over-engineered science project." data-cat="personal" data-discuss="https://www.reddit.com/r/homeautomation/comments/1vja0py/automating_sleep_and_recovery_at_home_without_it/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
-        <article class="card src-reddit" data-created="1786210075" data-brief-item>
-        <div class="kicker"><span class="badge">r/dalalstreetbets</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://i.redd.it/osni2sr8e8ih1.png" data-title="Discussion: What has the rise of retail participation changed about the Indian stock market?" data-source="reddit" data-label="r/dalalstreetbets" data-gist="A discussion on how surging retail trading volume is reshaping the Indian stock market&#x27;s dynamics, liquidity, and volatility." data-cat="personal" data-discuss="https://www.reddit.com/r/dalalstreetbets/comments/1vj9lo7/discussion_what_has_the_rise_of_retail/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://i.redd.it/osni2sr8e8ih1.png">Discussion: What has the rise of retail participation changed about the Indian stock market?</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A discussion on how surging retail trading volume is reshaping the Indian stock market&#x27;s dynamics, liquidity, and volatility.</p>
-        <div class="meta"><span class="date">9h ago</span> · <a href="https://www.reddit.com/r/dalalstreetbets/comments/1vj9lo7/discussion_what_has_the_rise_of_retail/">open →</a></div>
+        <article class="item story" data-src="reddit" data-created="1786210075" data-rank="2" data-brief-item>
+        <span class="src-kicker">r/dalalstreetbets</span>
+        <h3><a href="https://i.redd.it/osni2sr8e8ih1.png">Discussion: What has the rise of retail participation changed about the Indian stock market?</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A discussion on how surging retail trading volume is reshaping the Indian stock market&#x27;s dynamics, liquidity, and volatility.</p>
+        <div class="meta">23h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://i.redd.it/osni2sr8e8ih1.png">Read →</a><a class="btn btn-sm" href="https://www.reddit.com/r/dalalstreetbets/comments/1vj9lo7/discussion_what_has_the_rise_of_retail/">Discuss</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://i.redd.it/osni2sr8e8ih1.png" data-title="Discussion: What has the rise of retail participation changed about the Indian stock market?" data-source="reddit" data-label="r/dalalstreetbets" data-gist="A discussion on how surging retail trading volume is reshaping the Indian stock market&#x27;s dynamics, liquidity, and volatility." data-cat="personal" data-discuss="https://www.reddit.com/r/dalalstreetbets/comments/1vj9lo7/discussion_what_has_the_rise_of_retail/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
-        <article class="card src-reddit" data-created="1786209908" data-brief-item>
-        <div class="kicker"><span class="badge">r/showerthoughts</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/Showerthoughts/comments/1vj9jfm/we_should_make_1080p_the_new_hd_and_downgrade/" data-title="We should make 1080p the new HD and downgrade 720p to SD." data-source="reddit" data-label="r/showerthoughts" data-gist="A tongue-in-cheek proposal to rebrand 1080p as HD and demote 720p to SD, playing on how resolution standards keep quietly shifting upward." data-cat="personal" data-discuss="https://www.reddit.com/r/Showerthoughts/comments/1vj9jfm/we_should_make_1080p_the_new_hd_and_downgrade/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/Showerthoughts/comments/1vj9jfm/we_should_make_1080p_the_new_hd_and_downgrade/">We should make 1080p the new HD and downgrade 720p to SD.</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A tongue-in-cheek proposal to rebrand 1080p as HD and demote 720p to SD, playing on how resolution standards keep quietly shifting upward.</p>
-        <div class="meta"><span class="date">9h ago</span> · <a href="https://www.reddit.com/r/Showerthoughts/comments/1vj9jfm/we_should_make_1080p_the_new_hd_and_downgrade/">open →</a></div>
-      </article>
-        </div>
-        <div class="tail-list">
-        <article class="card row src-substack" data-created="1786194067" data-brief-item>
-        <div class="kicker"><span class="badge">The Substack Post</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://post.substack.com/p/it-was-5-hours-into-the-trip-when" data-title="“It was 5 hours into the trip when I realized my hostess might be annoyed. 33 hours when I thought she hated me. 55 hours when I knew she would never speak to me again.”" data-source="substack" data-label="The Substack Post" data-gist="A personal essay on prolonged social rejection and awkward travel mishaps, part of a newsletter roundup on Vice&#x27;s collapse and modern rebellion." data-cat="personal" data-discuss="https://post.substack.com/p/it-was-5-hours-into-the-trip-when"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://post.substack.com/p/it-was-5-hours-into-the-trip-when">“It was 5 hours into the trip when I realized my hostess might be annoyed. 33 hours when I thought she hated me. 55 hours when I knew she would never speak to me again.”</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A personal essay on prolonged social rejection and awkward travel mishaps, part of a newsletter roundup on Vice&#x27;s collapse and modern rebellion.</p>
-        <div class="meta">Substack · <span class="date">13h ago</span> · <a href="https://post.substack.com/p/it-was-5-hours-into-the-trip-when">read →</a></div>
-      </article>
-        <article class="card row src-reddit" data-created="1786203168" data-brief-item>
-        <div class="kicker"><span class="badge">r/whatsthisplant</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/gallery/1vj708u" data-title="Are these pears?" data-source="reddit" data-label="r/whatsthisplant" data-gist="A gardening subreddit asks for help identifying whether backyard fruit are actually pears." data-cat="personal" data-discuss="https://www.reddit.com/r/whatsthisplant/comments/1vj708u/are_these_pears/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/gallery/1vj708u">Are these pears?</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A gardening subreddit asks for help identifying whether backyard fruit are actually pears.</p>
-        <div class="meta"><span class="date">10h ago</span> · <a href="https://www.reddit.com/r/whatsthisplant/comments/1vj708u/are_these_pears/">open →</a></div>
-      </article>
-        <article class="card row src-reddit" data-created="1786201221" data-brief-item>
-        <div class="kicker"><span class="badge">r/walking</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/walking/comments/1vj695g/walking_helped_me_leave_my_toxic_relationship/" data-title="Walking helped me leave my toxic relationship!" data-source="reddit" data-label="r/walking" data-gist="A personal story on how a daily walking habit gave someone the clarity and courage to leave a toxic relationship." data-cat="personal" data-discuss="https://www.reddit.com/r/walking/comments/1vj695g/walking_helped_me_leave_my_toxic_relationship/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/walking/comments/1vj695g/walking_helped_me_leave_my_toxic_relationship/">Walking helped me leave my toxic relationship!</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A personal story on how a daily walking habit gave someone the clarity and courage to leave a toxic relationship.</p>
-        <div class="meta"><span class="date">11h ago</span> · <a href="https://www.reddit.com/r/walking/comments/1vj695g/walking_helped_me_leave_my_toxic_relationship/">open →</a></div>
-      </article>
-        <article class="card row src-substack" data-created="1786188274" data-brief-item>
-        <div class="kicker"><span class="badge">Compounding Dividends</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.compoundingdividends.net/p/dividend-growth-and-secular-tailwinds" data-title="Dividend Growth and Secular Tailwinds" data-source="substack" data-label="Compounding Dividends" data-gist="A case for dividend growth investing as a long-term compounding strategy, though the author concedes high-yield stocks suit those needing income now." data-cat="personal" data-discuss="https://www.compoundingdividends.net/p/dividend-growth-and-secular-tailwinds"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.compoundingdividends.net/p/dividend-growth-and-secular-tailwinds">Dividend Growth and Secular Tailwinds</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A case for dividend growth investing as a long-term compounding strategy, though the author concedes high-yield stocks suit those needing income now.</p>
-        <div class="meta">TJ Terwilliger · <span class="date">15h ago</span> · <a href="https://www.compoundingdividends.net/p/dividend-growth-and-secular-tailwinds">read →</a></div>
-      </article>
-        <article class="card row src-reddit" data-created="1786199795" data-brief-item>
-        <div class="kicker"><span class="badge">r/championsleague</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/championsleague/comments/1vj5oyk/20022006_is_the_best_era_of_football/" data-title="2002-2006 is the best Era of Football" data-source="reddit" data-label="r/championsleague" data-gist="Football fans debate whether 2002-2006 was the sport&#x27;s greatest era, reminiscing over that Champions League golden age." data-cat="personal" data-discuss="https://www.reddit.com/r/championsleague/comments/1vj5oyk/20022006_is_the_best_era_of_football/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/championsleague/comments/1vj5oyk/20022006_is_the_best_era_of_football/">2002-2006 is the best Era of Football</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Football fans debate whether 2002-2006 was the sport&#x27;s greatest era, reminiscing over that Champions League golden age.</p>
-        <div class="meta"><span class="date">11h ago</span> · <a href="https://www.reddit.com/r/championsleague/comments/1vj5oyk/20022006_is_the_best_era_of_football/">open →</a></div>
-      </article>
-        <article class="card row src-reddit" data-created="1786198422" data-brief-item>
-        <div class="kicker"><span class="badge">r/trueoffmychest</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/TrueOffMyChest/comments/1vj55hb/my_friend_is_having_her_affair_partners_baby/" data-title="My friend is having her affair partner&#x27;s baby" data-source="reddit" data-label="r/trueoffmychest" data-gist="A wrenching confession thread about a friend carrying her affair partner&#x27;s child, and the fallout rippling through her relationships." data-cat="personal" data-discuss="https://www.reddit.com/r/TrueOffMyChest/comments/1vj55hb/my_friend_is_having_her_affair_partners_baby/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/TrueOffMyChest/comments/1vj55hb/my_friend_is_having_her_affair_partners_baby/">My friend is having her affair partner&#x27;s baby</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>A wrenching confession thread about a friend carrying her affair partner&#x27;s child, and the fallout rippling through her relationships.</p>
-        <div class="meta"><span class="date">12h ago</span> · <a href="https://www.reddit.com/r/TrueOffMyChest/comments/1vj55hb/my_friend_is_having_her_affair_partners_baby/">open →</a></div>
-      </article>
-        <article class="card row src-reddit" data-created="1786196768" data-brief-item>
-        <div class="kicker"><span class="badge">r/stocks</span>
-          <span class="kicker-r"><button class="bm-btn" type="button" aria-label="Save to bookmarks" title="Save" data-url="https://www.reddit.com/r/stocks/comments/1vj4i19/iran_issues_list_of_demands_complicating_efforts/" data-title="Iran Issues List of Demands, Complicating Efforts to Reopen Strait" data-source="reddit" data-label="r/stocks" data-gist="Iran lays out demands that complicate reopening the Strait of Hormuz, a chokepoint whose status ripples through oil markets and stock sentiment." data-cat="personal" data-discuss="https://www.reddit.com/r/stocks/comments/1vj4i19/iran_issues_list_of_demands_complicating_efforts/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg></button></span></div>
-        <a class="card-title" href="https://www.reddit.com/r/stocks/comments/1vj4i19/iran_issues_list_of_demands_complicating_efforts/">Iran Issues List of Demands, Complicating Efforts to Reopen Strait</a>
-        <p class="card-gist"><span class="ai-tag">AI gist</span>Iran lays out demands that complicate reopening the Strait of Hormuz, a chokepoint whose status ripples through oil markets and stock sentiment.</p>
-        <div class="meta"><span class="date">12h ago</span> · <a href="https://www.reddit.com/r/stocks/comments/1vj4i19/iran_issues_list_of_demands_complicating_efforts/">open →</a></div>
+        <article class="item story" data-src="reddit" data-created="1786209908" data-rank="3" data-brief-item>
+        <span class="src-kicker">r/showerthoughts</span>
+        <h3><a href="https://www.reddit.com/r/Showerthoughts/comments/1vj9jfm/we_should_make_1080p_the_new_hd_and_downgrade/">We should make 1080p the new HD and downgrade 720p to SD.</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A tongue-in-cheek proposal to rebrand 1080p as HD and demote 720p to SD, playing on how resolution standards keep quietly shifting upward.</p>
+        <div class="meta">23h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/Showerthoughts/comments/1vj9jfm/we_should_make_1080p_the_new_hd_and_downgrade/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/Showerthoughts/comments/1vj9jfm/we_should_make_1080p_the_new_hd_and_downgrade/" data-title="We should make 1080p the new HD and downgrade 720p to SD." data-source="reddit" data-label="r/showerthoughts" data-gist="A tongue-in-cheek proposal to rebrand 1080p as HD and demote 720p to SD, playing on how resolution standards keep quietly shifting upward." data-cat="personal" data-discuss="https://www.reddit.com/r/Showerthoughts/comments/1vj9jfm/we_should_make_1080p_the_new_hd_and_downgrade/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
       </article>
         </div>
-        <div class="finish-line">End of <em>Off the Clock</em> &middot; 11 stories</div>
+        <div class="tail">
+        <article class="item row" data-src="substack" data-created="1786194067" data-rank="4" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://post.substack.com/p/it-was-5-hours-into-the-trip-when">“It was 5 hours into the trip when I realized my hostess might be annoyed. 33 hours when I thought she hated me. 55 hours when I knew she would never speak to me again.”</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A personal essay on prolonged social rejection and awkward travel mishaps, part of a newsletter roundup on Vice&#x27;s collapse and modern rebellion.</p>
+          <div class="meta"><span class="src-kicker">The Substack Post</span> · Substack · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://post.substack.com/p/it-was-5-hours-into-the-trip-when">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://post.substack.com/p/it-was-5-hours-into-the-trip-when" data-title="“It was 5 hours into the trip when I realized my hostess might be annoyed. 33 hours when I thought she hated me. 55 hours when I knew she would never speak to me again.”" data-source="substack" data-label="The Substack Post" data-gist="A personal essay on prolonged social rejection and awkward travel mishaps, part of a newsletter roundup on Vice&#x27;s collapse and modern rebellion." data-cat="personal" data-discuss="https://post.substack.com/p/it-was-5-hours-into-the-trip-when"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1786203168" data-rank="5" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.reddit.com/gallery/1vj708u">Are these pears?</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A gardening subreddit asks for help identifying whether backyard fruit are actually pears.</p>
+          <div class="meta"><span class="src-kicker">r/whatsthisplant</span> · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/gallery/1vj708u">Read →</a><a class="btn btn-sm" href="https://www.reddit.com/r/whatsthisplant/comments/1vj708u/are_these_pears/">Discuss</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/gallery/1vj708u" data-title="Are these pears?" data-source="reddit" data-label="r/whatsthisplant" data-gist="A gardening subreddit asks for help identifying whether backyard fruit are actually pears." data-cat="personal" data-discuss="https://www.reddit.com/r/whatsthisplant/comments/1vj708u/are_these_pears/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1786201221" data-rank="6" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.reddit.com/r/walking/comments/1vj695g/walking_helped_me_leave_my_toxic_relationship/">Walking helped me leave my toxic relationship!</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A personal story on how a daily walking habit gave someone the clarity and courage to leave a toxic relationship.</p>
+          <div class="meta"><span class="src-kicker">r/walking</span> · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/walking/comments/1vj695g/walking_helped_me_leave_my_toxic_relationship/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/walking/comments/1vj695g/walking_helped_me_leave_my_toxic_relationship/" data-title="Walking helped me leave my toxic relationship!" data-source="reddit" data-label="r/walking" data-gist="A personal story on how a daily walking habit gave someone the clarity and courage to leave a toxic relationship." data-cat="personal" data-discuss="https://www.reddit.com/r/walking/comments/1vj695g/walking_helped_me_leave_my_toxic_relationship/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="substack" data-created="1786188274" data-rank="7" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.compoundingdividends.net/p/dividend-growth-and-secular-tailwinds">Dividend Growth and Secular Tailwinds</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A case for dividend growth investing as a long-term compounding strategy, though the author concedes high-yield stocks suit those needing income now.</p>
+          <div class="meta"><span class="src-kicker">Compounding Dividends</span> · TJ Terwilliger · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.compoundingdividends.net/p/dividend-growth-and-secular-tailwinds">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.compoundingdividends.net/p/dividend-growth-and-secular-tailwinds" data-title="Dividend Growth and Secular Tailwinds" data-source="substack" data-label="Compounding Dividends" data-gist="A case for dividend growth investing as a long-term compounding strategy, though the author concedes high-yield stocks suit those needing income now." data-cat="personal" data-discuss="https://www.compoundingdividends.net/p/dividend-growth-and-secular-tailwinds"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1786199795" data-rank="8" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.reddit.com/r/championsleague/comments/1vj5oyk/20022006_is_the_best_era_of_football/">2002-2006 is the best Era of Football</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Football fans debate whether 2002-2006 was the sport&#x27;s greatest era, reminiscing over that Champions League golden age.</p>
+          <div class="meta"><span class="src-kicker">r/championsleague</span> · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/championsleague/comments/1vj5oyk/20022006_is_the_best_era_of_football/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/championsleague/comments/1vj5oyk/20022006_is_the_best_era_of_football/" data-title="2002-2006 is the best Era of Football" data-source="reddit" data-label="r/championsleague" data-gist="Football fans debate whether 2002-2006 was the sport&#x27;s greatest era, reminiscing over that Champions League golden age." data-cat="personal" data-discuss="https://www.reddit.com/r/championsleague/comments/1vj5oyk/20022006_is_the_best_era_of_football/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1786198422" data-rank="9" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.reddit.com/r/TrueOffMyChest/comments/1vj55hb/my_friend_is_having_her_affair_partners_baby/">My friend is having her affair partner&#x27;s baby</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A wrenching confession thread about a friend carrying her affair partner&#x27;s child, and the fallout rippling through her relationships.</p>
+          <div class="meta"><span class="src-kicker">r/trueoffmychest</span> · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/TrueOffMyChest/comments/1vj55hb/my_friend_is_having_her_affair_partners_baby/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/TrueOffMyChest/comments/1vj55hb/my_friend_is_having_her_affair_partners_baby/" data-title="My friend is having her affair partner&#x27;s baby" data-source="reddit" data-label="r/trueoffmychest" data-gist="A wrenching confession thread about a friend carrying her affair partner&#x27;s child, and the fallout rippling through her relationships." data-cat="personal" data-discuss="https://www.reddit.com/r/TrueOffMyChest/comments/1vj55hb/my_friend_is_having_her_affair_partners_baby/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1786196768" data-rank="10" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.reddit.com/r/stocks/comments/1vj4i19/iran_issues_list_of_demands_complicating_efforts/">Iran Issues List of Demands, Complicating Efforts to Reopen Strait</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Iran lays out demands that complicate reopening the Strait of Hormuz, a chokepoint whose status ripples through oil markets and stock sentiment.</p>
+          <div class="meta"><span class="src-kicker">r/stocks</span> · 1d ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/stocks/comments/1vj4i19/iran_issues_list_of_demands_complicating_efforts/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/stocks/comments/1vj4i19/iran_issues_list_of_demands_complicating_efforts/" data-title="Iran Issues List of Demands, Complicating Efforts to Reopen Strait" data-source="reddit" data-label="r/stocks" data-gist="Iran lays out demands that complicate reopening the Strait of Hormuz, a chokepoint whose status ripples through oil markets and stock sentiment." data-cat="personal" data-discuss="https://www.reddit.com/r/stocks/comments/1vj4i19/iran_issues_list_of_demands_complicating_efforts/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        </div>
+        <div class="done">
+          <p class="done-h">You're caught up.</p>
+          <p class="done-sub"><b class="doneCount">11</b> <span class="doneNoun">stories</span> in Off the Clock · <b class="doneSaved">0</b> saved today</p>
+          <div class="actions">
+            <button class="btn" type="button" data-open-saved>Review what you saved</button>
+            <a class="btn" href="../archive.html">Earlier editions</a>
+          </div>
+          <p class="done-next">Next edition tomorrow, 8:00</p>
+        </div>
       </section>
     </div>
+  </main>
 
-    <footer>
+  <footer class="foot">
+    <div class="in">
       <div class="provenance">Personalized from — Reddit: your home RSS · Substack: your subscriptions · Medium: your follows</div>
       Built from <a href="https://hn.algolia.com/api">Hacker News</a>,
-      <a href="https://www.reddit.com">Reddit</a>, Substack &amp;
-      Medium · generated 09 Aug 2026, 08:00 · <a href="../archive.html">archive</a>
-    </footer>
-  </div>
+      <a href="https://www.reddit.com">Reddit</a>, Substack &amp; Medium ·
+      <a href="../archive.html">archive</a>
+    </div>
+  </footer>
 
-  <!-- Bookmarks: side tab + slide-out drawer (data lives in localStorage) -->
-  <button class="bm-tab" id="bmTab" type="button" aria-label="Open bookmarks">Bookmarks<span class="bm-count" id="bmCount">0</span></button>
   <div class="bm-backdrop" id="bmBackdrop"></div>
-  <aside class="bm-drawer" id="bmDrawer" aria-label="Saved bookmarks">
+  <aside class="bm-drawer" id="bmDrawer" aria-label="Saved stories">
     <div class="bm-head">
-      <h2>Saved <em>&#9733;</em></h2>
+      <h2>Saved</h2>
       <div class="bm-head-actions">
-        <button class="bm-export" id="bmExport" type="button" title="Export bookmarks as JSON">Export</button>
-        <button class="bm-import-btn" id="bmImportBtn" type="button" title="Import bookmarks from JSON">Import</button>
+        <button class="bm-export" id="bmExport" type="button" title="Export as JSON">Export</button>
+        <button class="bm-import-btn" id="bmImportBtn" type="button" title="Import from JSON">Import</button>
         <input type="file" id="bmImportFile" accept=".json" style="display:none">
         <button class="bm-close" id="bmClose" type="button" aria-label="Close">&times;</button>
       </div>
@@ -564,8 +732,10 @@
   <script>
   (function () {
     "use strict";
+    function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
 
-    /* ---- Bookmarks ---- */
+    /* ---- Saved stories ---- */
+    var savedCount = 0;
     try {
       var BM_KEY = "db_bookmarks_v1", UNSORTED = "__unsorted__";
       function bmLoad() {
@@ -574,9 +744,9 @@
       }
       function bmSave() { try { localStorage.setItem(BM_KEY, JSON.stringify(bmState)); } catch (e) { console.error("[daily-brief] bmSave", e); } }
       var bmState = bmLoad();
-
       var body = document.getElementById("bmBody");
       var countEl = document.getElementById("bmCount");
+      var tabBtn = document.getElementById("bmTab");
       var drawer = document.getElementById("bmDrawer");
       var backdrop = document.getElementById("bmBackdrop");
       var newName = document.getElementById("bmNewName");
@@ -588,48 +758,50 @@
           .filter(function (it) { return (it.group || UNSORTED) === gid; })
           .sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
       }
-      function updateCount() { countEl.textContent = count(); }
-      function syncButtons() {
-        var btns = document.querySelectorAll(".bm-btn");
-        for (var i = 0; i < btns.length; i++) {
-          btns[i].classList.toggle("on", !!bmState.items[btns[i].getAttribute("data-url")]);
-        }
+      function updateCount() {
+        savedCount = count();
+        countEl.textContent = savedCount;
+        tabBtn.classList.toggle("has", savedCount > 0);
+        document.querySelectorAll(".doneSaved").forEach(function (n) { n.textContent = savedCount; });
       }
-      function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-
+      function syncButtons() {
+        document.querySelectorAll(".bm-btn").forEach(function (b) {
+          var on = !!bmState.items[b.getAttribute("data-url")];
+          b.classList.toggle("on", on);
+          var lab = b.querySelector(".bm-label");
+          if (lab) lab.textContent = on ? "Saved" : "Save";
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+      }
       function itemNode(it) {
-        var node = el("div", "bm-item");
+        var w = el("div", "bm-item");
         var a = el("a", "t", it.title || it.url); a.href = it.url; a.target = "_blank"; a.rel = "noopener";
-        node.appendChild(a);
-        var row = el("div", "row");
-        row.appendChild(el("span", "src", it.label || it.source || ""));
-        var sel = el("select");
+        w.appendChild(a);
+        var r2 = el("div", "row2");
+        r2.appendChild(el("span", "src", it.label || it.source || ""));
+        var sel = document.createElement("select");
         groupsAll().forEach(function (g) {
-          var o = el("option", null, g.name); o.value = g.id;
+          var o = document.createElement("option"); o.value = g.id; o.textContent = g.name;
           if ((it.group || UNSORTED) === g.id) o.selected = true;
           sel.appendChild(o);
         });
-        sel.onchange = function () { it.group = sel.value; bmSave(); render(); };
-        row.appendChild(sel);
-        var rm = el("button", "rm", "×"); rm.title = "Remove";
+        sel.onchange = function () { bmState.items[it.url].group = sel.value; bmSave(); render(); };
+        r2.appendChild(sel);
+        var rm = el("button", "rm", "×"); rm.title = "Remove"; rm.setAttribute("aria-label", "Remove");
         rm.onclick = function () { delete bmState.items[it.url]; bmSave(); render(); syncButtons(); updateCount(); };
-        row.appendChild(rm);
-        node.appendChild(row);
-        return node;
+        r2.appendChild(rm);
+        w.appendChild(r2);
+        return w;
       }
-
       function render() {
         body.innerHTML = "";
-        if (count() === 0) {
-          body.appendChild(el("div", "bm-empty", "No bookmarks yet. Tap the bookmark icon on any story to save it here."));
-          return;
-        }
+        if (!count()) { body.appendChild(el("div", "bm-empty", "Nothing saved yet. Hit Save on any story and it lands here — stored in this browser, exportable as JSON.")); return; }
         groupsAll().forEach(function (g) {
           var items = itemsIn(g.id);
-          if (g.id === UNSORTED && items.length === 0) return;
+          if (!items.length && g.id === UNSORTED) return;
           var wrap = el("div", "bm-group");
           var h = el("div", "bm-group-h");
-          var name = el("span", "name"); name.textContent = g.name;
+          var name = el("span", "name", g.name);
           name.appendChild(el("span", "n", "  " + items.length));
           h.appendChild(name);
           if (g.id !== UNSORTED) {
@@ -646,7 +818,6 @@
           body.appendChild(wrap);
         });
       }
-
       function addGroup() {
         var name = (newName.value || "").trim();
         if (!name) return;
@@ -656,26 +827,25 @@
       document.getElementById("bmAddGroup").onclick = addGroup;
       newName.addEventListener("keydown", function (e) { if (e.key === "Enter") addGroup(); });
 
-      function open() { drawer.classList.add("open"); backdrop.classList.add("open"); render(); }
-      function close() { drawer.classList.remove("open"); backdrop.classList.remove("open"); }
-      document.getElementById("bmTab").onclick = open;
-      document.getElementById("bmClose").onclick = close;
-      backdrop.onclick = close;
-      document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+      function openDrawer() { drawer.classList.add("open"); backdrop.classList.add("open"); render(); document.getElementById("bmClose").focus(); }
+      function closeDrawer() { drawer.classList.remove("open"); backdrop.classList.remove("open"); tabBtn.focus(); }
+      tabBtn.onclick = openDrawer;
+      document.getElementById("bmClose").onclick = closeDrawer;
+      backdrop.onclick = closeDrawer;
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && drawer.classList.contains("open")) closeDrawer(); });
+      document.querySelectorAll("[data-open-saved]").forEach(function (b) { b.onclick = openDrawer; });
 
       document.getElementById("bmExport").onclick = function () {
         try {
           var blob = new Blob([JSON.stringify(bmState, null, 2)], { type: "application/json" });
           var a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
-          a.download = "daily-brief-bookmarks.json";
+          a.download = "daily-brief-saved.json";
           a.click();
           URL.revokeObjectURL(a.href);
-        } catch (e) { console.error("[daily-brief] bookmark export", e); }
+        } catch (e) { console.error("[daily-brief] export", e); }
       };
-      document.getElementById("bmImportBtn").onclick = function () {
-        document.getElementById("bmImportFile").click();
-      };
+      document.getElementById("bmImportBtn").onclick = function () { document.getElementById("bmImportFile").click(); };
       document.getElementById("bmImportFile").onchange = function (e) {
         var file = e.target.files[0];
         if (!file) return;
@@ -692,7 +862,7 @@
               }
               bmSave(); render(); syncButtons(); updateCount();
             }
-          } catch (err) { alert("Invalid bookmark file"); }
+          } catch (err) { alert("Invalid saved-stories file"); }
         };
         reader.readAsText(file);
         e.target.value = "";
@@ -702,7 +872,7 @@
         var u = btn.getAttribute("data-url");
         if (!u) return;
         btn.addEventListener("click", function () {
-          if (bmState.items[u]) { delete bmState.items[u]; btn.classList.remove("on"); }
+          if (bmState.items[u]) { delete bmState.items[u]; }
           else {
             bmState.items[u] = {
               url: u, title: btn.getAttribute("data-title"), source: btn.getAttribute("data-source"),
@@ -710,69 +880,151 @@
               cat: btn.getAttribute("data-cat"), discuss: btn.getAttribute("data-discuss"),
               group: UNSORTED, savedAt: Date.now()
             };
-            btn.classList.add("on");
           }
-          bmSave(); updateCount();
+          bmSave(); syncButtons(); updateCount();
           if (drawer.classList.contains("open")) render();
         });
       });
-
       syncButtons(); updateCount();
-    } catch (e) { console.error("[daily-brief] bookmarks init failed", e); }
+    } catch (e) { console.error("[daily-brief] saved-stories init failed", e); }
 
-    /* ---- Visit state (seen/new tracking, per-tab new counts) ---- */
+    /* ---- Visit state ---- */
     try {
       var VISIT_KEY = "db_visit_state";
       var now = Date.now();
       var visitState;
-      try { visitState = JSON.parse(localStorage.getItem(VISIT_KEY)) || {}; } catch (e) { visitState = {}; console.error("[daily-brief] visit-state load", e); }
+      try { visitState = JSON.parse(localStorage.getItem(VISIT_KEY)) || {}; } catch (e) { visitState = {}; }
       var lastVisit = visitState.lastVisit || 0;
       var seen = visitState.seen || {};
-
-      /* Migrate legacy seen entries (boolean true -> current timestamp) and
-         prune entries older than 14 days. Legacy boolean true coerced to 1
-         would otherwise exceed the TTL threshold and wipe all read history. */
       var SEEN_TTL = 14 * 24 * 60 * 60 * 1000;
       Object.keys(seen).forEach(function (key) {
-        if (typeof seen[key] !== "number") {
-          seen[key] = now;
-        }
-        if (now - seen[key] > SEEN_TTL) {
-          delete seen[key];
-        }
+        if (typeof seen[key] !== "number") seen[key] = now;
+        if (now - seen[key] > SEEN_TTL) delete seen[key];
       });
-
-      var tabNewCounts = {};
-      var items = document.querySelectorAll("[data-brief-item][data-created]");
-      items.forEach(function (card) {
+      var tabNewCounts = {}, totalNew = 0;
+      document.querySelectorAll("[data-brief-item][data-created]").forEach(function (card) {
         var created = parseInt(card.getAttribute("data-created"), 10) * 1000;
-        var url = card.querySelector("a.card-title");
-        var key = url ? url.href : created;
+        var link = card.querySelector("h2 a, h3 a, .row-title a");
+        var key = link ? link.href : String(created);
         if (seen[key]) {
           card.classList.add("seen");
         } else if (created > lastVisit && lastVisit > 0) {
           card.classList.add("new-item");
+          totalNew++;
           var panel = card.closest(".panel");
           if (panel) {
-            var panelId = panel.id.replace("panel-", "");
-            tabNewCounts[panelId] = (tabNewCounts[panelId] || 0) + 1;
+            var pid = panel.id.replace("panel-", "");
+            tabNewCounts[pid] = (tabNewCounts[pid] || 0) + 1;
           }
         }
         seen[key] = now;
       });
-
-      document.querySelectorAll(".new-count[data-tab-key]").forEach(function (el) {
-        var key = el.getAttribute("data-tab-key");
-        var n = tabNewCounts[key] || 0;
-        if (n > 0) {
-          el.textContent = n + " new";
-        }
+      document.querySelectorAll(".new-count[data-tab-key]").forEach(function (n) {
+        var c = tabNewCounts[n.getAttribute("data-tab-key")] || 0;
+        if (c > 0) n.textContent = c + " new";
       });
-
-      try {
-        localStorage.setItem(VISIT_KEY, JSON.stringify({ lastVisit: now, seen: seen }));
-      } catch (e) { console.error("[daily-brief] visit-state save", e); }
+      if (totalNew > 0) {
+        document.getElementById("newNum").textContent = totalNew;
+        document.getElementById("newStat").hidden = false;
+        var gn = document.getElementById("glanceNew");
+        if (gn) { gn.className = "new"; gn.textContent = " · " + totalNew + " new"; }
+      }
+      try { localStorage.setItem(VISIT_KEY, JSON.stringify({ lastVisit: now, seen: seen })); } catch (e) {}
     } catch (e) { console.error("[daily-brief] visit-state init failed", e); }
+
+    /* ---- View controls: source filter (multi-select, hides) + show budget ----
+       One applyView() owns visibility so the two controls compose instead of
+       fighting: budget counts positions within the *filtered* set. */
+    try {
+      var FILTER_KEY = "db_source_filter_v2", BUDGET_KEY = "db_budget_v1";
+      var SECS_PER_STORY = 10;
+      var chipBar = document.getElementById("chips");
+      var chips = chipBar ? chipBar.querySelectorAll(".chip") : [];
+      var clearBtn = document.getElementById("chipClear");
+      var budgetBar = document.getElementById("budget");
+      var readout = document.getElementById("readout");
+
+      var active = new Set();
+      try { (JSON.parse(sessionStorage.getItem(FILTER_KEY)) || []).forEach(function (s) { active.add(s); }); } catch (e) {}
+      var budget = 0;
+      try { budget = parseInt(localStorage.getItem(BUDGET_KEY), 10) || 0; } catch (e) { budget = 0; }
+
+      function persist() {
+        try {
+          if (active.size) sessionStorage.setItem(FILTER_KEY, JSON.stringify([].concat(Array.from(active))));
+          else sessionStorage.removeItem(FILTER_KEY);
+          localStorage.setItem(BUDGET_KEY, String(budget));
+        } catch (e) {}
+      }
+
+      function applyView() {
+        var grandTotal = 0;
+        document.querySelectorAll(".panel").forEach(function (panel) {
+          var shown = 0, matched = 0;
+          panel.querySelectorAll("[data-brief-item]").forEach(function (card) {
+            var srcOk = !active.size || active.has(card.getAttribute("data-src"));
+            if (srcOk) matched++;
+            var vis = srcOk && (!budget || shown < budget);
+            if (vis) shown++;
+            card.classList.toggle("is-hidden", !vis);
+            /* keep hidden cards out of the tab order */
+            card.querySelectorAll("a, button").forEach(function (n) {
+              if (vis) n.removeAttribute("tabindex"); else n.setAttribute("tabindex", "-1");
+            });
+          });
+          ["grid", "tail"].forEach(function (cls) {
+            var box = panel.querySelector("." + cls);
+            if (box) box.hidden = !box.querySelector("[data-brief-item]:not(.is-hidden)");
+          });
+          var trim = panel.querySelector(".trim");
+          if (trim) {
+            var hiddenByBudget = matched - shown;
+            trim.hidden = hiddenByBudget <= 0;
+            var label = trim.querySelector(".trim-text");
+            if (label) label.textContent = "Showing the top " + shown + " of " + matched + " — " + hiddenByBudget + " more below your cutoff.";
+          }
+          var dc = panel.querySelector(".doneCount");
+          if (dc) dc.textContent = shown;
+          var dn = panel.querySelector(".doneNoun");
+          if (dn) dn.textContent = shown === 1 ? "story" : "stories";
+          grandTotal += shown;
+        });
+        if (readout) {
+          var mins = Math.max(1, Math.round(grandTotal * SECS_PER_STORY / 60));
+          readout.textContent = "≈ " + mins + " min";
+        }
+        chips.forEach(function (c) {
+          var on = active.has(c.getAttribute("data-src"));
+          c.classList.toggle("on", on);
+          c.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        if (clearBtn) clearBtn.hidden = active.size === 0;
+        if (budgetBar) budgetBar.querySelectorAll("button").forEach(function (b) {
+          var on = parseInt(b.getAttribute("data-budget"), 10) === budget;
+          b.classList.toggle("on", on);
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+      }
+
+      chips.forEach(function (c) {
+        c.addEventListener("click", function () {
+          var s = c.getAttribute("data-src");
+          if (active.has(s)) active.delete(s); else active.add(s);
+          persist(); applyView();
+        });
+      });
+      if (clearBtn) clearBtn.addEventListener("click", function () { active.clear(); persist(); applyView(); });
+      if (budgetBar) budgetBar.querySelectorAll("button").forEach(function (b) {
+        b.addEventListener("click", function () {
+          budget = parseInt(b.getAttribute("data-budget"), 10) || 0;
+          persist(); applyView();
+        });
+      });
+      document.querySelectorAll("[data-show-all]").forEach(function (b) {
+        b.addEventListener("click", function () { budget = 0; persist(); applyView(); });
+      });
+      applyView();
+    } catch (e) { console.error("[daily-brief] view-controls init failed", e); }
   })();
   </script>
 </body>
