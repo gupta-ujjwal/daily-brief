@@ -6,77 +6,134 @@
 <title>Daily Brief · {{DATE}}</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect x='4' y='4' width='16' height='16' fill='none' stroke='%23E85A4F' stroke-width='2.5'/><circle cx='12' cy='12' r='3.5' fill='%23E85A4F'/></svg>">
 <style>
-  /* Switchboard theme — 4px base spacing scale, single coral accent.
-     Scheme: black hero (brand, tabs, source filters) over a white content sheet.
-     One accent (#E85A4F) for every interactive element; sources are identity by
-     monospace kicker text only, never by color. */
+  /* Switchboard v2 — sticky masthead, compact hero + glance stats, "Show" budget,
+     labelled action rows, full-bleed sheet. Two accent tokens: the bright coral
+     only on black (5.7:1), a darker coral on white (4.6:1) so every action passes AA. */
   :root {
     --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px; --s8: 64px;
-    --canvas: #0A0A0A; --hero-ink: #F5F5F5; --hero-gray: #9A9A9A; --hero-dim: #6F6F6F;
+    --canvas: #0A0A0A; --hero-ink: #F5F5F5; --hero-gray: #A6A6A6; --hero-dim: #8A8A8A;
     --sheet: #FFFFFF; --ink: #111111; --ink-soft: #3D3D3D; --gray: #6B6B6B;
-    --line: #ECECEC; --hairline: #F0F0F0;
-    --panel-dark: #141414; --panel-dark2: #1C1C1C;
-    --accent: #E85A4F; --accent-ink: #FFFFFF; --accent-soft: rgba(232,90,79,.08);
+    --line: #E4E4E4; --hairline: #EDEDED;
+    --panel-dark: #171717; --panel-dark2: #202020;
+    --accent: #E85A4F;            /* on black only */
+    --accent-ink: #C8412F;        /* on white — 4.6:1 */
+    --accent-deep: #B23929;       /* on the tinted --accent-soft ground — 5.25:1 */
+    --accent-soft: rgba(200,65,47,.09);
     --font-body: "Inter", -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    --topbar-h: 56px;
   }
   * { box-sizing: border-box; margin: 0; }
   html { scroll-behavior: smooth; }
   body { background: var(--canvas); color: var(--ink); font: 15.5px/1.55 var(--font-body);
     -webkit-font-smoothing: antialiased; }
-  .wrap { max-width: 1120px; margin: 0 auto; padding-bottom: var(--s7); }
+  .in { max-width: 1180px; margin: 0 auto; padding: 0 var(--s5); }
 
-  /* ---- Hero (black zone) ---- */
-  .hero { color: var(--hero-ink); padding: var(--s6) var(--s5) var(--s5);
-    display: grid; gap: var(--s4); }
-  .hero-top { display: flex; align-items: center; justify-content: space-between;
-    gap: var(--s4); flex-wrap: wrap; }
-  .logo { display: flex; align-items: center; gap: var(--s3); }
-  .logo .mark { width: 30px; height: 30px; border: 2.5px solid var(--hero-ink);
-    display: grid; place-items: center; font: 800 13px/1 var(--font-mono); }
-  .logo span { font: 700 14px/1 var(--font-body); letter-spacing: .03em; }
-  .hero .date { font: 500 13px/1 var(--font-mono); color: var(--hero-gray); }
-  .hero h1 { font: 800 clamp(34px, 5.4vw, 54px)/1.04 var(--font-body);
-    letter-spacing: -.035em; max-width: 22ch; }
-  .hero h1 em { font-style: normal; color: var(--accent); }
-  .hero .sub { color: var(--hero-gray); font-size: 14.5px; max-width: 62ch; }
+  /* Every interactive thing gets a visible focus ring (was 1 rule in 122). */
+  :focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; border-radius: 3px; }
+  .topbar :focus-visible, .hero :focus-visible { outline-color: var(--accent); }
+  .skip { position: absolute; left: -9999px; top: 0; z-index: 200; background: #FFF; color: var(--ink);
+    padding: 10px 16px; font: 600 14px/1 var(--font-body); border-radius: 0 0 8px 0; }
+  .skip:focus { left: 0; }
 
-  .hero-bottom { display: flex; justify-content: space-between; align-items: flex-end;
-    gap: var(--s4); flex-wrap: wrap; margin-top: var(--s2); }
+  /* ---- Sticky masthead ---- */
+  .topbar { position: sticky; top: 0; z-index: 40; background: rgba(10,10,10,.92);
+    backdrop-filter: blur(12px); border-bottom: 1px solid #232323; }
+  .topbar .in { display: flex; align-items: center; gap: var(--s5); height: var(--topbar-h); }
+  .logo { display: flex; align-items: center; gap: 9px; color: var(--hero-ink);
+    text-decoration: none; flex: none; }
+  .logo .mark { width: 26px; height: 26px; border: 2.2px solid var(--hero-ink);
+    display: grid; place-items: center; font: 800 11px/1 var(--font-mono); }
+  .logo span.wm { font: 700 13.5px/1 var(--font-body); letter-spacing: .02em; }
 
-  /* source filter chips */
-  .chips { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: center; }
-  .chip-label { font: 650 10px/1.2 var(--font-mono); letter-spacing: .14em;
-    color: var(--hero-dim); text-transform: uppercase; margin-right: var(--s1); }
-  .chip { font: 600 12px/1 var(--font-body); color: #C8C8C8; background: var(--panel-dark);
-    border: 1px solid #2C2C2C; border-radius: 7px; padding: 8px 12px; cursor: pointer;
-    transition: background .12s, border-color .12s, color .12s; }
-  .chip .n { font: 600 11px/1 var(--font-mono); opacity: .55; margin-left: var(--s1); }
-  .chip-note { font: 500 11.5px/1 var(--font-mono); color: var(--hero-dim); padding: 8px 4px; }
-  .chip:hover { border-color: #555555; color: #FFFFFF; }
-  .chip.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-
-  /* tabs — pill switch, CSS-only via radios */
   .tabinput { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-  .tabbar { display: flex; gap: var(--s1); background: var(--panel-dark); padding: var(--s1);
-    border-radius: 11px; border: 1px solid #222222; flex-wrap: wrap; }
-  .tab { font: 600 13px/1 var(--font-body); color: var(--hero-gray); padding: 9px 15px;
+  .tabbar { display: flex; gap: var(--s1); flex: 1; min-width: 0; overflow-x: auto;
+    scrollbar-width: none; }
+  .tabbar::-webkit-scrollbar { display: none; }
+  .tab { font: 600 13.5px/1 var(--font-body); color: var(--hero-gray); padding: 9px 13px;
     border-radius: 8px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center;
-    transition: color .12s, background .12s; user-select: none; }
-  .tab .n { font: 600 11px/1 var(--font-mono); opacity: .6; }
+    white-space: nowrap; transition: color .12s, background .12s; user-select: none; }
+  .tab .n { font: 600 11px/1 var(--font-mono); opacity: .65; }
   .tab .new-count { font: 700 10px/1 var(--font-mono); color: var(--accent);
-    background: var(--accent-soft); padding: 3px 7px; border-radius: 999px; }
+    background: rgba(232,90,79,.14); padding: 3px 6px; border-radius: 999px; }
   .tab .new-count:empty { display: none; }
-  .tab:hover { color: #FFFFFF; }
-  #tab-industry:checked ~ .hero .tab-industry,
-  #tab-learning:checked ~ .hero .tab-learning,
-  #tab-products:checked ~ .hero .tab-products,
-  #tab-personal:checked ~ .hero .tab-personal {
+  .tab:hover { color: #FFFFFF; background: var(--panel-dark); }
+  #tab-industry:checked ~ .topbar .tab-industry,
+  #tab-learning:checked ~ .topbar .tab-learning,
+  #tab-products:checked ~ .topbar .tab-products,
+  #tab-personal:checked ~ .topbar .tab-personal {
     background: #FFFFFF; color: #111111; }
+  #tab-industry:focus-visible ~ .topbar .tab-industry,
+  #tab-learning:focus-visible ~ .topbar .tab-learning,
+  #tab-products:focus-visible ~ .topbar .tab-products,
+  #tab-personal:focus-visible ~ .topbar .tab-personal {
+    outline: 2px solid var(--accent); outline-offset: 2px; }
 
-  /* ---- Sheet (white content zone) ---- */
-  .sheet { background: var(--sheet); border-radius: 16px; margin: 0 var(--s5);
-    padding: var(--s6); box-shadow: 0 24px 80px rgba(0,0,0,.55); }
+  .saved-btn { flex: none; display: inline-flex; align-items: center; gap: 7px;
+    min-height: 38px; padding: 0 14px; border-radius: 9px; cursor: pointer;
+    background: var(--panel-dark); border: 1px solid #2E2E2E; color: #E4E4E4;
+    font: 600 13px/1 var(--font-body); transition: border-color .12s, color .12s; }
+  .saved-btn:hover { border-color: #5A5A5A; color: #FFFFFF; }
+  .saved-btn svg { fill: none; stroke: currentColor; stroke-width: 1.8; }
+  .saved-btn .n { font: 700 11.5px/1 var(--font-mono); color: var(--accent); }
+  .saved-btn.has svg { fill: var(--accent); stroke: var(--accent); }
+
+  /* ---- Hero (compact) ---- */
+  .hero { color: var(--hero-ink); padding: var(--s6) 0 var(--s6); }
+  .hero .in { display: grid; grid-template-columns: minmax(0,1fr) auto;
+    gap: var(--s6); align-items: start; }
+  .hero h1 { font: 800 clamp(30px, 4.4vw, 46px)/1.05 var(--font-body);
+    letter-spacing: -.035em; max-width: 20ch; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .dateline { color: var(--hero-gray); font: 500 13px/1.4 var(--font-mono); margin-top: var(--s3); }
+  /* Phone-only stand-in for the big-number stat panel, which costs too much
+     vertical space above the fold on a 390px screen. */
+  .glance { display: none; color: var(--hero-gray); font: 500 13px/1.4 var(--font-mono);
+    margin-top: var(--s2); }
+  .glance b { color: var(--hero-ink); font-weight: 700; }
+  .glance .new { color: var(--accent); font-weight: 700; }
+
+  .controls { display: grid; gap: var(--s3); margin-top: var(--s5); }
+  .ctl { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+  .ctl-label { font: 650 10px/1.2 var(--font-mono); letter-spacing: .14em;
+    color: var(--hero-dim); text-transform: uppercase; margin-right: var(--s1); min-width: 52px; }
+  .seg { display: inline-flex; gap: var(--s1); background: var(--panel-dark);
+    border: 1px solid #262626; border-radius: 10px; padding: 3px; }
+  .seg button { font: 600 12.5px/1 var(--font-body); color: var(--hero-gray);
+    background: none; border: none; border-radius: 7px; padding: 9px 13px; cursor: pointer;
+    min-height: 34px; transition: background .12s, color .12s; }
+  .seg button:hover { color: #FFFFFF; }
+  .seg button.on { background: #FFFFFF; color: #111111; }
+  .readout { font: 600 12px/1 var(--font-mono); color: var(--accent); padding-left: var(--s2); }
+
+  .chip { font: 600 12.5px/1 var(--font-body); color: #C8C8C8; background: var(--panel-dark);
+    border: 1px solid #2C2C2C; border-radius: 8px; padding: 0 13px; cursor: pointer;
+    min-height: 36px; display: inline-flex; align-items: center; gap: 6px;
+    transition: background .12s, border-color .12s, color .12s; }
+  .chip .n { font: 600 11px/1 var(--font-mono); opacity: .6; }
+  .chip:hover { border-color: #5A5A5A; color: #FFFFFF; }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+  .chip.on .n { opacity: .85; }
+  .chip-clear { background: none; border: none; color: var(--hero-gray); cursor: pointer;
+    font: 600 12px/1 var(--font-mono); text-decoration: underline; padding: 8px; min-height: 34px; }
+  .chip-clear:hover { color: #FFFFFF; }
+  .chip-clear[hidden] { display: none; }
+
+  /* glance stats — fills what used to be dead space */
+  .stats { display: flex; gap: var(--s6); border-left: 1px solid #262626;
+    padding-left: var(--s6); }
+  .stat { display: grid; gap: 5px; }
+  .stat b { font: 800 30px/1 var(--font-body); letter-spacing: -.02em; color: var(--hero-ink); }
+  .stat b.accent { color: var(--accent); }
+  .stat span { font: 600 10.5px/1.3 var(--font-mono); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--hero-dim); max-width: 11ch; }
+  .stat[hidden] { display: none; }
+
+  /* ---- Sheet (full-bleed white, closes the void) ---- */
+  .sheet { background: var(--sheet); padding: var(--s5) 0 var(--s8); }
+  .ai-note { font: 500 11.5px/1.5 var(--font-mono); color: var(--gray);
+    border-bottom: 1px solid var(--hairline); padding-bottom: var(--s3); margin-bottom: var(--s4); }
+  .ai-note b { color: var(--ink-soft); }
   .panel { display: none; }
   #tab-industry:checked ~ .sheet #panel-industry,
   #tab-learning:checked ~ .sheet #panel-learning,
@@ -86,131 +143,133 @@
   @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
   .panel-intro { color: var(--gray); font: 500 13.5px/1.5 var(--font-mono); margin-bottom: var(--s5); }
 
-  /* kicker — source identity is text only */
+  .trim { font: 600 12.5px/1.5 var(--font-mono); color: var(--ink-soft);
+    background: var(--accent-soft); border-radius: 8px; padding: 10px var(--s4);
+    margin-bottom: var(--s5); display: flex; gap: var(--s3); align-items: center; flex-wrap: wrap; }
+  .trim[hidden] { display: none; }
+  .trim button { background: none; border: none; color: var(--accent-deep); cursor: pointer;
+    font: 700 12.5px/1 var(--font-mono); text-decoration: underline; padding: 6px 2px; }
+
   .src-kicker { font: 700 10px/1.3 var(--font-mono); letter-spacing: .14em;
-    text-transform: uppercase; color: #777777; white-space: nowrap; }
+    text-transform: uppercase; color: #5F5F5F; white-space: nowrap; }
+  .meta { font: 500 12px/1.5 var(--font-mono); color: var(--gray); display: flex;
+    gap: 9px; align-items: center; flex-wrap: wrap; }
+  .meta .also { color: var(--gray); }
+  /* AI provenance: one glyph, not a badge on all 30 items */
+  .gm { color: var(--accent-ink); font-size: 12px; margin-right: 5px; cursor: help; }
 
-  .meta { font: 500 12px/1.5 var(--font-mono); color: #8E8E8E; display: flex;
-    gap: 10px; align-items: center; flex-wrap: wrap; }
-  .meta a { color: var(--accent); text-decoration: none; font-weight: 600; }
-  .meta a:hover { text-decoration: underline; }
-  .meta .also { color: #B0B0B0; }
-  .ai-tag { display: inline-block; font: 650 9.5px/1 var(--font-mono); text-transform: uppercase;
-    letter-spacing: .12em; color: var(--gray); background: #F4F4F3; padding: 3px 7px;
-    border-radius: 4px; margin-right: 7px; }
-
-  /* lead card — white with thick coral edge */
-  .lead { position: relative; border: 1px solid var(--line); border-left: 5px solid var(--accent);
-    border-radius: 12px; padding: var(--s5); margin-bottom: var(--s5);
-    box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 10px 32px rgba(0,0,0,.06);
-    display: grid; gap: var(--s3); }
-  .lead .top-row { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); }
-  .lead .top-row .src-kicker { color: var(--accent); }
-  .tag { font: 700 9.5px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase;
-    color: var(--accent); background: var(--accent-soft); padding: 5px 8px; border-radius: 5px;
-    white-space: nowrap; }
-  .lead h2 { font: 800 clamp(24px, 3.2vw, 34px)/1.16 var(--font-body); letter-spacing: -.025em; }
-  .lead h2 a { color: inherit; text-decoration: none; }
-  .lead h2 a:hover { color: var(--accent); }
-  .lead .gist { font-size: 15.5px; line-height: 1.6; color: var(--ink-soft); max-width: 68ch; }
-  .lead .meta { margin-top: var(--s1); }
-
-  /* secondary grid — bordered cards, hover lift */
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
-  .story { border: 1px solid var(--line); border-radius: 12px; padding: var(--s4);
-    display: flex; flex-direction: column; gap: var(--s3); background: #FFFFFF;
-    transition: transform .14s, box-shadow .14s, opacity .15s; }
-  .story:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,.09); }
-  .story h3 { font: 700 16.5px/1.3 var(--font-body); letter-spacing: -.012em; }
-  .story h3 a { color: inherit; text-decoration: none; }
-  .story h3 a:hover { color: var(--accent); }
-  .story .gist { font-size: 13.5px; line-height: 1.58; color: #5A5A5A; flex: 1; }
-  .story .meta { margin-top: auto; }
-
-  /* tail rows — hairline list */
-  .tail { margin-top: var(--s5); }
-  .row { display: grid; grid-template-columns: 140px minmax(0,1.35fr) minmax(0,1fr); gap: var(--s4);
-    align-items: baseline; padding: 13px 2px; border-bottom: 1px solid var(--hairline);
-    transition: opacity .15s; }
-  .row-title { font: 600 14.5px/1.35 var(--font-body); }
-  .row-title a { color: inherit; text-decoration: none; transition: color .1s; }
-  .row:hover .row-title a { color: var(--accent); }
-  .row .gist { font-size: 12.5px; line-height: 1.45; color: #909090; margin: 0;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .row .meta { grid-column: 1 / -1; font-size: 11px; }
-
-  /* shared card shape so filter/seen/new JS has one selector */
-  .item { transition: opacity .15s; }
-
-  /* new / seen (visit-state JS) */
-  .item.seen { opacity: .72; }
-  .item.new-item { border-color: var(--accent); }
-  .item.new-item::after { content: "NEW"; position: absolute; top: var(--s3); right: var(--s3);
-    font: 700 9px/1 var(--font-mono); letter-spacing: .14em; color: var(--accent);
-    background: var(--accent-soft); padding: 3px 6px; border-radius: 4px; }
-  .lead, .story, .row { position: relative; }
-
-  /* source filter dimming */
-  .f-dim { opacity: .14; filter: grayscale(1); }
-
-  .finish { text-align: center; margin-top: var(--s6);
-    font: 650 10.5px/1 var(--font-mono); letter-spacing: .2em; text-transform: uppercase;
-    color: #A8A8A8; }
-  .finish em { color: var(--gray); font-style: normal; }
-
-  footer { margin-top: var(--s6); padding-top: var(--s5); border-top: 1px solid var(--line);
-    text-align: center; font: 500 12px/1.8 var(--font-mono); color: var(--gray); }
-  footer a { color: var(--accent); text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
-  .provenance { color: var(--ink-soft); margin-bottom: var(--s2); }
-  .provenance.degraded { color: var(--accent); font-weight: 600; }
-
-  /* ---- Bookmarks ---- */
-  .bm-btn { display: inline-flex; align-items: center; justify-content: center;
-    padding: 3px; border: none; background: none; cursor: pointer; color: #B0B0B0;
-    border-radius: 6px; transition: color .12s, background .12s, transform .1s; }
-  .bm-btn:hover { color: var(--accent); background: var(--accent-soft); }
-  .bm-btn:active { transform: scale(.86); }
-  .bm-btn svg { fill: none; stroke: currentColor; stroke-width: 1.7; }
-  .bm-btn.on { color: var(--accent); }
+  /* ---- Action rows — labelled, 40px+ targets ---- */
+  .actions { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: center; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    min-height: 40px; padding: 0 16px; border-radius: 9px; cursor: pointer;
+    font: 650 13.5px/1 var(--font-body); text-decoration: none; white-space: nowrap;
+    background: #FFFFFF; color: var(--ink-soft); border: 1px solid var(--line);
+    transition: border-color .12s, color .12s, background .12s, transform .1s; }
+  .btn:hover { border-color: #B9B9B9; color: var(--ink); }
+  .btn:active { transform: scale(.98); }
+  .btn-primary { background: var(--accent-ink); border-color: var(--accent-ink); color: #FFFFFF; }
+  .btn-primary:hover { background: #B23929; border-color: #B23929; color: #FFFFFF; }
+  .btn-sm { min-height: 38px; padding: 0 13px; font-size: 13px; }
+  .btn svg { fill: none; stroke: currentColor; stroke-width: 1.8; flex: none; }
+  .bm-btn.on { border-color: var(--accent-ink); color: var(--accent-ink); background: var(--accent-soft); }
   .bm-btn.on svg { fill: currentColor; }
 
-  .bm-tab { position: fixed; right: 0; top: 46%; transform: translateY(-50%); z-index: 50;
-    writing-mode: vertical-rl; text-orientation: mixed;
-    background: #FFFFFF; color: var(--ink); border: none;
-    border-radius: 10px 0 0 10px; padding: 16px 9px; cursor: pointer;
-    font: 700 11.5px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase;
-    box-shadow: -4px 0 18px rgba(0,0,0,.35); transition: color .12s; }
-  .bm-tab:hover { color: var(--accent); }
-  .bm-tab .bm-count { display: inline-block; margin-top: var(--s2); color: var(--accent); }
+  /* ---- Lead ---- */
+  .lead { position: relative; border: 1px solid var(--line); border-left: 5px solid var(--accent-ink);
+    border-radius: 14px; padding: var(--s5) var(--s6) var(--s5) var(--s5); margin-bottom: var(--s5);
+    box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 12px 34px rgba(0,0,0,.07);
+    display: grid; gap: var(--s3); }
+  .lead .top-row { display: flex; justify-content: space-between; align-items: center;
+    gap: var(--s3); flex-wrap: wrap; }
+  .lead .top-row .src-kicker { color: var(--accent-ink); }
+  .tag { font: 700 9.5px/1 var(--font-mono); letter-spacing: .13em; text-transform: uppercase;
+    color: var(--accent-deep); background: var(--accent-soft); padding: 6px 9px; border-radius: 5px; }
+  .lead h2 { font: 800 clamp(24px, 3.1vw, 33px)/1.16 var(--font-body); letter-spacing: -.025em; }
+  .lead h2 a { color: inherit; text-decoration: none; }
+  .lead h2 a:hover { color: var(--accent-ink); }
+  .lead .gist { font-size: 16px; line-height: 1.6; color: var(--ink-soft); max-width: 66ch; }
+  .lead .actions { margin-top: var(--s2); }
 
+  /* ---- Secondary cards ---- */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+  .grid[hidden] { display: none; }
+  .story { border: 1px solid var(--line); border-radius: 14px; padding: var(--s4);
+    display: flex; flex-direction: column; gap: var(--s3); background: #FFFFFF;
+    transition: transform .14s, box-shadow .14s; }
+  .story:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,.09); }
+  .story h3 { font: 700 17px/1.3 var(--font-body); letter-spacing: -.012em; }
+  .story h3 a { color: inherit; text-decoration: none; }
+  .story h3 a:hover { color: var(--accent-ink); }
+  .story .gist { font-size: 13.5px; line-height: 1.58; color: #4A4A4A; flex: 1; }
+  .story .actions { margin-top: auto; padding-top: var(--s1); }
+
+  /* ---- Tail rows — title first, hard left ---- */
+  .tail { margin-top: var(--s6); border-top: 1px solid var(--line); }
+  .tail[hidden] { display: none; }
+  .row { display: flex; gap: var(--s4); align-items: flex-start; justify-content: space-between;
+    padding: var(--s4) 2px; border-bottom: 1px solid var(--hairline); }
+  .row:hover { background: #FCFCFC; }
+  .row-main { min-width: 0; display: grid; gap: 7px; }
+  .row-title { font: 700 16px/1.35 var(--font-body); letter-spacing: -.01em; }
+  .row-title a { color: inherit; text-decoration: none; }
+  .row:hover .row-title a { color: var(--accent-ink); }
+  .row .gist { font-size: 13.5px; line-height: 1.5; color: #565656; max-width: 78ch; }
+  .row .actions { flex: none; }
+
+  .item.is-hidden { display: none; }
+  /* Read-state marks the *status*, not the content — greying the headline of an
+     already-read story makes revisiting it harder for no gain. */
+  .item.seen .gist { color: var(--gray); }
+  .item.seen .src-kicker::after { content: " · read"; color: #8A8A8A;
+    text-transform: none; letter-spacing: 0; font-weight: 500; }
+  .item.new-item .src-kicker::after { content: " · NEW"; color: var(--accent-ink); }
+
+  /* ---- Completion state — the payoff of a finite product ---- */
+  .done { margin-top: var(--s8); border-top: 2px solid var(--ink); padding-top: var(--s6);
+    text-align: center; display: grid; gap: var(--s3); justify-items: center; }
+  .done-h { font: 800 clamp(24px, 3vw, 32px)/1.15 var(--font-body); letter-spacing: -.03em; }
+  .done-sub { font: 500 14.5px/1.5 var(--font-body); color: var(--gray); }
+  .done-sub b { color: var(--ink); font-weight: 700; }
+  .done .actions { margin-top: var(--s3); justify-content: center; }
+  .done-next { font: 600 11px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase;
+    color: var(--gray); margin-top: var(--s3); }
+
+  /* ---- Footer (black band closes the composition) ---- */
+  .foot { background: var(--canvas); color: var(--hero-gray); padding: var(--s7) 0;
+    text-align: center; font: 500 12.5px/1.9 var(--font-mono); }
+  .foot a { color: var(--accent); text-decoration: none; }
+  .foot a:hover { text-decoration: underline; }
+  .provenance { color: #CFCFCF; margin-bottom: var(--s2); }
+  .provenance.degraded { color: var(--accent); font-weight: 600; }
+
+  /* ---- Saved drawer ---- */
   .bm-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 59;
     opacity: 0; visibility: hidden; transition: opacity .2s, visibility .2s; }
   .bm-backdrop.open { opacity: 1; visibility: visible; }
-
-  .bm-drawer { position: fixed; top: 0; right: 0; height: 100%; width: min(400px, 94vw);
-    background: #FFFFFF; border-left: 1px solid var(--line); z-index: 60;
-    transform: translateX(100%); transition: transform .26s cubic-bezier(.4,0,.2,1);
-    display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,.5); }
-  .bm-drawer.open { transform: none; }
+  /* Closed drawer is visibility:hidden — otherwise its shadow bleeds a grey band
+     down the right edge of the page and its controls stay in the tab order. */
+  .bm-drawer { position: fixed; top: 0; right: 0; height: 100%; width: min(420px, 94vw);
+    background: #FFFFFF; z-index: 60; transform: translateX(100%); visibility: hidden;
+    transition: transform .26s cubic-bezier(.4,0,.2,1), visibility .26s;
+    display: flex; flex-direction: column; }
+  .bm-drawer.open { transform: none; visibility: visible;
+    box-shadow: -20px 0 50px rgba(0,0,0,.5); }
   .bm-head { display: flex; align-items: center; justify-content: space-between;
     padding: var(--s5) var(--s5) var(--s3); border-bottom: 1px solid var(--line); }
-  .bm-head h2 { margin: 0; font: 800 20px/1 var(--font-body); letter-spacing: -.01em; }
-  .bm-head h2 em { color: var(--accent); font-style: normal; }
+  .bm-head h2 { font: 800 20px/1 var(--font-body); letter-spacing: -.01em; }
   .bm-head-actions { display: flex; align-items: center; gap: 6px; }
   .bm-export, .bm-import-btn { background: none; border: 1px solid var(--line); color: var(--ink-soft);
-    font: 600 11px/1 var(--font-mono); padding: 6px 10px; border-radius: 6px; cursor: pointer; }
-  .bm-export:hover, .bm-import-btn:hover { color: var(--accent); border-color: var(--accent); }
+    font: 600 11px/1 var(--font-mono); padding: 9px 11px; border-radius: 7px; cursor: pointer; }
+  .bm-export:hover, .bm-import-btn:hover { color: var(--accent-ink); border-color: var(--accent-ink); }
   .bm-close { background: none; border: none; color: var(--gray); font-size: 24px;
-    cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 6px; }
+    cursor: pointer; line-height: 1; padding: 4px 9px; border-radius: 6px; }
   .bm-close:hover { color: var(--ink); }
   .bm-newgroup { display: flex; gap: var(--s2); padding: var(--s3) var(--s5); border-bottom: 1px solid var(--line); }
   .bm-newgroup input { flex: 1; background: #FAFAF9; border: 1px solid var(--line);
-    border-radius: 8px; color: var(--ink); padding: 8px 11px; font: 13px/1 inherit; }
-  .bm-newgroup input:focus { outline: none; border-color: var(--accent); }
-  .bm-newgroup button { background: var(--accent); color: var(--accent-ink); border: none;
-    border-radius: 8px; padding: 0 14px; font: 700 13px/1 var(--font-mono); cursor: pointer; }
-  .bm-newgroup button:hover { filter: brightness(1.06); }
+    border-radius: 8px; color: var(--ink); padding: 10px 11px; font: 13px/1 inherit; }
+  .bm-newgroup input:focus { outline: none; border-color: var(--accent-ink); }
+  .bm-newgroup button { background: var(--accent-ink); color: #FFFFFF; border: none;
+    border-radius: 8px; padding: 0 15px; font: 700 13px/1 var(--font-mono); cursor: pointer; }
   .bm-body { overflow-y: auto; padding: var(--s2) var(--s5) var(--s6); flex: 1; }
   .bm-empty { color: var(--gray); font-size: 14px; text-align: center; padding: var(--s6) var(--s3); }
   .bm-group { margin-top: var(--s4); }
@@ -220,99 +279,151 @@
     text-transform: uppercase; color: var(--ink-soft); }
   .bm-group-h .name .n { color: var(--gray); }
   .bm-del-group { background: none; border: none; color: var(--gray); cursor: pointer;
-    font: 11px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px; }
-  .bm-del-group:hover { color: var(--accent); }
+    font: 11px/1 var(--font-mono); padding: 6px 7px; border-radius: 5px; }
+  .bm-del-group:hover { color: var(--accent-ink); }
   .bm-item { background: #FAFAF9; border: 1px solid var(--line); border-radius: 10px;
-    padding: 11px 12px; margin-bottom: 9px; }
+    padding: 12px; margin-bottom: 9px; }
   .bm-item .t { display: block; color: var(--ink); text-decoration: none; font: 600 14px/1.32 var(--font-body); }
-  .bm-item .t:hover { color: var(--accent); }
+  .bm-item .t:hover { color: var(--accent-ink); }
   .bm-item .row2 { display: flex; align-items: center; gap: var(--s2); margin-top: var(--s2); }
   .bm-item .src { font: 500 11px/1 var(--font-mono); color: var(--gray);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
   .bm-item select { margin-left: auto; background: #FFFFFF; color: var(--ink-soft);
-    border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font: 11px/1 inherit; cursor: pointer; }
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px; font: 11px/1 inherit; cursor: pointer; }
   .bm-item .rm { background: none; border: none; color: var(--gray); cursor: pointer;
-    font-size: 15px; padding: 2px 5px; border-radius: 5px; }
-  .bm-item .rm:hover { color: var(--accent); }
+    font-size: 15px; padding: 5px 7px; border-radius: 5px; }
+  .bm-item .rm:hover { color: var(--accent-ink); }
 
-  @media (max-width: 900px) {
-    .grid { grid-template-columns: 1fr; }
-    .row { grid-template-columns: 108px minmax(0,1fr); }
-    .row .gist { grid-column: 2; }
-    .row .meta { grid-column: 1 / -1; }
+  @media (max-width: 1000px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 860px) {
+    .hero .in { grid-template-columns: 1fr; gap: var(--s5); }
+    .stats { border-left: none; padding-left: 0; border-top: 1px solid #262626;
+      padding-top: var(--s4); gap: var(--s7); }
+    .stat b { font-size: 24px; }
   }
   @media (max-width: 720px) {
-    .hero { padding: var(--s5) var(--s4) var(--s4); }
-    .hero-bottom { flex-direction: column; align-items: stretch; }
-    .tabbar { width: 100%; }
-    .tab { flex: 1 1 auto; justify-content: center; white-space: nowrap; }
-    .sheet { margin: 0 var(--s3); padding: var(--s4); border-radius: 12px; }
+    .in { padding: 0 var(--s4); }
+    .topbar .in { gap: var(--s3); }
+    .logo span.wm { display: none; }
+    .tab { padding: 13px; }
+    .hero { padding: var(--s5) 0 var(--s5); }
+    .hero h1 { font-size: 29px; }
+    /* Swap the stat panel for a one-line glance, and let each control row scroll
+       sideways instead of wrapping — together this lifts the first headline
+       roughly 300px up the page. */
+    .stats { display: none; }
+    .glance { display: block; }
+    .gen { display: none; }
+    .controls { gap: var(--s2); margin-top: var(--s4); }
+    .ctl { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .ctl::-webkit-scrollbar { display: none; }
+    .ctl-label { min-width: 0; flex: none; }
+    .seg, .chip, .chip-clear, .readout { flex: none; }
+    .grid { grid-template-columns: 1fr; }
+    .sheet { padding: var(--s5) 0 var(--s7); }
     .lead { padding: var(--s4); }
-    .row .gist { display: none; }
-    .item.new-item::after { top: var(--s2); right: var(--s2); }
-    .bm-tab { top: auto; bottom: 16px; right: 16px; writing-mode: horizontal-tb; padding: 10px 14px; }
-    .bm-tab .bm-count { margin-top: 0; margin-left: 6px; }
+    .row { flex-direction: column; gap: var(--s3); }
+    .row .actions { width: 100%; }
+    .btn { flex: 1 1 auto; }
+    .stats { gap: var(--s5); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    html { scroll-behavior: auto; }
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    {{TAB_RADIOS}}
-    <header class="hero">
-      <div class="hero-top">
-        <div class="logo"><span class="mark">DB</span><span>Daily Brief</span></div>
-        <span class="date">{{DATE}} · generated {{GENERATED}}</span>
-      </div>
-      <h1>The day in <em>tech</em>, distilled.</h1>
-      <p class="sub">Hacker News, Reddit, Substack and Medium — ranked across platforms, split across tabs, with the gist of each. Bookmark what's worth keeping — it's saved in your browser, organised into your own groups. Toggle a source below to isolate it:</p>
-      <div class="hero-bottom">
-        <nav class="tabbar">
-          {{TAB_LABELS}}
-        </nav>
-        <div class="chips" id="chips">
-          <span class="chip-label">Source</span>
-          {{SOURCE_CHIPS}} <span class="chip-note" id="filterNote"></span>
-        </div>
-      </div>
-    </header>
+  <a class="skip" href="#content">Skip to today's stories</a>
+  {{TAB_RADIOS}}
 
-    <main class="sheet">
-      {{PANELS}}
-
-      <footer>
-        {{PROVENANCE}}
-        Built from <a href="https://hn.algolia.com/api" style="color:inherit">Hacker News</a>,
-        <a href="https://www.reddit.com" style="color:inherit">Reddit</a>, Substack &amp;
-        Medium · <a href="{{ROOT}}archive.html">archive</a>
-      </footer>
-    </main>
-
-    <!-- Bookmarks: side tab + slide-out drawer (data lives in localStorage) -->
-    <button class="bm-tab" id="bmTab" type="button" aria-label="Open bookmarks">Bookmarks<span class="bm-count" id="bmCount">0</span></button>
-    <div class="bm-backdrop" id="bmBackdrop"></div>
-    <aside class="bm-drawer" id="bmDrawer" aria-label="Saved bookmarks">
-      <div class="bm-head">
-        <h2>Saved <em>&#9733;</em></h2>
-        <div class="bm-head-actions">
-          <button class="bm-export" id="bmExport" type="button" title="Export bookmarks as JSON">Export</button>
-          <button class="bm-import-btn" id="bmImportBtn" type="button" title="Import bookmarks from JSON">Import</button>
-          <input type="file" id="bmImportFile" accept=".json" style="display:none">
-          <button class="bm-close" id="bmClose" type="button" aria-label="Close">&times;</button>
-        </div>
-      </div>
-      <div class="bm-newgroup">
-        <input id="bmNewName" type="text" placeholder="New group name&#8230;" maxlength="40" aria-label="New group name">
-        <button id="bmAddGroup" type="button">Add</button>
-      </div>
-      <div class="bm-body" id="bmBody"></div>
-    </aside>
+  <div class="topbar">
+    <div class="in">
+      <a class="logo" href="#content"><span class="mark">DB</span><span class="wm">Daily Brief</span></a>
+      <nav class="tabbar" aria-label="Sections">
+        {{TAB_LABELS}}
+      </nav>
+      <button class="saved-btn" id="bmTab" type="button" aria-label="Open your saved stories">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>
+        Saved <span class="n" id="bmCount">0</span>
+      </button>
+    </div>
   </div>
+
+  <header class="hero">
+    <div class="in">
+      <div>
+        <h1>The day in <em>tech</em>, distilled.</h1>
+        <p class="dateline">{{WEEKDAY_DATE}}<span class="gen"> · generated {{GENERATED}}</span></p>
+        <p class="glance"><b>{{TOTAL_STORIES}}</b> stories · <b>~{{TOTAL_MINS}} min</b> to skim<span id="glanceNew"></span></p>
+        <div class="controls">
+          <div class="ctl">
+            <span class="ctl-label">Show</span>
+            <div class="seg" id="budget" role="group" aria-label="How many stories per section">
+              <button type="button" data-budget="3">Top 3</button>
+              <button type="button" data-budget="8">Top 8</button>
+              <button type="button" data-budget="0" class="on">Everything</button>
+            </div>
+            <span class="readout" id="readout"></span>
+          </div>
+          <div class="ctl" id="chips">
+            <span class="ctl-label">Sources</span>
+            {{SOURCE_CHIPS}}
+            <button class="chip-clear" id="chipClear" type="button" hidden>clear</button>
+          </div>
+        </div>
+      </div>
+      <aside class="stats" aria-label="Today at a glance">
+        <div class="stat"><b>{{TOTAL_STORIES}}</b><span>stories today</span></div>
+        <div class="stat"><b>~{{TOTAL_MINS}}</b><span>min to skim</span></div>
+        <div class="stat" id="newStat" hidden><b class="accent" id="newNum">0</b><span>new since last visit</span></div>
+      </aside>
+    </div>
+  </header>
+
+  <main class="sheet" id="content">
+    <div class="in">
+      <p class="ai-note"><span class="gm" aria-hidden="true">&#10022;</span> marks an <b>AI-written</b> one-line summary · headlines and links are the originals</p>
+      {{PANELS}}
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="in">
+      {{PROVENANCE}}
+      Built from <a href="https://hn.algolia.com/api">Hacker News</a>,
+      <a href="https://www.reddit.com">Reddit</a>, Substack &amp; Medium ·
+      <a href="{{ROOT}}archive.html">archive</a>
+    </div>
+  </footer>
+
+  <div class="bm-backdrop" id="bmBackdrop"></div>
+  <aside class="bm-drawer" id="bmDrawer" aria-label="Saved stories">
+    <div class="bm-head">
+      <h2>Saved</h2>
+      <div class="bm-head-actions">
+        <button class="bm-export" id="bmExport" type="button" title="Export as JSON">Export</button>
+        <button class="bm-import-btn" id="bmImportBtn" type="button" title="Import from JSON">Import</button>
+        <input type="file" id="bmImportFile" accept=".json" style="display:none">
+        <button class="bm-close" id="bmClose" type="button" aria-label="Close">&times;</button>
+      </div>
+    </div>
+    <div class="bm-newgroup">
+      <input id="bmNewName" type="text" placeholder="New group name&#8230;" maxlength="40" aria-label="New group name">
+      <button id="bmAddGroup" type="button">Add</button>
+    </div>
+    <div class="bm-body" id="bmBody"></div>
+  </aside>
 
   <script>
   (function () {
     "use strict";
+    function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
 
-    /* ---- Bookmarks ---- */
+    /* ---- Saved stories ---- */
+    var savedCount = 0;
     try {
       var BM_KEY = "db_bookmarks_v1", UNSORTED = "__unsorted__";
       function bmLoad() {
@@ -321,9 +432,9 @@
       }
       function bmSave() { try { localStorage.setItem(BM_KEY, JSON.stringify(bmState)); } catch (e) { console.error("[daily-brief] bmSave", e); } }
       var bmState = bmLoad();
-
       var body = document.getElementById("bmBody");
       var countEl = document.getElementById("bmCount");
+      var tabBtn = document.getElementById("bmTab");
       var drawer = document.getElementById("bmDrawer");
       var backdrop = document.getElementById("bmBackdrop");
       var newName = document.getElementById("bmNewName");
@@ -335,48 +446,50 @@
           .filter(function (it) { return (it.group || UNSORTED) === gid; })
           .sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
       }
-      function updateCount() { countEl.textContent = count(); }
-      function syncButtons() {
-        var btns = document.querySelectorAll(".bm-btn");
-        for (var i = 0; i < btns.length; i++) {
-          btns[i].classList.toggle("on", !!bmState.items[btns[i].getAttribute("data-url")]);
-        }
+      function updateCount() {
+        savedCount = count();
+        countEl.textContent = savedCount;
+        tabBtn.classList.toggle("has", savedCount > 0);
+        document.querySelectorAll(".doneSaved").forEach(function (n) { n.textContent = savedCount; });
       }
-      function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-
+      function syncButtons() {
+        document.querySelectorAll(".bm-btn").forEach(function (b) {
+          var on = !!bmState.items[b.getAttribute("data-url")];
+          b.classList.toggle("on", on);
+          var lab = b.querySelector(".bm-label");
+          if (lab) lab.textContent = on ? "Saved" : "Save";
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+      }
       function itemNode(it) {
-        var node = el("div", "bm-item");
+        var w = el("div", "bm-item");
         var a = el("a", "t", it.title || it.url); a.href = it.url; a.target = "_blank"; a.rel = "noopener";
-        node.appendChild(a);
-        var row = el("div", "row2");
-        row.appendChild(el("span", "src", it.label || it.source || ""));
-        var sel = el("select");
+        w.appendChild(a);
+        var r2 = el("div", "row2");
+        r2.appendChild(el("span", "src", it.label || it.source || ""));
+        var sel = document.createElement("select");
         groupsAll().forEach(function (g) {
-          var o = el("option", null, g.name); o.value = g.id;
+          var o = document.createElement("option"); o.value = g.id; o.textContent = g.name;
           if ((it.group || UNSORTED) === g.id) o.selected = true;
           sel.appendChild(o);
         });
-        sel.onchange = function () { it.group = sel.value; bmSave(); render(); };
-        row.appendChild(sel);
-        var rm = el("button", "rm", "×"); rm.title = "Remove";
+        sel.onchange = function () { bmState.items[it.url].group = sel.value; bmSave(); render(); };
+        r2.appendChild(sel);
+        var rm = el("button", "rm", "×"); rm.title = "Remove"; rm.setAttribute("aria-label", "Remove");
         rm.onclick = function () { delete bmState.items[it.url]; bmSave(); render(); syncButtons(); updateCount(); };
-        row.appendChild(rm);
-        node.appendChild(row);
-        return node;
+        r2.appendChild(rm);
+        w.appendChild(r2);
+        return w;
       }
-
       function render() {
         body.innerHTML = "";
-        if (count() === 0) {
-          body.appendChild(el("div", "bm-empty", "No bookmarks yet. Tap the bookmark icon on any story to save it here."));
-          return;
-        }
+        if (!count()) { body.appendChild(el("div", "bm-empty", "Nothing saved yet. Hit Save on any story and it lands here — stored in this browser, exportable as JSON.")); return; }
         groupsAll().forEach(function (g) {
           var items = itemsIn(g.id);
-          if (g.id === UNSORTED && items.length === 0) return;
+          if (!items.length && g.id === UNSORTED) return;
           var wrap = el("div", "bm-group");
           var h = el("div", "bm-group-h");
-          var name = el("span", "name"); name.textContent = g.name;
+          var name = el("span", "name", g.name);
           name.appendChild(el("span", "n", "  " + items.length));
           h.appendChild(name);
           if (g.id !== UNSORTED) {
@@ -393,7 +506,6 @@
           body.appendChild(wrap);
         });
       }
-
       function addGroup() {
         var name = (newName.value || "").trim();
         if (!name) return;
@@ -403,26 +515,25 @@
       document.getElementById("bmAddGroup").onclick = addGroup;
       newName.addEventListener("keydown", function (e) { if (e.key === "Enter") addGroup(); });
 
-      function open() { drawer.classList.add("open"); backdrop.classList.add("open"); render(); }
-      function close() { drawer.classList.remove("open"); backdrop.classList.remove("open"); }
-      document.getElementById("bmTab").onclick = open;
-      document.getElementById("bmClose").onclick = close;
-      backdrop.onclick = close;
-      document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+      function openDrawer() { drawer.classList.add("open"); backdrop.classList.add("open"); render(); document.getElementById("bmClose").focus(); }
+      function closeDrawer() { drawer.classList.remove("open"); backdrop.classList.remove("open"); tabBtn.focus(); }
+      tabBtn.onclick = openDrawer;
+      document.getElementById("bmClose").onclick = closeDrawer;
+      backdrop.onclick = closeDrawer;
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && drawer.classList.contains("open")) closeDrawer(); });
+      document.querySelectorAll("[data-open-saved]").forEach(function (b) { b.onclick = openDrawer; });
 
       document.getElementById("bmExport").onclick = function () {
         try {
           var blob = new Blob([JSON.stringify(bmState, null, 2)], { type: "application/json" });
           var a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
-          a.download = "daily-brief-bookmarks.json";
+          a.download = "daily-brief-saved.json";
           a.click();
           URL.revokeObjectURL(a.href);
-        } catch (e) { console.error("[daily-brief] bookmark export", e); }
+        } catch (e) { console.error("[daily-brief] export", e); }
       };
-      document.getElementById("bmImportBtn").onclick = function () {
-        document.getElementById("bmImportFile").click();
-      };
+      document.getElementById("bmImportBtn").onclick = function () { document.getElementById("bmImportFile").click(); };
       document.getElementById("bmImportFile").onchange = function (e) {
         var file = e.target.files[0];
         if (!file) return;
@@ -439,7 +550,7 @@
               }
               bmSave(); render(); syncButtons(); updateCount();
             }
-          } catch (err) { alert("Invalid bookmark file"); }
+          } catch (err) { alert("Invalid saved-stories file"); }
         };
         reader.readAsText(file);
         e.target.value = "";
@@ -449,7 +560,7 @@
         var u = btn.getAttribute("data-url");
         if (!u) return;
         btn.addEventListener("click", function () {
-          if (bmState.items[u]) { delete bmState.items[u]; btn.classList.remove("on"); }
+          if (bmState.items[u]) { delete bmState.items[u]; }
           else {
             bmState.items[u] = {
               url: u, title: btn.getAttribute("data-title"), source: btn.getAttribute("data-source"),
@@ -457,102 +568,151 @@
               cat: btn.getAttribute("data-cat"), discuss: btn.getAttribute("data-discuss"),
               group: UNSORTED, savedAt: Date.now()
             };
-            btn.classList.add("on");
           }
-          bmSave(); updateCount();
+          bmSave(); syncButtons(); updateCount();
           if (drawer.classList.contains("open")) render();
         });
       });
-
       syncButtons(); updateCount();
-    } catch (e) { console.error("[daily-brief] bookmarks init failed", e); }
+    } catch (e) { console.error("[daily-brief] saved-stories init failed", e); }
 
-    /* ---- Visit state (seen/new tracking, per-tab new counts) ---- */
+    /* ---- Visit state ---- */
     try {
       var VISIT_KEY = "db_visit_state";
       var now = Date.now();
       var visitState;
-      try { visitState = JSON.parse(localStorage.getItem(VISIT_KEY)) || {}; } catch (e) { visitState = {}; console.error("[daily-brief] visit-state load", e); }
+      try { visitState = JSON.parse(localStorage.getItem(VISIT_KEY)) || {}; } catch (e) { visitState = {}; }
       var lastVisit = visitState.lastVisit || 0;
       var seen = visitState.seen || {};
-
-      /* Migrate legacy seen entries (boolean true -> current timestamp) and
-         prune entries older than 14 days. Legacy boolean true coerced to 1
-         would otherwise exceed the TTL threshold and wipe all read history. */
       var SEEN_TTL = 14 * 24 * 60 * 60 * 1000;
       Object.keys(seen).forEach(function (key) {
-        if (typeof seen[key] !== "number") {
-          seen[key] = now;
-        }
-        if (now - seen[key] > SEEN_TTL) {
-          delete seen[key];
-        }
+        if (typeof seen[key] !== "number") seen[key] = now;
+        if (now - seen[key] > SEEN_TTL) delete seen[key];
       });
-
-      var tabNewCounts = {};
-      var items = document.querySelectorAll("[data-brief-item][data-created]");
-      items.forEach(function (card) {
+      var tabNewCounts = {}, totalNew = 0;
+      document.querySelectorAll("[data-brief-item][data-created]").forEach(function (card) {
         var created = parseInt(card.getAttribute("data-created"), 10) * 1000;
-        var url = card.querySelector("a.card-title, a.story-title, h2 a, .row-title a, h3 a");
-        var key = url ? url.href : created;
+        var link = card.querySelector("h2 a, h3 a, .row-title a");
+        var key = link ? link.href : String(created);
         if (seen[key]) {
           card.classList.add("seen");
         } else if (created > lastVisit && lastVisit > 0) {
           card.classList.add("new-item");
+          totalNew++;
           var panel = card.closest(".panel");
           if (panel) {
-            var panelId = panel.id.replace("panel-", "");
-            tabNewCounts[panelId] = (tabNewCounts[panelId] || 0) + 1;
+            var pid = panel.id.replace("panel-", "");
+            tabNewCounts[pid] = (tabNewCounts[pid] || 0) + 1;
           }
         }
         seen[key] = now;
       });
-
-      document.querySelectorAll(".new-count[data-tab-key]").forEach(function (el) {
-        var key = el.getAttribute("data-tab-key");
-        var n = tabNewCounts[key] || 0;
-        if (n > 0) {
-          el.textContent = n + " new";
-        }
+      document.querySelectorAll(".new-count[data-tab-key]").forEach(function (n) {
+        var c = tabNewCounts[n.getAttribute("data-tab-key")] || 0;
+        if (c > 0) n.textContent = c + " new";
       });
-
-      try {
-        localStorage.setItem(VISIT_KEY, JSON.stringify({ lastVisit: now, seen: seen }));
-      } catch (e) { console.error("[daily-brief] visit-state save", e); }
+      if (totalNew > 0) {
+        document.getElementById("newNum").textContent = totalNew;
+        document.getElementById("newStat").hidden = false;
+        var gn = document.getElementById("glanceNew");
+        if (gn) { gn.className = "new"; gn.textContent = " · " + totalNew + " new"; }
+      }
+      try { localStorage.setItem(VISIT_KEY, JSON.stringify({ lastVisit: now, seen: seen })); } catch (e) {}
     } catch (e) { console.error("[daily-brief] visit-state init failed", e); }
 
-    /* ---- Source filter chips (session-scoped) ---- */
+    /* ---- View controls: source filter (multi-select, hides) + show budget ----
+       One applyView() owns visibility so the two controls compose instead of
+       fighting: budget counts positions within the *filtered* set. */
     try {
-      var FILTER_KEY = "db_source_filter";
+      var FILTER_KEY = "db_source_filter_v2", BUDGET_KEY = "db_budget_v1";
+      var SECS_PER_STORY = 10;
       var chipBar = document.getElementById("chips");
-      if (chipBar) {
-        var chips = chipBar.querySelectorAll(".chip");
-        var active = null;
-        try { active = sessionStorage.getItem(FILTER_KEY) || null; } catch (e) { active = null; }
+      var chips = chipBar ? chipBar.querySelectorAll(".chip") : [];
+      var clearBtn = document.getElementById("chipClear");
+      var budgetBar = document.getElementById("budget");
+      var readout = document.getElementById("readout");
 
-        function applyFilter() {
-          chips.forEach(function (c) { c.classList.toggle("on", c.getAttribute("data-src") === active); });
-          document.querySelectorAll("[data-brief-item]").forEach(function (el) {
-            var src = el.getAttribute("data-src");
-            el.classList.toggle("f-dim", !!active && src !== active);
+      var active = new Set();
+      try { (JSON.parse(sessionStorage.getItem(FILTER_KEY)) || []).forEach(function (s) { active.add(s); }); } catch (e) {}
+      var budget = 0;
+      try { budget = parseInt(localStorage.getItem(BUDGET_KEY), 10) || 0; } catch (e) { budget = 0; }
+
+      function persist() {
+        try {
+          if (active.size) sessionStorage.setItem(FILTER_KEY, JSON.stringify([].concat(Array.from(active))));
+          else sessionStorage.removeItem(FILTER_KEY);
+          localStorage.setItem(BUDGET_KEY, String(budget));
+        } catch (e) {}
+      }
+
+      function applyView() {
+        var grandTotal = 0;
+        document.querySelectorAll(".panel").forEach(function (panel) {
+          var shown = 0, matched = 0;
+          panel.querySelectorAll("[data-brief-item]").forEach(function (card) {
+            var srcOk = !active.size || active.has(card.getAttribute("data-src"));
+            if (srcOk) matched++;
+            var vis = srcOk && (!budget || shown < budget);
+            if (vis) shown++;
+            card.classList.toggle("is-hidden", !vis);
+            /* keep hidden cards out of the tab order */
+            card.querySelectorAll("a, button").forEach(function (n) {
+              if (vis) n.removeAttribute("tabindex"); else n.setAttribute("tabindex", "-1");
+            });
           });
-          var note = document.getElementById("filterNote");
-          if (note) note.textContent = active ? "· filtered" : "";
+          ["grid", "tail"].forEach(function (cls) {
+            var box = panel.querySelector("." + cls);
+            if (box) box.hidden = !box.querySelector("[data-brief-item]:not(.is-hidden)");
+          });
+          var trim = panel.querySelector(".trim");
+          if (trim) {
+            var hiddenByBudget = matched - shown;
+            trim.hidden = hiddenByBudget <= 0;
+            var label = trim.querySelector(".trim-text");
+            if (label) label.textContent = "Showing the top " + shown + " of " + matched + " — " + hiddenByBudget + " more below your cutoff.";
+          }
+          var dc = panel.querySelector(".doneCount");
+          if (dc) dc.textContent = shown;
+          var dn = panel.querySelector(".doneNoun");
+          if (dn) dn.textContent = shown === 1 ? "story" : "stories";
+          grandTotal += shown;
+        });
+        if (readout) {
+          var mins = Math.max(1, Math.round(grandTotal * SECS_PER_STORY / 60));
+          readout.textContent = "≈ " + mins + " min";
         }
         chips.forEach(function (c) {
-          c.addEventListener("click", function () {
-            var src = c.getAttribute("data-src");
-            active = (active === src) ? null : src;
-            try {
-              if (active) sessionStorage.setItem(FILTER_KEY, active);
-              else sessionStorage.removeItem(FILTER_KEY);
-            } catch (e) { /* private mode */ }
-            applyFilter();
-          });
+          var on = active.has(c.getAttribute("data-src"));
+          c.classList.toggle("on", on);
+          c.setAttribute("aria-pressed", on ? "true" : "false");
         });
-        applyFilter();
+        if (clearBtn) clearBtn.hidden = active.size === 0;
+        if (budgetBar) budgetBar.querySelectorAll("button").forEach(function (b) {
+          var on = parseInt(b.getAttribute("data-budget"), 10) === budget;
+          b.classList.toggle("on", on);
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
       }
-    } catch (e) { console.error("[daily-brief] source-filter init failed", e); }
+
+      chips.forEach(function (c) {
+        c.addEventListener("click", function () {
+          var s = c.getAttribute("data-src");
+          if (active.has(s)) active.delete(s); else active.add(s);
+          persist(); applyView();
+        });
+      });
+      if (clearBtn) clearBtn.addEventListener("click", function () { active.clear(); persist(); applyView(); });
+      if (budgetBar) budgetBar.querySelectorAll("button").forEach(function (b) {
+        b.addEventListener("click", function () {
+          budget = parseInt(b.getAttribute("data-budget"), 10) || 0;
+          persist(); applyView();
+        });
+      });
+      document.querySelectorAll("[data-show-all]").forEach(function (b) {
+        b.addEventListener("click", function () { budget = 0; persist(); applyView(); });
+      });
+      applyView();
+    } catch (e) { console.error("[daily-brief] view-controls init failed", e); }
   })();
   </script>
 </body>
