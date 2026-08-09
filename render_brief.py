@@ -4,9 +4,9 @@
 The model's only job is to add a one-line "gist" and a "category" to each item in
 data.json (see the daily-brief skill). This script does the rest deterministically:
 groups items into four category sections, renders a 3-tier editorial layout per
-section (lead card, secondary card grid, compact tail rows), builds source badges
-and meta lines, and fills template.html. Keeping layout in code (not hand-built
-each run) makes scheduled runs reliable.
+section (lead card, secondary card grid, compact tail rows), builds the hero
+(brand, tabs, source filter chips), and fills template.html. Keeping layout in
+code (not hand-built each run) makes scheduled runs reliable.
 
     python3 render_brief.py --data data.json --date "25 June 2026" \
         --out briefs/2026-06-25.html
@@ -22,11 +22,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, ".claude", "skills", "daily-brief", "template.html")
 SOURCES = os.path.join(HERE, "sources.json")
 
-LEGEND = {  # source key -> (legend dot class, display name)
-    "hackernews": ("hn", "Hacker News"),
-    "reddit": ("reddit", "Reddit"),
-    "substack": ("substack", "Substack"),
-    "medium": ("medium", "Medium"),
+LEGEND = {  # source key -> short chip label for the filter chips
+    "hackernews": "HN",
+    "reddit": "Reddit",
+    "substack": "Substack",
+    "medium": "Medium",
 }
 
 # Per-source served tier -> short human label for the provenance footer. Tiers not
@@ -49,7 +49,7 @@ def provenance_line(d):
     for key in ("reddit", "substack", "medium"):
         tier = prov.get(key)
         if tier and tier in TIER_LABELS:
-            _, name = LEGEND[key]
+            name = LEGEND[key]
             parts.append(f"{name}: {TIER_LABELS[tier]}")
     if not parts:
         return ""
@@ -188,31 +188,45 @@ def meta(it):
     return f"{inner} · {a}" if inner else a
 
 
-def card_block(it, lead=False):
+def lead_block(it):
+    """Tier 1: full-width lead card — coral left edge, TOP STORY tag, biggest title."""
     g = it.get("gist", "")
     ai_label = '<span class="ai-tag">AI gist</span>' if g else ""
-    gist = f'<p class="card-gist">{ai_label}{esc(g)}</p>' if g else ""
-    cls = "card lead" if lead else "card"
-    right = '<span class="lead-tag">Top</span>' if lead else ""
-    return f'''<article class="{cls} src-{it['source']}" data-created="{it.get('created_at', 0)}" data-brief-item>
-        <div class="kicker"><span class="badge">{esc(it['source_label'])}</span>
-          <span class="kicker-r">{right}{bookmark_btn(it)}</span></div>
-        <a class="card-title" href="{esc(it['url'])}">{esc(it['title'])}</a>
+    gist = f'<p class="gist">{ai_label}{esc(g)}</p>' if g else ""
+    return f'''<article class="item lead" data-src="{esc(it['source'])}" data-created="{it.get('created_at', 0)}" data-brief-item>
+        <div class="top-row">
+          <span class="src-kicker">{esc(it['source_label'])}</span>
+          <span style="display:inline-flex;align-items:center;gap:10px">
+            <span class="tag">Top story</span>{bookmark_btn(it)}
+          </span>
+        </div>
+        <h2><a href="{esc(it['url'])}">{esc(it['title'])}</a></h2>
+        {gist}
+        <div class="meta">{meta(it)}</div>
+      </article>'''
+
+
+def story_block(it):
+    """Tier 2: secondary grid card — kicker + save button row, serif-free title."""
+    g = it.get("gist", "")
+    ai_label = '<span class="ai-tag">AI gist</span>' if g else ""
+    gist = f'<p class="gist">{ai_label}{esc(g)}</p>' if g else ""
+    return f'''<article class="item story" data-src="{esc(it['source'])}" data-created="{it.get('created_at', 0)}" data-brief-item>
+        <div class="kicker"><span class="src-kicker">{esc(it['source_label'])}</span>{bookmark_btn(it)}</div>
+        <h3><a href="{esc(it['url'])}">{esc(it['title'])}</a></h3>
         {gist}
         <div class="meta">{meta(it)}</div>
       </article>'''
 
 
 def row_block(it):
-    """Compact tail-row variant of card_block — same data attrs for JS parity,
-    different CSS (.card.row) for headline-list density."""
+    """Tier 3: tail row — [kicker | title | gist] grid, meta full-width under."""
     g = it.get("gist", "")
     ai_label = '<span class="ai-tag">AI gist</span>' if g else ""
-    gist = f'<p class="card-gist">{ai_label}{esc(g)}</p>' if g else ""
-    return f'''<article class="card row src-{it['source']}" data-created="{it.get('created_at', 0)}" data-brief-item>
-        <div class="kicker"><span class="badge">{esc(it['source_label'])}</span>
-          <span class="kicker-r">{bookmark_btn(it)}</span></div>
-        <a class="card-title" href="{esc(it['url'])}">{esc(it['title'])}</a>
+    gist = f'<p class="gist">{ai_label}{esc(g)}</p>' if g else ""
+    return f'''<article class="item row" data-src="{esc(it['source'])}" data-created="{it.get('created_at', 0)}" data-brief-item>
+        <span class="src-kicker">{esc(it['source_label'])}</span>
+        <span class="row-title"><a href="{esc(it['url'])}">{esc(it['title'])}</a>{bookmark_btn(it)}</span>
         {gist}
         <div class="meta">{meta(it)}</div>
       </article>'''
@@ -222,19 +236,17 @@ def panel_block(key, name, intro, items):
     n = len(items)
     if n == 0:
         return ""
-    lead_html = card_block(items[0], lead=True)
+    parts = [lead_block(items[0])]
     secondary = items[1:4]
     tail = items[4:]
-    parts = [lead_html]
     if secondary:
-        sec_cards = "\n        ".join(card_block(it) for it in secondary)
+        sec_cards = "\n        ".join(story_block(it) for it in secondary)
         parts.append(f'<div class="grid">\n        {sec_cards}\n        </div>')
     if tail:
         tail_rows = "\n        ".join(row_block(it) for it in tail)
-        parts.append(f'<div class="tail-list">\n        {tail_rows}\n        </div>')
+        parts.append(f'<div class="tail">\n        {tail_rows}\n        </div>')
     noun = "story" if n == 1 else "stories"
-    finish = f'<div class="finish-line">End of <em>{esc(name)}</em> &middot; {n} {noun}</div>'
-    parts.append(finish)
+    parts.append(f'<div class="finish">End of <em>{esc(name)}</em> · {n} {noun}</div>')
     inner = "\n        ".join(parts)
     return f'''<section id="panel-{key}" class="panel">
         <p class="panel-intro">{intro}</p>
@@ -243,24 +255,35 @@ def panel_block(key, name, intro, items):
 
 
 def tabs_block(present):
-    """present = list of (key, name, intro, items) for non-empty categories."""
+    """Build (radios_html, labels_html, panels_html) for the template's
+    {{TAB_RADIOS}} / {{TAB_LABELS}} / {{PANELS}} placeholders. Keeping the three
+    zones separate lets the template pin radios BEFORE the hero (so the CSS-only
+    sibling selectors reach both the tabbar and the sheet)."""
     radios, labels, panels = [], [], []
     best_i = max(range(len(present)), key=lambda i: (
         len(present[i][3]), -CATEGORY_PRIORITY.get(present[i][0], 99)))
     for i, (key, name, intro, items) in enumerate(present):
         checked = " checked" if i == best_i else ""
         radios.append(f'<input type="radio" name="brieftab" id="tab-{key}" class="tabinput"{checked}>')
-        labels.append(f'<label for="tab-{key}" class="tab tab-{key}">{name} '
-                      f'<span class="count">{len(items)}</span>'
+        labels.append(f'<label for="tab-{key}" class="tab tab-{key}">{esc(name)} '
+                      f'<span class="n">{len(items)}</span>'
                       f'<span class="new-count" data-tab-key="{key}"></span></label>')
         panels.append(panel_block(key, name, intro, items))
-    return (f'<div class="tabs">\n      '
-            + "\n      ".join(radios)
-            + '\n      <nav class="tabbar">\n        '
-            + "\n        ".join(labels)
-            + '\n      </nav>\n      '
-            + "\n      ".join(panels)
-            + '\n    </div>')
+    return ("\n    ".join(radios),
+            "\n          ".join(labels),
+            "\n      ".join(panels))
+
+
+def chips_block(d):
+    """Source filter chips with counts — one button per source present."""
+    counts = d.get("source_counts", {})
+    chips = []
+    for key, label in LEGEND.items():
+        n = counts.get(key, 0)
+        if n:
+            chips.append(f'<button class="chip" type="button" data-src="{key}">'
+                         f'{esc(label)}<span class="n">{n}</span></button>')
+    return "\n          ".join(chips)
 
 
 def main():
@@ -297,27 +320,25 @@ def main():
         del buckets["products"]
     present = [(key, name, intro, buckets[key])
                for key, name, intro in CATEGORIES if buckets.get(key)]
-    tabs = tabs_block(present)
-
-    legend = []
-    for key, (cls, name) in LEGEND.items():
-        n = d.get("source_counts", {}).get(key, 0)
-        if n:
-            legend.append(f'<span><i class="{cls}"></i>{name} · {n}</span>')
 
     gen = datetime.datetime.fromtimestamp(d.get("generated_at", 0)).strftime("%d %b %Y, %H:%M")
+    radios_html, labels_html, panels_html = tabs_block(present)
+
     tmpl = open(TEMPLATE).read()
     out = (tmpl
            .replace("{{DATE}}", esc(disp_date))
            .replace("{{GENERATED}}", gen)
-           .replace("{{SOURCE_LEGEND}}", "\n        ".join(legend))
+           .replace("{{TAB_RADIOS}}", radios_html)
+           .replace("{{TAB_LABELS}}", labels_html)
+           .replace("{{SOURCE_CHIPS}}", chips_block(d))
+           .replace("{{PANELS}}", panels_html)
            .replace("{{PROVENANCE}}", provenance_line(d))
-           .replace("{{ROOT}}", esc(args.root_prefix))
-           .replace("{{SECTIONS}}", tabs))
+           .replace("{{ROOT}}", esc(args.root_prefix)))
     if rescore_sentinel:
         out = rescore_sentinel + "\n" + out
     if "{{" in out:
-        raise SystemExit("unfilled placeholder remains in template")
+        raise SystemExit(f"unfilled placeholder remains in template: "
+                         f"{[m for m in out.split('{{')[1:]][:3]}")
 
     out_dir = os.path.dirname(out_path)
     if out_dir:
