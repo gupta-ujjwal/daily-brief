@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Brief · 15 October 2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect x='4' y='4' width='16' height='16' fill='none' stroke='%23E85A4F' stroke-width='2.5'/><circle cx='12' cy='12' r='3.5' fill='%23E85A4F'/></svg>">
+<style>
+  /* Switchboard v2 — sticky masthead, compact hero + glance stats, "Show" budget,
+     labelled action rows, full-bleed sheet. Two accent tokens: the bright coral
+     only on black (5.7:1), a darker coral on white (4.6:1) so every action passes AA. */
+  :root {
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px; --s8: 64px;
+    --canvas: #0A0A0A; --hero-ink: #F5F5F5; --hero-gray: #A6A6A6; --hero-dim: #8A8A8A;
+    --sheet: #FFFFFF; --ink: #111111; --ink-soft: #3D3D3D; --gray: #6B6B6B;
+    --line: #E4E4E4; --hairline: #EDEDED;
+    --panel-dark: #171717; --panel-dark2: #202020;
+    --accent: #E85A4F;            /* on black only */
+    --accent-ink: #C8412F;        /* on white — 4.6:1 */
+    --accent-deep: #B23929;       /* on the tinted --accent-soft ground — 5.25:1 */
+    --accent-soft: rgba(200,65,47,.09);
+    --font-body: "Inter", -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    --topbar-h: 56px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--canvas); color: var(--ink); font: 15.5px/1.55 var(--font-body);
+    -webkit-font-smoothing: antialiased; }
+  .in { max-width: 1180px; margin: 0 auto; padding: 0 var(--s5); }
+
+  /* Every interactive thing gets a visible focus ring (was 1 rule in 122). */
+  :focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; border-radius: 3px; }
+  .topbar :focus-visible, .hero :focus-visible { outline-color: var(--accent); }
+  .skip { position: absolute; left: -9999px; top: 0; z-index: 200; background: #FFF; color: var(--ink);
+    padding: 10px 16px; font: 600 14px/1 var(--font-body); border-radius: 0 0 8px 0; }
+  .skip:focus { left: 0; }
+
+  /* ---- Sticky masthead ---- */
+  .topbar { position: sticky; top: 0; z-index: 40; background: rgba(10,10,10,.92);
+    backdrop-filter: blur(12px); border-bottom: 1px solid #232323; }
+  .topbar .in { display: flex; align-items: center; gap: var(--s5); height: var(--topbar-h); }
+  .logo { display: flex; align-items: center; gap: 9px; color: var(--hero-ink);
+    text-decoration: none; flex: none; }
+  .logo .mark { width: 26px; height: 26px; border: 2.2px solid var(--hero-ink);
+    display: grid; place-items: center; font: 800 11px/1 var(--font-mono); }
+  .logo span.wm { font: 700 13.5px/1 var(--font-body); letter-spacing: .02em; }
+
+  .tabinput { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .tabbar { display: flex; gap: var(--s1); flex: 1; min-width: 0; overflow-x: auto;
+    scrollbar-width: none; }
+  .tabbar::-webkit-scrollbar { display: none; }
+  .tab { font: 600 13.5px/1 var(--font-body); color: var(--hero-gray); padding: 9px 13px;
+    border-radius: 8px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center;
+    white-space: nowrap; transition: color .12s, background .12s; user-select: none; }
+  .tab .n { font: 600 11px/1 var(--font-mono); opacity: .65; }
+  .tab .new-count { font: 700 10px/1 var(--font-mono); color: var(--accent);
+    background: rgba(232,90,79,.14); padding: 3px 6px; border-radius: 999px; }
+  .tab .new-count:empty { display: none; }
+  .tab:hover { color: #FFFFFF; background: var(--panel-dark); }
+  #tab-industry:checked ~ .topbar .tab-industry,
+  #tab-learning:checked ~ .topbar .tab-learning,
+  #tab-products:checked ~ .topbar .tab-products,
+  #tab-personal:checked ~ .topbar .tab-personal {
+    background: #FFFFFF; color: #111111; }
+  #tab-industry:focus-visible ~ .topbar .tab-industry,
+  #tab-learning:focus-visible ~ .topbar .tab-learning,
+  #tab-products:focus-visible ~ .topbar .tab-products,
+  #tab-personal:focus-visible ~ .topbar .tab-personal {
+    outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .saved-btn { flex: none; display: inline-flex; align-items: center; gap: 7px;
+    min-height: 38px; padding: 0 14px; border-radius: 9px; cursor: pointer;
+    background: var(--panel-dark); border: 1px solid #2E2E2E; color: #E4E4E4;
+    font: 600 13px/1 var(--font-body); transition: border-color .12s, color .12s; }
+  .saved-btn:hover { border-color: #5A5A5A; color: #FFFFFF; }
+  .saved-btn svg { fill: none; stroke: currentColor; stroke-width: 1.8; }
+  .saved-btn .n { font: 700 11.5px/1 var(--font-mono); color: var(--accent); }
+  .saved-btn.has svg { fill: var(--accent); stroke: var(--accent); }
+
+  /* ---- Hero (compact) ---- */
+  .hero { color: var(--hero-ink); padding: var(--s6) 0 var(--s6); }
+  .hero .in { display: grid; grid-template-columns: minmax(0,1fr) auto;
+    gap: var(--s6); align-items: start; }
+  .hero h1 { font: 800 clamp(30px, 4.4vw, 46px)/1.05 var(--font-body);
+    letter-spacing: -.035em; max-width: 20ch; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .dateline { color: var(--hero-gray); font: 500 13px/1.4 var(--font-mono); margin-top: var(--s3); }
+  /* Phone-only stand-in for the big-number stat panel, which costs too much
+     vertical space above the fold on a 390px screen. */
+  .glance { display: none; color: var(--hero-gray); font: 500 13px/1.4 var(--font-mono);
+    margin-top: var(--s2); }
+  .glance b { color: var(--hero-ink); font-weight: 700; }
+  .glance .new { color: var(--accent); font-weight: 700; }
+
+  .controls { display: grid; gap: var(--s3); margin-top: var(--s5); }
+  .ctl { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+  .ctl-label { font: 650 10px/1.2 var(--font-mono); letter-spacing: .14em;
+    color: var(--hero-dim); text-transform: uppercase; margin-right: var(--s1); min-width: 52px; }
+  .seg { display: inline-flex; gap: var(--s1); background: var(--panel-dark);
+    border: 1px solid #262626; border-radius: 10px; padding: 3px; }
+  .seg button { font: 600 12.5px/1 var(--font-body); color: var(--hero-gray);
+    background: none; border: none; border-radius: 7px; padding: 9px 13px; cursor: pointer;
+    min-height: 34px; transition: background .12s, color .12s; }
+  .seg button:hover { color: #FFFFFF; }
+  .seg button.on { background: #FFFFFF; color: #111111; }
+  .readout { font: 600 12px/1 var(--font-mono); color: var(--accent); padding-left: var(--s2); }
+
+  .chip { font: 600 12.5px/1 var(--font-body); color: #C8C8C8; background: var(--panel-dark);
+    border: 1px solid #2C2C2C; border-radius: 8px; padding: 0 13px; cursor: pointer;
+    min-height: 36px; display: inline-flex; align-items: center; gap: 6px;
+    transition: background .12s, border-color .12s, color .12s; }
+  .chip .n { font: 600 11px/1 var(--font-mono); opacity: .6; }
+  .chip:hover { border-color: #5A5A5A; color: #FFFFFF; }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+  .chip.on .n { opacity: .85; }
+  .chip-clear { background: none; border: none; color: var(--hero-gray); cursor: pointer;
+    font: 600 12px/1 var(--font-mono); text-decoration: underline; padding: 8px; min-height: 34px; }
+  .chip-clear:hover { color: #FFFFFF; }
+  .chip-clear[hidden] { display: none; }
+
+  /* glance stats — fills what used to be dead space */
+  .stats { display: flex; gap: var(--s6); border-left: 1px solid #262626;
+    padding-left: var(--s6); }
+  .stat { display: grid; gap: 5px; }
+  .stat b { font: 800 30px/1 var(--font-body); letter-spacing: -.02em; color: var(--hero-ink); }
+  .stat b.accent { color: var(--accent); }
+  .stat span { font: 600 10.5px/1.3 var(--font-mono); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--hero-dim); max-width: 11ch; }
+  .stat[hidden] { display: none; }
+
+  /* ---- Sheet (full-bleed white, closes the void) ---- */
+  .sheet { background: var(--sheet); padding: var(--s5) 0 var(--s8); }
+  .ai-note { font: 500 11.5px/1.5 var(--font-mono); color: var(--gray);
+    border-bottom: 1px solid var(--hairline); padding-bottom: var(--s3); margin-bottom: var(--s4); }
+  .ai-note b { color: var(--ink-soft); }
+  .panel { display: none; }
+  #tab-industry:checked ~ .sheet #panel-industry,
+  #tab-learning:checked ~ .sheet #panel-learning,
+  #tab-products:checked ~ .sheet #panel-products,
+  #tab-personal:checked ~ .sheet #panel-personal {
+    display: block; animation: panel-in .22s ease both; }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  .panel-intro { color: var(--gray); font: 500 13.5px/1.5 var(--font-mono); margin-bottom: var(--s5); }
+
+  .trim { font: 600 12.5px/1.5 var(--font-mono); color: var(--ink-soft);
+    background: var(--accent-soft); border-radius: 8px; padding: 10px var(--s4);
+    margin-bottom: var(--s5); display: flex; gap: var(--s3); align-items: center; flex-wrap: wrap; }
+  .trim[hidden] { display: none; }
+  .trim button { background: none; border: none; color: var(--accent-deep); cursor: pointer;
+    font: 700 12.5px/1 var(--font-mono); text-decoration: underline; padding: 6px 2px; }
+
+  .src-kicker { font: 700 10px/1.3 var(--font-mono); letter-spacing: .14em;
+    text-transform: uppercase; color: #5F5F5F; white-space: nowrap; }
+  .meta { font: 500 12px/1.5 var(--font-mono); color: var(--gray); display: flex;
+    gap: 9px; align-items: center; flex-wrap: wrap; }
+  .meta .also { color: var(--gray); }
+  /* AI provenance: one glyph, not a badge on all 30 items */
+  .gm { color: var(--accent-ink); font-size: 12px; margin-right: 5px; cursor: help; }
+
+  /* ---- Action rows — labelled, 40px+ targets ---- */
+  .actions { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: center; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    min-height: 40px; padding: 0 16px; border-radius: 9px; cursor: pointer;
+    font: 650 13.5px/1 var(--font-body); text-decoration: none; white-space: nowrap;
+    background: #FFFFFF; color: var(--ink-soft); border: 1px solid var(--line);
+    transition: border-color .12s, color .12s, background .12s, transform .1s; }
+  .btn:hover { border-color: #B9B9B9; color: var(--ink); }
+  .btn:active { transform: scale(.98); }
+  .btn-primary { background: var(--accent-ink); border-color: var(--accent-ink); color: #FFFFFF; }
+  .btn-primary:hover { background: #B23929; border-color: #B23929; color: #FFFFFF; }
+  .btn-sm { min-height: 38px; padding: 0 13px; font-size: 13px; }
+  .btn svg { fill: none; stroke: currentColor; stroke-width: 1.8; flex: none; }
+  .bm-btn.on { border-color: var(--accent-ink); color: var(--accent-ink); background: var(--accent-soft); }
+  .bm-btn.on svg { fill: currentColor; }
+
+  /* ---- Lead ---- */
+  .lead { position: relative; border: 1px solid var(--line); border-left: 5px solid var(--accent-ink);
+    border-radius: 14px; padding: var(--s5) var(--s6) var(--s5) var(--s5); margin-bottom: var(--s5);
+    box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 12px 34px rgba(0,0,0,.07);
+    display: grid; gap: var(--s3); }
+  .lead .top-row { display: flex; justify-content: space-between; align-items: center;
+    gap: var(--s3); flex-wrap: wrap; }
+  .lead .top-row .src-kicker { color: var(--accent-ink); }
+  .tag { font: 700 9.5px/1 var(--font-mono); letter-spacing: .13em; text-transform: uppercase;
+    color: var(--accent-deep); background: var(--accent-soft); padding: 6px 9px; border-radius: 5px; }
+  .lead h2 { font: 800 clamp(24px, 3.1vw, 33px)/1.16 var(--font-body); letter-spacing: -.025em; }
+  .lead h2 a { color: inherit; text-decoration: none; }
+  .lead h2 a:hover { color: var(--accent-ink); }
+  .lead .gist { font-size: 16px; line-height: 1.6; color: var(--ink-soft); max-width: 66ch; }
+  .lead .actions { margin-top: var(--s2); }
+
+  /* ---- Secondary cards ---- */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+  .grid[hidden] { display: none; }
+  .story { border: 1px solid var(--line); border-radius: 14px; padding: var(--s4);
+    display: flex; flex-direction: column; gap: var(--s3); background: #FFFFFF;
+    transition: transform .14s, box-shadow .14s; }
+  .story:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,.09); }
+  .story h3 { font: 700 17px/1.3 var(--font-body); letter-spacing: -.012em; }
+  .story h3 a { color: inherit; text-decoration: none; }
+  .story h3 a:hover { color: var(--accent-ink); }
+  .story .gist { font-size: 13.5px; line-height: 1.58; color: #4A4A4A; flex: 1; }
+  .story .actions { margin-top: auto; padding-top: var(--s1); }
+
+  /* ---- Tail rows — title first, hard left ---- */
+  .tail { margin-top: var(--s6); border-top: 1px solid var(--line); }
+  .tail[hidden] { display: none; }
+  .row { display: flex; gap: var(--s4); align-items: flex-start; justify-content: space-between;
+    padding: var(--s4) 2px; border-bottom: 1px solid var(--hairline); }
+  .row:hover { background: #FCFCFC; }
+  .row-main { min-width: 0; display: grid; gap: 7px; }
+  .row-title { font: 700 16px/1.35 var(--font-body); letter-spacing: -.01em; }
+  .row-title a { color: inherit; text-decoration: none; }
+  .row:hover .row-title a { color: var(--accent-ink); }
+  .row .gist { font-size: 13.5px; line-height: 1.5; color: #565656; max-width: 78ch; }
+  .row .actions { flex: none; }
+
+  .item.is-hidden { display: none; }
+  /* Read-state marks the *status*, not the content — greying the headline of an
+     already-read story makes revisiting it harder for no gain. */
+  .item.seen .gist { color: var(--gray); }
+  .item.seen .src-kicker::after { content: " · read"; color: #8A8A8A;
+    text-transform: none; letter-spacing: 0; font-weight: 500; }
+  .item.new-item .src-kicker::after { content: " · NEW"; color: var(--accent-ink); }
+
+  /* ---- Completion state — the payoff of a finite product ---- */
+  .done { margin-top: var(--s8); border-top: 2px solid var(--ink); padding-top: var(--s6);
+    text-align: center; display: grid; gap: var(--s3); justify-items: center; }
+  .done-h { font: 800 clamp(24px, 3vw, 32px)/1.15 var(--font-body); letter-spacing: -.03em; }
+  .done-sub { font: 500 14.5px/1.5 var(--font-body); color: var(--gray); }
+  .done-sub b { color: var(--ink); font-weight: 700; }
+  .done .actions { margin-top: var(--s3); justify-content: center; }
+  .done-next { font: 600 11px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase;
+    color: var(--gray); margin-top: var(--s3); }
+
+  /* ---- Footer (black band closes the composition) ---- */
+  .foot { background: var(--canvas); color: var(--hero-gray); padding: var(--s7) 0;
+    text-align: center; font: 500 12.5px/1.9 var(--font-mono); }
+  .foot a { color: var(--accent); text-decoration: none; }
+  .foot a:hover { text-decoration: underline; }
+  .provenance { color: #CFCFCF; margin-bottom: var(--s2); }
+  .provenance.degraded { color: var(--accent); font-weight: 600; }
+
+  /* ---- Saved drawer ---- */
+  .bm-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 59;
+    opacity: 0; visibility: hidden; transition: opacity .2s, visibility .2s; }
+  .bm-backdrop.open { opacity: 1; visibility: visible; }
+  /* Closed drawer is visibility:hidden — otherwise its shadow bleeds a grey band
+     down the right edge of the page and its controls stay in the tab order. */
+  .bm-drawer { position: fixed; top: 0; right: 0; height: 100%; width: min(420px, 94vw);
+    background: #FFFFFF; z-index: 60; transform: translateX(100%); visibility: hidden;
+    transition: transform .26s cubic-bezier(.4,0,.2,1), visibility .26s;
+    display: flex; flex-direction: column; }
+  .bm-drawer.open { transform: none; visibility: visible;
+    box-shadow: -20px 0 50px rgba(0,0,0,.5); }
+  .bm-head { display: flex; align-items: center; justify-content: space-between;
+    padding: var(--s5) var(--s5) var(--s3); border-bottom: 1px solid var(--line); }
+  .bm-head h2 { font: 800 20px/1 var(--font-body); letter-spacing: -.01em; }
+  .bm-head-actions { display: flex; align-items: center; gap: 6px; }
+  .bm-export, .bm-import-btn { background: none; border: 1px solid var(--line); color: var(--ink-soft);
+    font: 600 11px/1 var(--font-mono); padding: 9px 11px; border-radius: 7px; cursor: pointer; }
+  .bm-export:hover, .bm-import-btn:hover { color: var(--accent-ink); border-color: var(--accent-ink); }
+  .bm-close { background: none; border: none; color: var(--gray); font-size: 24px;
+    cursor: pointer; line-height: 1; padding: 4px 9px; border-radius: 6px; }
+  .bm-close:hover { color: var(--ink); }
+  .bm-newgroup { display: flex; gap: var(--s2); padding: var(--s3) var(--s5); border-bottom: 1px solid var(--line); }
+  .bm-newgroup input { flex: 1; background: #FAFAF9; border: 1px solid var(--line);
+    border-radius: 8px; color: var(--ink); padding: 10px 11px; font: 13px/1 inherit; }
+  .bm-newgroup input:focus { outline: none; border-color: var(--accent-ink); }
+  .bm-newgroup button { background: var(--accent-ink); color: #FFFFFF; border: none;
+    border-radius: 8px; padding: 0 15px; font: 700 13px/1 var(--font-mono); cursor: pointer; }
+  .bm-body { overflow-y: auto; padding: var(--s2) var(--s5) var(--s6); flex: 1; }
+  .bm-empty { color: var(--gray); font-size: 14px; text-align: center; padding: var(--s6) var(--s3); }
+  .bm-group { margin-top: var(--s4); }
+  .bm-group-h { display: flex; align-items: center; justify-content: space-between; gap: var(--s2);
+    padding-bottom: var(--s2); margin-bottom: var(--s2); border-bottom: 1px dashed var(--line); }
+  .bm-group-h .name { font: 700 12px/1 var(--font-mono); letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-soft); }
+  .bm-group-h .name .n { color: var(--gray); }
+  .bm-del-group { background: none; border: none; color: var(--gray); cursor: pointer;
+    font: 11px/1 var(--font-mono); padding: 6px 7px; border-radius: 5px; }
+  .bm-del-group:hover { color: var(--accent-ink); }
+  .bm-item { background: #FAFAF9; border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px; margin-bottom: 9px; }
+  .bm-item .t { display: block; color: var(--ink); text-decoration: none; font: 600 14px/1.32 var(--font-body); }
+  .bm-item .t:hover { color: var(--accent-ink); }
+  .bm-item .row2 { display: flex; align-items: center; gap: var(--s2); margin-top: var(--s2); }
+  .bm-item .src { font: 500 11px/1 var(--font-mono); color: var(--gray);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+  .bm-item select { margin-left: auto; background: #FFFFFF; color: var(--ink-soft);
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px; font: 11px/1 inherit; cursor: pointer; }
+  .bm-item .rm { background: none; border: none; color: var(--gray); cursor: pointer;
+    font-size: 15px; padding: 5px 7px; border-radius: 5px; }
+  .bm-item .rm:hover { color: var(--accent-ink); }
+
+  @media (max-width: 1000px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 860px) {
+    .hero .in { grid-template-columns: 1fr; gap: var(--s5); }
+    .stats { border-left: none; padding-left: 0; border-top: 1px solid #262626;
+      padding-top: var(--s4); gap: var(--s7); }
+    .stat b { font-size: 24px; }
+  }
+  @media (max-width: 720px) {
+    .in { padding: 0 var(--s4); }
+    .topbar .in { gap: var(--s3); }
+    .logo span.wm { display: none; }
+    .tab { padding: 13px; }
+    .hero { padding: var(--s5) 0 var(--s5); }
+    .hero h1 { font-size: 29px; }
+    /* Swap the stat panel for a one-line glance, and let each control row scroll
+       sideways instead of wrapping — together this lifts the first headline
+       roughly 300px up the page. */
+    .stats { display: none; }
+    .glance { display: block; }
+    .gen { display: none; }
+    .controls { gap: var(--s2); margin-top: var(--s4); }
+    .ctl { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .ctl::-webkit-scrollbar { display: none; }
+    .ctl-label { min-width: 0; flex: none; }
+    .seg, .chip, .chip-clear, .readout { flex: none; }
+    .grid { grid-template-columns: 1fr; }
+    .sheet { padding: var(--s5) 0 var(--s7); }
+    .lead { padding: var(--s4); }
+    .row { flex-direction: column; gap: var(--s3); }
+    .row .actions { width: 100%; }
+    .btn { flex: 1 1 auto; }
+    .stats { gap: var(--s5); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+  <a class="skip" href="#content">Skip to today's stories</a>
+  <input type="radio" name="brieftab" id="tab-industry" class="tabinput" checked>
+  <input type="radio" name="brieftab" id="tab-learning" class="tabinput">
+  <input type="radio" name="brieftab" id="tab-personal" class="tabinput">
+
+  <div class="topbar">
+    <div class="in">
+      <a class="logo" href="#content"><span class="mark">DB</span><span class="wm">Daily Brief</span></a>
+      <nav class="tabbar" aria-label="Sections">
+        <label for="tab-industry" class="tab tab-industry">The Wire <span class="n">6</span><span class="new-count" data-tab-key="industry"></span></label>
+        <label for="tab-learning" class="tab tab-learning">Deep Dives <span class="n">10</span><span class="new-count" data-tab-key="learning"></span></label>
+        <label for="tab-personal" class="tab tab-personal">Off the Clock <span class="n">14</span><span class="new-count" data-tab-key="personal"></span></label>
+      </nav>
+      <button class="saved-btn" id="bmTab" type="button" aria-label="Open your saved stories">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>
+        Saved <span class="n" id="bmCount">0</span>
+      </button>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="in">
+      <div>
+        <h1>The day in <em>tech</em>, distilled.</h1>
+        <p class="dateline">Thursday, 15 October 2026<span class="gen"> · generated 15 Oct 2026, 08:01</span></p>
+        <p class="glance"><b>30</b> stories · <b>~5 min</b> to skim<span id="glanceNew"></span></p>
+        <div class="controls">
+          <div class="ctl">
+            <span class="ctl-label">Show</span>
+            <div class="seg" id="budget" role="group" aria-label="How many stories per section">
+              <button type="button" data-budget="3">Top 3</button>
+              <button type="button" data-budget="8">Top 8</button>
+              <button type="button" data-budget="0" class="on">Everything</button>
+            </div>
+            <span class="readout" id="readout"></span>
+          </div>
+          <div class="ctl" id="chips">
+            <span class="ctl-label">Sources</span>
+            <button class="chip" type="button" data-src="hackernews">HN<span class="n">26</span></button>
+          <button class="chip" type="button" data-src="reddit">Reddit<span class="n">24</span></button>
+          <button class="chip" type="button" data-src="substack">Substack<span class="n">10</span></button>
+          <button class="chip" type="button" data-src="medium">Medium<span class="n">10</span></button>
+            <button class="chip-clear" id="chipClear" type="button" hidden>clear</button>
+          </div>
+        </div>
+      </div>
+      <aside class="stats" aria-label="Today at a glance">
+        <div class="stat"><b>30</b><span>stories today</span></div>
+        <div class="stat"><b>~5</b><span>min to skim</span></div>
+        <div class="stat" id="newStat" hidden><b class="accent" id="newNum">0</b><span>new since last visit</span></div>
+      </aside>
+    </div>
+  </header>
+
+  <main class="sheet" id="content">
+    <div class="in">
+      <p class="ai-note"><span class="gm" aria-hidden="true">&#10022;</span> marks an <b>AI-written</b> one-line summary · headlines and links are the originals</p>
+      <section id="panel-industry" class="panel">
+        <p class="panel-intro">What's moving across the industry — funding, deals, launches and power plays.</p>
+        <p class="trim" hidden><span class="trim-text"></span><button type="button" data-show-all>Show everything →</button></p>
+        <article class="item lead" data-src="hackernews" data-created="1791999923" data-rank="0" data-brief-item>
+        <div class="top-row">
+          <span class="src-kicker">Hacker News</span>
+          <span class="tag">Top story · most discussed</span>
+        </div>
+        <h2><a href="https://www.csoonline.com/article/4234854/ai-agents-arent-going-rogue-frontier-labs-are-skipping-security-basics.html">Containment and monitoring failures are to blame for AI hacking reports: experts</a></h2>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: experts say &#x27;rogue AI hacking&#x27; reports reflect weak lab containment and monitoring, not emergent malice; commenters dispute whether labs&#x27; evals are sloppy.</p>
+        <div class="meta">▲ 842 · 454 comments · 8h ago</div>
+        <div class="actions"><a class="btn btn-primary" href="https://www.csoonline.com/article/4234854/ai-agents-arent-going-rogue-frontier-labs-are-skipping-security-basics.html">Read the story →</a><a class="btn" href="https://news.ycombinator.com/item?id=50091788">454 comments</a><button class="btn bm-btn" type="button" aria-pressed="false" data-url="https://www.csoonline.com/article/4234854/ai-agents-arent-going-rogue-frontier-labs-are-skipping-security-basics.html" data-title="Containment and monitoring failures are to blame for AI hacking reports: experts" data-source="hackernews" data-label="Hacker News" data-gist="Why it matters: experts say &#x27;rogue AI hacking&#x27; reports reflect weak lab containment and monitoring, not emergent malice; commenters dispute whether labs&#x27; evals are sloppy." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=50091788"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <div class="grid">
+        <article class="item story" data-src="hackernews" data-created="1791970097" data-rank="1" data-brief-item>
+        <span class="src-kicker">Hacker News</span>
+        <h3><a href="https://www.not-ship.com/how-amazon-pushes-up-prices-all-across-the-internet/">How Amazon pushes up prices all across the Internet</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Commenters say Amazon search is flooded with dubious Chinese brands, so many now buy big items direct from manufacturers and use Amazon only for cheap basics.</p>
+        <div class="meta">▲ 729 · 595 comments · 17h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.not-ship.com/how-amazon-pushes-up-prices-all-across-the-internet/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=50084757">595 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.not-ship.com/how-amazon-pushes-up-prices-all-across-the-internet/" data-title="How Amazon pushes up prices all across the Internet" data-source="hackernews" data-label="Hacker News" data-gist="Commenters say Amazon search is flooded with dubious Chinese brands, so many now buy big items direct from manufacturers and use Amazon only for cheap basics." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=50084757"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item story" data-src="hackernews" data-created="1791995331" data-rank="2" data-brief-item>
+        <span class="src-kicker">Hacker News</span>
+        <h3><a href="https://www.androidauthority.com/google-auto-phone-number-verification-android-3723117/">Google is silently linking your phone number across all signed-in accounts</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: Google reportedly ties your phone number across all signed-in accounts; commenters see it as aggressive deanonymization and a reason to limit Google use.</p>
+        <div class="meta">▲ 396 · 99 comments · 10h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.androidauthority.com/google-auto-phone-number-verification-android-3723117/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=50090349">99 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.androidauthority.com/google-auto-phone-number-verification-android-3723117/" data-title="Google is silently linking your phone number across all signed-in accounts" data-source="hackernews" data-label="Hacker News" data-gist="Why it matters: Google reportedly ties your phone number across all signed-in accounts; commenters see it as aggressive deanonymization and a reason to limit Google use." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=50090349"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item story" data-src="hackernews" data-created="1792002772" data-rank="3" data-brief-item>
+        <span class="src-kicker">Hacker News</span>
+        <h3><a href="https://startupfortune.com/banks-are-now-trying-to-offload-the-ai-data-center-debt-they-just-underwrote/">Banks are now trying to offload the AI data center debt they just underwrote</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: banks are trying to sell off AI data center debt they underwrote; commenters say that&#x27;s normal syndication, but AI debt issuance has dropped.</p>
+        <div class="meta">▲ 305 · 223 comments · 7h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://startupfortune.com/banks-are-now-trying-to-offload-the-ai-data-center-debt-they-just-underwrote/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=50092664">223 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://startupfortune.com/banks-are-now-trying-to-offload-the-ai-data-center-debt-they-just-underwrote/" data-title="Banks are now trying to offload the AI data center debt they just underwrote" data-source="hackernews" data-label="Hacker News" data-gist="Why it matters: banks are trying to sell off AI data center debt they underwrote; commenters say that&#x27;s normal syndication, but AI debt issuance has dropped." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=50092664"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        </div>
+        <div class="tail">
+        <article class="item row" data-src="hackernews" data-created="1792003041" data-rank="4" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://dpa-international.com/politics/urn:newsml:dpa.com:20090101:261014-930-839530/">Fire at Starlink site in Bulgaria after suspected sabotage in Poland</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: a fire at a Bulgarian Starlink site after suspected sabotage in Poland signals rising physical threats to satellite infrastructure; officials added security.</p>
+          <div class="meta"><span class="src-kicker">Hacker News</span> · ▲ 295 · 204 comments · 7h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://dpa-international.com/politics/urn:newsml:dpa.com:20090101:261014-930-839530/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=50092730">204 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://dpa-international.com/politics/urn:newsml:dpa.com:20090101:261014-930-839530/" data-title="Fire at Starlink site in Bulgaria after suspected sabotage in Poland" data-source="hackernews" data-label="Hacker News" data-gist="Why it matters: a fire at a Bulgarian Starlink site after suspected sabotage in Poland signals rising physical threats to satellite infrastructure; officials added security." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=50092730"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="hackernews" data-created="1792009854" data-rank="5" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://sunshowers.io/posts/anthropic-mononoke/">Anthropic&#x27;s Scion is heavily inspired by Mononoke</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: claims Anthropic&#x27;s Scion borrows heavily from Mononoke; commenters debate whether failing to cite the inspiration is a real problem or just FAANG-style rebuilding.</p>
+          <div class="meta"><span class="src-kicker">Hacker News</span> · ▲ 263 · 114 comments · 6h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://sunshowers.io/posts/anthropic-mononoke/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=50094694">114 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://sunshowers.io/posts/anthropic-mononoke/" data-title="Anthropic&#x27;s Scion is heavily inspired by Mononoke" data-source="hackernews" data-label="Hacker News" data-gist="Why it matters: claims Anthropic&#x27;s Scion borrows heavily from Mononoke; commenters debate whether failing to cite the inspiration is a real problem or just FAANG-style rebuilding." data-cat="industry" data-discuss="https://news.ycombinator.com/item?id=50094694"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        </div>
+        <div class="done">
+          <p class="done-h">You're caught up.</p>
+          <p class="done-sub"><b class="doneCount">6</b> <span class="doneNoun">stories</span> in The Wire · <b class="doneSaved">0</b> saved today</p>
+          <div class="actions">
+            <button class="btn" type="button" data-open-saved>Review what you saved</button>
+            <a class="btn" href="../archive.html">Earlier editions</a>
+          </div>
+          <p class="done-next">Next edition tomorrow, 8:00</p>
+        </div>
+      </section>
+      <section id="panel-learning" class="panel">
+        <p class="panel-intro">Essays, ideas and new tech worth slowing down to understand.</p>
+        <p class="trim" hidden><span class="trim-text"></span><button type="button" data-show-all>Show everything →</button></p>
+        <article class="item lead" data-src="hackernews" data-created="1791990945" data-rank="0" data-brief-item>
+        <div class="top-row">
+          <span class="src-kicker">Hacker News</span>
+          <span class="tag">Top story · most discussed</span>
+        </div>
+        <h2><a href="https://scotthelme.co.uk/passkeys-are-not-a-trap/">Passkeys are not a trap</a></h2>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: rebuts the &#x27;passkeys are a trap&#x27; case; debate centers on password manager trust, UX flaws being fixed, and whether attestation could lock users out.</p>
+        <div class="meta">▲ 504 · 671 comments · 11h ago</div>
+        <div class="actions"><a class="btn btn-primary" href="https://scotthelme.co.uk/passkeys-are-not-a-trap/">Read the story →</a><a class="btn" href="https://news.ycombinator.com/item?id=50088935">671 comments</a><button class="btn bm-btn" type="button" aria-pressed="false" data-url="https://scotthelme.co.uk/passkeys-are-not-a-trap/" data-title="Passkeys are not a trap" data-source="hackernews" data-label="Hacker News" data-gist="Why it matters: rebuts the &#x27;passkeys are a trap&#x27; case; debate centers on password manager trust, UX flaws being fixed, and whether attestation could lock users out." data-cat="learning" data-discuss="https://news.ycombinator.com/item?id=50088935"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <div class="grid">
+        <article class="item story" data-src="substack" data-created="1792015244" data-rank="1" data-brief-item>
+        <span class="src-kicker">Product Growth</span>
+        <h3><a href="https://www.news.aakashg.com/p/how-the-best-pms-think-about-product-strategy">How you need to think about product strategy in the age of AI</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: product strategy in the AI era should help you say no; Tim Herbig illustrates this with a fictional used-car marketplace example.</p>
+        <div class="meta">Aakash Gupta · 4h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.news.aakashg.com/p/how-the-best-pms-think-about-product-strategy">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.news.aakashg.com/p/how-the-best-pms-think-about-product-strategy" data-title="How you need to think about product strategy in the age of AI" data-source="substack" data-label="Product Growth" data-gist="Why it matters: product strategy in the AI era should help you say no; Tim Herbig illustrates this with a fictional used-car marketplace example." data-cat="learning" data-discuss="https://www.news.aakashg.com/p/how-the-best-pms-think-about-product-strategy"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item story" data-src="medium" data-created="1792022463" data-rank="2" data-brief-item>
+        <span class="src-kicker">Medium · Towards AI</span>
+        <h3><a href="https://pub.towardsai.net/almost-right-engineering-for-partial-correctness-57beee9c76ad?source=rss----98111c9905da---4">Almost Right: Engineering for Partial Correctness</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: binary pass/fail is the wrong way to judge agent output; argues for partial-credit scoring, repair loops, and a taxonomy of near-miss failures.</p>
+        <div class="meta">Shrashti Singhal · 2h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://pub.towardsai.net/almost-right-engineering-for-partial-correctness-57beee9c76ad?source=rss----98111c9905da---4">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://pub.towardsai.net/almost-right-engineering-for-partial-correctness-57beee9c76ad?source=rss----98111c9905da---4" data-title="Almost Right: Engineering for Partial Correctness" data-source="medium" data-label="Medium · Towards AI" data-gist="Why it matters: binary pass/fail is the wrong way to judge agent output; argues for partial-credit scoring, repair loops, and a taxonomy of near-miss failures." data-cat="learning" data-discuss="https://pub.towardsai.net/almost-right-engineering-for-partial-correctness-57beee9c76ad?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item story" data-src="substack" data-created="1792014052" data-rank="3" data-brief-item>
+        <span class="src-kicker">Latent.Space</span>
+        <h3><a href="https://www.latent.space/p/crossing-the-threshold">Crossing the Threshold: How OpenAI and Anthropic Approach Autonomy and Safety in Financial Agents</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: OpenAI, Anthropic and finance firms discuss how to give agents useful autonomy while keeping consequential financial decisions under human control.</p>
+        <div class="meta">Richard MacManus · 4h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.latent.space/p/crossing-the-threshold">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.latent.space/p/crossing-the-threshold" data-title="Crossing the Threshold: How OpenAI and Anthropic Approach Autonomy and Safety in Financial Agents" data-source="substack" data-label="Latent.Space" data-gist="Why it matters: OpenAI, Anthropic and finance firms discuss how to give agents useful autonomy while keeping consequential financial decisions under human control." data-cat="learning" data-discuss="https://www.latent.space/p/crossing-the-threshold"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        </div>
+        <div class="tail">
+        <article class="item row" data-src="medium" data-created="1792018863" data-rank="4" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://pub.towardsai.net/how-much-autonomy-should-an-ai-agent-have-the-economics-of-verification-and-recovery-a6cb5744ef17?source=rss----98111c9905da---4">How Much Autonomy Should an AI Agent Have? The Economics of Verification and Recovery</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: argues maximum autonomy isn&#x27;t the goal; use a marginal test weighing verification and recovery costs to decide how far to delegate to agents.</p>
+          <div class="meta"><span class="src-kicker">Medium · Towards AI</span> · Diogo Santos · 3h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://pub.towardsai.net/how-much-autonomy-should-an-ai-agent-have-the-economics-of-verification-and-recovery-a6cb5744ef17?source=rss----98111c9905da---4">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://pub.towardsai.net/how-much-autonomy-should-an-ai-agent-have-the-economics-of-verification-and-recovery-a6cb5744ef17?source=rss----98111c9905da---4" data-title="How Much Autonomy Should an AI Agent Have? The Economics of Verification and Recovery" data-source="medium" data-label="Medium · Towards AI" data-gist="Why it matters: argues maximum autonomy isn&#x27;t the goal; use a marginal test weighing verification and recovery costs to decide how far to delegate to agents." data-cat="learning" data-discuss="https://pub.towardsai.net/how-much-autonomy-should-an-ai-agent-have-the-economics-of-verification-and-recovery-a6cb5744ef17?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="substack" data-created="1792010109" data-rank="5" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.latent.space/p/lab-in-the-loop-at-compute-speed">Lab-in-the-Loop at Compute Speed — Ian Quigley, Leash Bio </a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: Leash Bio explains how it tamed DNA-encoded library assays and uses that data to catch cheating models and train chemist-like AI agents.</p>
+          <div class="meta"><span class="src-kicker">Latent.Space</span> · Brandon Anderson · 5h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.latent.space/p/lab-in-the-loop-at-compute-speed">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.latent.space/p/lab-in-the-loop-at-compute-speed" data-title="Lab-in-the-Loop at Compute Speed — Ian Quigley, Leash Bio " data-source="substack" data-label="Latent.Space" data-gist="Why it matters: Leash Bio explains how it tamed DNA-encoded library assays and uses that data to catch cheating models and train chemist-like AI agents." data-cat="learning" data-discuss="https://www.latent.space/p/lab-in-the-loop-at-compute-speed"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="medium" data-created="1792017062" data-rank="6" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://pub.towardsai.net/part-xiv-broadcast-variables-the-driver-bottleneck-nobody-profiles-87189bb691ed?source=rss----98111c9905da---4">Part XIV — Broadcast Variables: The Driver Bottleneck Nobody Profiles</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: Spark broadcast joins skip shuffles but depend on driver heap and a 300-second timeout, so the &#x27;small&#x27; table can crash the driver at 2:47 AM.</p>
+          <div class="meta"><span class="src-kicker">Medium · Towards AI</span> · chakshu_salgotra · 4h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://pub.towardsai.net/part-xiv-broadcast-variables-the-driver-bottleneck-nobody-profiles-87189bb691ed?source=rss----98111c9905da---4">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://pub.towardsai.net/part-xiv-broadcast-variables-the-driver-bottleneck-nobody-profiles-87189bb691ed?source=rss----98111c9905da---4" data-title="Part XIV — Broadcast Variables: The Driver Bottleneck Nobody Profiles" data-source="medium" data-label="Medium · Towards AI" data-gist="Why it matters: Spark broadcast joins skip shuffles but depend on driver heap and a 300-second timeout, so the &#x27;small&#x27; table can crash the driver at 2:47 AM." data-cat="learning" data-discuss="https://pub.towardsai.net/part-xiv-broadcast-variables-the-driver-bottleneck-nobody-profiles-87189bb691ed?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="medium" data-created="1792015261" data-rank="7" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://pub.towardsai.net/ai-can-write-code-so-what-makes-a-developer-valuable-in-2026-56e90fb193d4?source=rss----98111c9905da---4">AI Can Write Code.
+So What Makes a Developer Valuable in 2026?</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: asks what makes a developer valuable in 2026 now that AI writes code, reflecting on shifting skills beyond just producing code.</p>
+          <div class="meta"><span class="src-kicker">Medium · Towards AI</span> · Let&#x27;s Talk Basics · 4h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://pub.towardsai.net/ai-can-write-code-so-what-makes-a-developer-valuable-in-2026-56e90fb193d4?source=rss----98111c9905da---4">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://pub.towardsai.net/ai-can-write-code-so-what-makes-a-developer-valuable-in-2026-56e90fb193d4?source=rss----98111c9905da---4" data-title="AI Can Write Code.
+So What Makes a Developer Valuable in 2026?" data-source="medium" data-label="Medium · Towards AI" data-gist="Why it matters: asks what makes a developer valuable in 2026 now that AI writes code, reflecting on shifting skills beyond just producing code." data-cat="learning" data-discuss="https://pub.towardsai.net/ai-can-write-code-so-what-makes-a-developer-valuable-in-2026-56e90fb193d4?source=rss----98111c9905da---4"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="hackernews" data-created="1792010904" data-rank="8" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://anoma.ly/notes/opencode-2-0/">OpenCode 2.0</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: OpenCode 2.0 is an open-source coding agent whose server-plus-native-app model enables remote sessions, though critics cite ignored bugs and regressions.</p>
+          <div class="meta"><span class="src-kicker">Hacker News</span> · ▲ 338 · 138 comments · 5h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://anoma.ly/notes/opencode-2-0/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=50094994">138 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://anoma.ly/notes/opencode-2-0/" data-title="OpenCode 2.0" data-source="hackernews" data-label="Hacker News" data-gist="Why it matters: OpenCode 2.0 is an open-source coding agent whose server-plus-native-app model enables remote sessions, though critics cite ignored bugs and regressions." data-cat="products" data-discuss="https://news.ycombinator.com/item?id=50094994"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1791985425" data-rank="9" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.reddit.com/r/aiagents/comments/1x609ek/we_built_an_agent_memory_system_on_surrealdb/">We built an agent memory system on SurrealDB, scoring 77.2% on BEAM</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: a team built an agent memory system on SurrealDB that scores 77.2% on the BEAM benchmark, a possible option for giving agents persistent memory.</p>
+          <div class="meta"><span class="src-kicker">r/aiagents</span> · 12h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/aiagents/comments/1x609ek/we_built_an_agent_memory_system_on_surrealdb/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/aiagents/comments/1x609ek/we_built_an_agent_memory_system_on_surrealdb/" data-title="We built an agent memory system on SurrealDB, scoring 77.2% on BEAM" data-source="reddit" data-label="r/aiagents" data-gist="Why it matters: a team built an agent memory system on SurrealDB that scores 77.2% on the BEAM benchmark, a possible option for giving agents persistent memory." data-cat="products" data-discuss="https://www.reddit.com/r/aiagents/comments/1x609ek/we_built_an_agent_memory_system_on_surrealdb/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        </div>
+        <div class="done">
+          <p class="done-h">You're caught up.</p>
+          <p class="done-sub"><b class="doneCount">10</b> <span class="doneNoun">stories</span> in Deep Dives · <b class="doneSaved">0</b> saved today</p>
+          <div class="actions">
+            <button class="btn" type="button" data-open-saved>Review what you saved</button>
+            <a class="btn" href="../archive.html">Earlier editions</a>
+          </div>
+          <p class="done-next">Next edition tomorrow, 8:00</p>
+        </div>
+      </section>
+      <section id="panel-personal" class="panel">
+        <p class="panel-intro">Your world beyond tech — local, hobby and the rest of your personal feed.</p>
+        <p class="trim" hidden><span class="trim-text"></span><button type="button" data-show-all>Show everything →</button></p>
+        <article class="item lead" data-src="hackernews" data-created="1792005990" data-rank="0" data-brief-item>
+        <div class="top-row">
+          <span class="src-kicker">Hacker News</span>
+          <span class="tag">Top story · most discussed</span>
+        </div>
+        <h2><a href="https://jjmaxwell4.com/writing/things-to-know-when-you-get-cancer/">Things to know when you get cancer</a></h2>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: practical, hard-won advice for a diagnosis—keep a shared doc, dictate notes after appointments, and watch insurance paperwork like COB questionnaires.</p>
+        <div class="meta">▲ 844 · 211 comments · 7h ago</div>
+        <div class="actions"><a class="btn btn-primary" href="https://jjmaxwell4.com/writing/things-to-know-when-you-get-cancer/">Read the story →</a><a class="btn" href="https://news.ycombinator.com/item?id=50093568">211 comments</a><button class="btn bm-btn" type="button" aria-pressed="false" data-url="https://jjmaxwell4.com/writing/things-to-know-when-you-get-cancer/" data-title="Things to know when you get cancer" data-source="hackernews" data-label="Hacker News" data-gist="Why it matters: practical, hard-won advice for a diagnosis—keep a shared doc, dictate notes after appointments, and watch insurance paperwork like COB questionnaires." data-cat="personal" data-discuss="https://news.ycombinator.com/item?id=50093568"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <div class="grid">
+        <article class="item story" data-src="reddit" data-created="1792009821" data-rank="1" data-brief-item>
+        <span class="src-kicker">r/developersindia</span>
+        <h3><a href="https://www.reddit.com/r/developersIndia/comments/1x69hu3/wanna_leave_it_and_do_something_else_what_do_you/">Wanna leave IT and do something else, what do you guys suggest?</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: a thread on career burnout in Indian IT, where people weigh leaving software for other fields and what realistic alternatives exist.</p>
+        <div class="meta">6h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/developersIndia/comments/1x69hu3/wanna_leave_it_and_do_something_else_what_do_you/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/developersIndia/comments/1x69hu3/wanna_leave_it_and_do_something_else_what_do_you/" data-title="Wanna leave IT and do something else, what do you guys suggest?" data-source="reddit" data-label="r/developersindia" data-gist="Why it matters: a thread on career burnout in Indian IT, where people weigh leaving software for other fields and what realistic alternatives exist." data-cat="personal" data-discuss="https://www.reddit.com/r/developersIndia/comments/1x69hu3/wanna_leave_it_and_do_something_else_what_do_you/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item story" data-src="reddit" data-created="1792007397" data-rank="2" data-brief-item>
+        <span class="src-kicker">r/chatgptpromptgenius</span>
+        <h3><a href="https://www.reddit.com/r/ChatGPTPromptGenius/comments/1x68p5d/have_questions/">Have questions</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A vague post asking for help in a prompt-sharing subreddit, with no clear tech substance; more a general question than a discussion worth reading.</p>
+        <div class="meta">6h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/ChatGPTPromptGenius/comments/1x68p5d/have_questions/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/ChatGPTPromptGenius/comments/1x68p5d/have_questions/" data-title="Have questions" data-source="reddit" data-label="r/chatgptpromptgenius" data-gist="A vague post asking for help in a prompt-sharing subreddit, with no clear tech substance; more a general question than a discussion worth reading." data-cat="personal" data-discuss="https://www.reddit.com/r/ChatGPTPromptGenius/comments/1x68p5d/have_questions/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item story" data-src="reddit" data-created="1792002717" data-rank="3" data-brief-item>
+        <span class="src-kicker">r/desiweddings</span>
+        <h3><a href="https://i.redd.it/5y4ux6nzuivh1.jpeg">Chandni Chowk Lehenga Recommendations – Need Delivery to Australia in 6 Weeks</a></h3>
+        <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Someone shopping for wedding lehengas in Delhi&#x27;s Chandni Chowk asks for shop recommendations that can ship to Australia within six weeks.</p>
+        <div class="meta">7h ago</div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://i.redd.it/5y4ux6nzuivh1.jpeg">Read →</a><a class="btn btn-sm" href="https://www.reddit.com/r/DesiWeddings/comments/1x673sd/chandni_chowk_lehenga_recommendations_need/">Discuss</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://i.redd.it/5y4ux6nzuivh1.jpeg" data-title="Chandni Chowk Lehenga Recommendations – Need Delivery to Australia in 6 Weeks" data-source="reddit" data-label="r/desiweddings" data-gist="Someone shopping for wedding lehengas in Delhi&#x27;s Chandni Chowk asks for shop recommendations that can ship to Australia within six weeks." data-cat="personal" data-discuss="https://www.reddit.com/r/DesiWeddings/comments/1x673sd/chandni_chowk_lehenga_recommendations_need/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        </div>
+        <div class="tail">
+        <article class="item row" data-src="reddit" data-created="1792002522" data-rank="4" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.reddit.com/r/hiringcafe/comments/1x670mw/can_we_please_block_bright_vision_technologies/">Can we please block Bright Vision Technologies?</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A job seeker asks moderators to block Bright Vision Technologies from listings, complaining about the staffing firm&#x27;s postings on the job search site.</p>
+          <div class="meta"><span class="src-kicker">r/hiringcafe</span> · 8h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/hiringcafe/comments/1x670mw/can_we_please_block_bright_vision_technologies/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/hiringcafe/comments/1x670mw/can_we_please_block_bright_vision_technologies/" data-title="Can we please block Bright Vision Technologies?" data-source="reddit" data-label="r/hiringcafe" data-gist="A job seeker asks moderators to block Bright Vision Technologies from listings, complaining about the staffing firm&#x27;s postings on the job search site." data-cat="personal" data-discuss="https://www.reddit.com/r/hiringcafe/comments/1x670mw/can_we_please_block_bright_vision_technologies/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1791995105" data-rank="5" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://i.redd.it/ecuh1ixc8ivh1.jpeg">lisandro ig story post</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: Manchester United fans react to a player&#x27;s Instagram story post, speculating on what it signals about his mood and future.</p>
+          <div class="meta"><span class="src-kicker">r/manchesterunited</span> · 10h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://i.redd.it/ecuh1ixc8ivh1.jpeg">Read →</a><a class="btn btn-sm" href="https://www.reddit.com/r/ManchesterUnited/comments/1x64a4f/lisandro_ig_story_post/">Discuss</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://i.redd.it/ecuh1ixc8ivh1.jpeg" data-title="lisandro ig story post" data-source="reddit" data-label="r/manchesterunited" data-gist="Why it matters: Manchester United fans react to a player&#x27;s Instagram story post, speculating on what it signals about his mood and future." data-cat="personal" data-discuss="https://www.reddit.com/r/ManchesterUnited/comments/1x64a4f/lisandro_ig_story_post/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1791991771" data-rank="6" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.reddit.com/r/MaleFashionMarket/comments/1x62xr3/sell_japanese_american_selvedge_denim_jeans/">[SELL] Japanese &amp; American Selvedge Denim Jeans + American &amp; Canadian Heritage Service Lace-Up Boots. ConUS to ConUs shipping only.</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A seller lists Japanese and American selvedge denim jeans plus heritage lace-up boots, shipping only within the continental US.</p>
+          <div class="meta"><span class="src-kicker">r/malefashionmarket</span> · 11h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/MaleFashionMarket/comments/1x62xr3/sell_japanese_american_selvedge_denim_jeans/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/MaleFashionMarket/comments/1x62xr3/sell_japanese_american_selvedge_denim_jeans/" data-title="[SELL] Japanese &amp; American Selvedge Denim Jeans + American &amp; Canadian Heritage Service Lace-Up Boots. ConUS to ConUs shipping only." data-source="reddit" data-label="r/malefashionmarket" data-gist="A seller lists Japanese and American selvedge denim jeans plus heritage lace-up boots, shipping only within the continental US." data-cat="personal" data-discuss="https://www.reddit.com/r/MaleFashionMarket/comments/1x62xr3/sell_japanese_american_selvedge_denim_jeans/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1791987842" data-rank="7" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://i.redd.it/flwic8frmhvh1.jpeg">At least theres some small comfort this week</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Manchester United fans find a bit of consolation after a rough week, trading reactions and lighter moments from the club&#x27;s recent run.</p>
+          <div class="meta"><span class="src-kicker">r/manchesterunited</span> · 12h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://i.redd.it/flwic8frmhvh1.jpeg">Read →</a><a class="btn btn-sm" href="https://www.reddit.com/r/ManchesterUnited/comments/1x61ahr/at_least_theres_some_small_comfort_this_week/">Discuss</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://i.redd.it/flwic8frmhvh1.jpeg" data-title="At least theres some small comfort this week" data-source="reddit" data-label="r/manchesterunited" data-gist="Manchester United fans find a bit of consolation after a rough week, trading reactions and lighter moments from the club&#x27;s recent run." data-cat="personal" data-discuss="https://www.reddit.com/r/ManchesterUnited/comments/1x61ahr/at_least_theres_some_small_comfort_this_week/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="hackernews" data-created="1792004638" data-rank="8" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.telegraph.co.uk/news/2026/10/13/suicide-rates-highest-ever-among-middle-aged-men/">Suicide rates highest ever among middle-aged men</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Commenters, many of them middle-aged, describe job loss to AI, sleeplessness and pessimism, reacting to record suicide rates among middle-aged men.</p>
+          <div class="meta"><span class="src-kicker">Hacker News</span> · ▲ 281 · 373 comments · 7h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.telegraph.co.uk/news/2026/10/13/suicide-rates-highest-ever-among-middle-aged-men/">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=50093180">373 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.telegraph.co.uk/news/2026/10/13/suicide-rates-highest-ever-among-middle-aged-men/" data-title="Suicide rates highest ever among middle-aged men" data-source="hackernews" data-label="Hacker News" data-gist="Commenters, many of them middle-aged, describe job loss to AI, sleeplessness and pessimism, reacting to record suicide rates among middle-aged men." data-cat="personal" data-discuss="https://news.ycombinator.com/item?id=50093180"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1791984845" data-rank="9" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://i.redd.it/7hxwkmfudhvh1.png">Auto wala</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A Bengaluru resident posts about an auto-rickshaw driver encounter, the kind of everyday city fare and driver gripe the local sub swaps stories about.</p>
+          <div class="meta"><span class="src-kicker">r/bengaluru</span> · 12h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://i.redd.it/7hxwkmfudhvh1.png">Read →</a><a class="btn btn-sm" href="https://www.reddit.com/r/Bengaluru/comments/1x60030/auto_wala/">Discuss</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://i.redd.it/7hxwkmfudhvh1.png" data-title="Auto wala" data-source="reddit" data-label="r/bengaluru" data-gist="A Bengaluru resident posts about an auto-rickshaw driver encounter, the kind of everyday city fare and driver gripe the local sub swaps stories about." data-cat="personal" data-discuss="https://www.reddit.com/r/Bengaluru/comments/1x60030/auto_wala/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="substack" data-created="1792007521" data-rank="10" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.readfeedme.com/p/feed-me-west-coast-c61">Feed Me: West Coast ☀️🌴🌉</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: a lifestyle newsletter on a New York club opening in SF, Chateau Marmont for babies, and startup deal gossip at SF Standard.</p>
+          <div class="meta"><span class="src-kicker">Feed Me</span> · Emily Sundberg · 6h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.readfeedme.com/p/feed-me-west-coast-c61">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.readfeedme.com/p/feed-me-west-coast-c61" data-title="Feed Me: West Coast ☀️🌴🌉" data-source="substack" data-label="Feed Me" data-gist="Why it matters: a lifestyle newsletter on a New York club opening in SF, Chateau Marmont for babies, and startup deal gossip at SF Standard." data-cat="personal" data-discuss="https://www.readfeedme.com/p/feed-me-west-coast-c61"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1791977464" data-rank="11" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://i.redd.it/givzq4ewrgvh1.jpeg">Caught in the transition between golden hour and midnight.(shot on Samsung S26 Ultra).</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>A photographer shares a twilight shot taken on a Samsung S26 Ultra, showing the transition between golden hour and midnight.</p>
+          <div class="meta"><span class="src-kicker">r/photographyindia</span> · 15h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://i.redd.it/givzq4ewrgvh1.jpeg">Read →</a><a class="btn btn-sm" href="https://www.reddit.com/r/PhotographyIndia/comments/1x5wpdf/caught_in_the_transition_between_golden_hour_and/">Discuss</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://i.redd.it/givzq4ewrgvh1.jpeg" data-title="Caught in the transition between golden hour and midnight.(shot on Samsung S26 Ultra)." data-source="reddit" data-label="r/photographyindia" data-gist="A photographer shares a twilight shot taken on a Samsung S26 Ultra, showing the transition between golden hour and midnight." data-cat="personal" data-discuss="https://www.reddit.com/r/PhotographyIndia/comments/1x5wpdf/caught_in_the_transition_between_golden_hour_and/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="hackernews" data-created="1791994140" data-rank="12" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.dataforprogress.org/blog/2026/9/29/americans-social-activity-has-steeply-declined-in-the-past-30-years">Americans&#x27; social activity has steeply declined in the past 30 years</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: commenters debate why Americans socialize far less than 30 years ago, citing coffeeshop meetups, lost adult friendships and intolerance.</p>
+          <div class="meta"><span class="src-kicker">Hacker News</span> · ▲ 247 · 268 comments · 10h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.dataforprogress.org/blog/2026/9/29/americans-social-activity-has-steeply-declined-in-the-past-30-years">Read →</a><a class="btn btn-sm" href="https://news.ycombinator.com/item?id=50089921">268 comments</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.dataforprogress.org/blog/2026/9/29/americans-social-activity-has-steeply-declined-in-the-past-30-years" data-title="Americans&#x27; social activity has steeply declined in the past 30 years" data-source="hackernews" data-label="Hacker News" data-gist="Why it matters: commenters debate why Americans socialize far less than 30 years ago, citing coffeeshop meetups, lost adult friendships and intolerance." data-cat="personal" data-discuss="https://news.ycombinator.com/item?id=50089921"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        <article class="item row" data-src="reddit" data-created="1791976804" data-rank="13" data-brief-item>
+        <div class="row-main">
+          <h4 class="row-title"><a href="https://www.reddit.com/r/developersIndia/comments/1x5wes9/70_lpa_fixed_only_ctc_in_startup_vs_72lpa_60_lpa/">70 LPA fixed only CTC in startup vs 72LPA (60 LPA fixed + 12 LPA variable) in Mid size company. Help me choose guys</a></h4>
+          <p class="gist"><span class="gm" title="AI-written summary" aria-hidden="true">&#10022;</span>Why it matters: an Indian developer weighs a 70 LPA all-fixed startup offer against a 72 LPA midsize offer with 60 fixed and 12 variable.</p>
+          <div class="meta"><span class="src-kicker">r/developersindia</span> · 15h ago</div>
+        </div>
+        <div class="actions"><a class="btn btn-primary btn-sm" href="https://www.reddit.com/r/developersIndia/comments/1x5wes9/70_lpa_fixed_only_ctc_in_startup_vs_72lpa_60_lpa/">Read →</a><button class="btn bm-btn btn-sm" type="button" aria-pressed="false" data-url="https://www.reddit.com/r/developersIndia/comments/1x5wes9/70_lpa_fixed_only_ctc_in_startup_vs_72lpa_60_lpa/" data-title="70 LPA fixed only CTC in startup vs 72LPA (60 LPA fixed + 12 LPA variable) in Mid size company. Help me choose guys" data-source="reddit" data-label="r/developersindia" data-gist="Why it matters: an Indian developer weighs a 70 LPA all-fixed startup offer against a 72 LPA midsize offer with 60 fixed and 12 variable." data-cat="personal" data-discuss="https://www.reddit.com/r/developersIndia/comments/1x5wes9/70_lpa_fixed_only_ctc_in_startup_vs_72lpa_60_lpa/"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg><span class="bm-label">Save</span></button></div>
+      </article>
+        </div>
+        <div class="done">
+          <p class="done-h">You're caught up.</p>
+          <p class="done-sub"><b class="doneCount">14</b> <span class="doneNoun">stories</span> in Off the Clock · <b class="doneSaved">0</b> saved today</p>
+          <div class="actions">
+            <button class="btn" type="button" data-open-saved>Review what you saved</button>
+            <a class="btn" href="../archive.html">Earlier editions</a>
+          </div>
+          <p class="done-next">Next edition tomorrow, 8:00</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="in">
+      <div class="provenance">Personalized from — Reddit: your home RSS · Substack: your subscriptions · Medium: your follows</div>
+      Built from <a href="https://hn.algolia.com/api">Hacker News</a>,
+      <a href="https://www.reddit.com">Reddit</a>, Substack &amp; Medium ·
+      <a href="../archive.html">archive</a>
+    </div>
+  </footer>
+
+  <div class="bm-backdrop" id="bmBackdrop"></div>
+  <aside class="bm-drawer" id="bmDrawer" aria-label="Saved stories">
+    <div class="bm-head">
+      <h2>Saved</h2>
+      <div class="bm-head-actions">
+        <button class="bm-export" id="bmExport" type="button" title="Export as JSON">Export</button>
+        <button class="bm-import-btn" id="bmImportBtn" type="button" title="Import from JSON">Import</button>
+        <input type="file" id="bmImportFile" accept=".json" style="display:none">
+        <button class="bm-close" id="bmClose" type="button" aria-label="Close">&times;</button>
+      </div>
+    </div>
+    <div class="bm-newgroup">
+      <input id="bmNewName" type="text" placeholder="New group name&#8230;" maxlength="40" aria-label="New group name">
+      <button id="bmAddGroup" type="button">Add</button>
+    </div>
+    <div class="bm-body" id="bmBody"></div>
+  </aside>
+
+  <script>
+  (function () {
+    "use strict";
+    function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+
+    /* ---- Saved stories ---- */
+    var savedCount = 0;
+    try {
+      var BM_KEY = "db_bookmarks_v1", UNSORTED = "__unsorted__";
+      function bmLoad() {
+        try { var s = JSON.parse(localStorage.getItem(BM_KEY)); if (s && s.items) { s.groups = s.groups || []; return s; } } catch (e) { console.error("[daily-brief] bmLoad", e); }
+        return { groups: [], items: {} };
+      }
+      function bmSave() { try { localStorage.setItem(BM_KEY, JSON.stringify(bmState)); } catch (e) { console.error("[daily-brief] bmSave", e); } }
+      var bmState = bmLoad();
+      var body = document.getElementById("bmBody");
+      var countEl = document.getElementById("bmCount");
+      var tabBtn = document.getElementById("bmTab");
+      var drawer = document.getElementById("bmDrawer");
+      var backdrop = document.getElementById("bmBackdrop");
+      var newName = document.getElementById("bmNewName");
+
+      function count() { return Object.keys(bmState.items).length; }
+      function groupsAll() { return [{ id: UNSORTED, name: "Unsorted" }].concat(bmState.groups); }
+      function itemsIn(gid) {
+        return Object.keys(bmState.items).map(function (k) { return bmState.items[k]; })
+          .filter(function (it) { return (it.group || UNSORTED) === gid; })
+          .sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
+      }
+      function updateCount() {
+        savedCount = count();
+        countEl.textContent = savedCount;
+        tabBtn.classList.toggle("has", savedCount > 0);
+        document.querySelectorAll(".doneSaved").forEach(function (n) { n.textContent = savedCount; });
+      }
+      function syncButtons() {
+        document.querySelectorAll(".bm-btn").forEach(function (b) {
+          var on = !!bmState.items[b.getAttribute("data-url")];
+          b.classList.toggle("on", on);
+          var lab = b.querySelector(".bm-label");
+          if (lab) lab.textContent = on ? "Saved" : "Save";
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+      }
+      function itemNode(it) {
+        var w = el("div", "bm-item");
+        var a = el("a", "t", it.title || it.url); a.href = it.url; a.target = "_blank"; a.rel = "noopener";
+        w.appendChild(a);
+        var r2 = el("div", "row2");
+        r2.appendChild(el("span", "src", it.label || it.source || ""));
+        var sel = document.createElement("select");
+        groupsAll().forEach(function (g) {
+          var o = document.createElement("option"); o.value = g.id; o.textContent = g.name;
+          if ((it.group || UNSORTED) === g.id) o.selected = true;
+          sel.appendChild(o);
+        });
+        sel.onchange = function () { bmState.items[it.url].group = sel.value; bmSave(); render(); };
+        r2.appendChild(sel);
+        var rm = el("button", "rm", "×"); rm.title = "Remove"; rm.setAttribute("aria-label", "Remove");
+        rm.onclick = function () { delete bmState.items[it.url]; bmSave(); render(); syncButtons(); updateCount(); };
+        r2.appendChild(rm);
+        w.appendChild(r2);
+        return w;
+      }
+      function render() {
+        body.innerHTML = "";
+        if (!count()) { body.appendChild(el("div", "bm-empty", "Nothing saved yet. Hit Save on any story and it lands here — stored in this browser, exportable as JSON.")); return; }
+        groupsAll().forEach(function (g) {
+          var items = itemsIn(g.id);
+          if (!items.length && g.id === UNSORTED) return;
+          var wrap = el("div", "bm-group");
+          var h = el("div", "bm-group-h");
+          var name = el("span", "name", g.name);
+          name.appendChild(el("span", "n", "  " + items.length));
+          h.appendChild(name);
+          if (g.id !== UNSORTED) {
+            var del = el("button", "bm-del-group", "delete");
+            del.onclick = function () {
+              bmState.groups = bmState.groups.filter(function (x) { return x.id !== g.id; });
+              Object.keys(bmState.items).forEach(function (k) { if (bmState.items[k].group === g.id) bmState.items[k].group = UNSORTED; });
+              bmSave(); render();
+            };
+            h.appendChild(del);
+          }
+          wrap.appendChild(h);
+          items.forEach(function (it) { wrap.appendChild(itemNode(it)); });
+          body.appendChild(wrap);
+        });
+      }
+      function addGroup() {
+        var name = (newName.value || "").trim();
+        if (!name) return;
+        bmState.groups.push({ id: "g" + Date.now() + Math.floor(Math.random() * 1000), name: name });
+        newName.value = ""; bmSave(); render();
+      }
+      document.getElementById("bmAddGroup").onclick = addGroup;
+      newName.addEventListener("keydown", function (e) { if (e.key === "Enter") addGroup(); });
+
+      function openDrawer() { drawer.classList.add("open"); backdrop.classList.add("open"); render(); document.getElementById("bmClose").focus(); }
+      function closeDrawer() { drawer.classList.remove("open"); backdrop.classList.remove("open"); tabBtn.focus(); }
+      tabBtn.onclick = openDrawer;
+      document.getElementById("bmClose").onclick = closeDrawer;
+      backdrop.onclick = closeDrawer;
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && drawer.classList.contains("open")) closeDrawer(); });
+      document.querySelectorAll("[data-open-saved]").forEach(function (b) { b.onclick = openDrawer; });
+
+      document.getElementById("bmExport").onclick = function () {
+        try {
+          var blob = new Blob([JSON.stringify(bmState, null, 2)], { type: "application/json" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "daily-brief-saved.json";
+          a.click();
+          URL.revokeObjectURL(a.href);
+        } catch (e) { console.error("[daily-brief] export", e); }
+      };
+      document.getElementById("bmImportBtn").onclick = function () { document.getElementById("bmImportFile").click(); };
+      document.getElementById("bmImportFile").onchange = function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          try {
+            var imported = JSON.parse(ev.target.result);
+            if (imported && imported.items) {
+              for (var k in imported.items) { bmState.items[k] = imported.items[k]; }
+              if (imported.groups) {
+                imported.groups.forEach(function (g) {
+                  if (!bmState.groups.some(function (x) { return x.id === g.id; })) bmState.groups.push(g);
+                });
+              }
+              bmSave(); render(); syncButtons(); updateCount();
+            }
+          } catch (err) { alert("Invalid saved-stories file"); }
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+      };
+
+      document.querySelectorAll(".bm-btn").forEach(function (btn) {
+        var u = btn.getAttribute("data-url");
+        if (!u) return;
+        btn.addEventListener("click", function () {
+          if (bmState.items[u]) { delete bmState.items[u]; }
+          else {
+            bmState.items[u] = {
+              url: u, title: btn.getAttribute("data-title"), source: btn.getAttribute("data-source"),
+              label: btn.getAttribute("data-label"), gist: btn.getAttribute("data-gist"),
+              cat: btn.getAttribute("data-cat"), discuss: btn.getAttribute("data-discuss"),
+              group: UNSORTED, savedAt: Date.now()
+            };
+          }
+          bmSave(); syncButtons(); updateCount();
+          if (drawer.classList.contains("open")) render();
+        });
+      });
+      syncButtons(); updateCount();
+    } catch (e) { console.error("[daily-brief] saved-stories init failed", e); }
+
+    /* ---- Visit state ---- */
+    try {
+      var VISIT_KEY = "db_visit_state";
+      var now = Date.now();
+      var visitState;
+      try { visitState = JSON.parse(localStorage.getItem(VISIT_KEY)) || {}; } catch (e) { visitState = {}; }
+      var lastVisit = visitState.lastVisit || 0;
+      var seen = visitState.seen || {};
+      var SEEN_TTL = 14 * 24 * 60 * 60 * 1000;
+      Object.keys(seen).forEach(function (key) {
+        if (typeof seen[key] !== "number") seen[key] = now;
+        if (now - seen[key] > SEEN_TTL) delete seen[key];
+      });
+      var tabNewCounts = {}, totalNew = 0;
+      document.querySelectorAll("[data-brief-item][data-created]").forEach(function (card) {
+        var created = parseInt(card.getAttribute("data-created"), 10) * 1000;
+        var link = card.querySelector("h2 a, h3 a, .row-title a");
+        var key = link ? link.href : String(created);
+        if (seen[key]) {
+          card.classList.add("seen");
+        } else if (created > lastVisit && lastVisit > 0) {
+          card.classList.add("new-item");
+          totalNew++;
+          var panel = card.closest(".panel");
+          if (panel) {
+            var pid = panel.id.replace("panel-", "");
+            tabNewCounts[pid] = (tabNewCounts[pid] || 0) + 1;
+          }
+        }
+        seen[key] = now;
+      });
+      document.querySelectorAll(".new-count[data-tab-key]").forEach(function (n) {
+        var c = tabNewCounts[n.getAttribute("data-tab-key")] || 0;
+        if (c > 0) n.textContent = c + " new";
+      });
+      if (totalNew > 0) {
+        document.getElementById("newNum").textContent = totalNew;
+        document.getElementById("newStat").hidden = false;
+        var gn = document.getElementById("glanceNew");
+        if (gn) { gn.className = "new"; gn.textContent = " · " + totalNew + " new"; }
+      }
+      try { localStorage.setItem(VISIT_KEY, JSON.stringify({ lastVisit: now, seen: seen })); } catch (e) {}
+    } catch (e) { console.error("[daily-brief] visit-state init failed", e); }
+
+    /* ---- View controls: source filter (multi-select, hides) + show budget ----
+       One applyView() owns visibility so the two controls compose instead of
+       fighting: budget counts positions within the *filtered* set. */
+    try {
+      var FILTER_KEY = "db_source_filter_v2", BUDGET_KEY = "db_budget_v1";
+      var SECS_PER_STORY = 10;
+      var chipBar = document.getElementById("chips");
+      var chips = chipBar ? chipBar.querySelectorAll(".chip") : [];
+      var clearBtn = document.getElementById("chipClear");
+      var budgetBar = document.getElementById("budget");
+      var readout = document.getElementById("readout");
+
+      var active = new Set();
+      try { (JSON.parse(sessionStorage.getItem(FILTER_KEY)) || []).forEach(function (s) { active.add(s); }); } catch (e) {}
+      var budget = 0;
+      try { budget = parseInt(localStorage.getItem(BUDGET_KEY), 10) || 0; } catch (e) { budget = 0; }
+
+      function persist() {
+        try {
+          if (active.size) sessionStorage.setItem(FILTER_KEY, JSON.stringify([].concat(Array.from(active))));
+          else sessionStorage.removeItem(FILTER_KEY);
+          localStorage.setItem(BUDGET_KEY, String(budget));
+        } catch (e) {}
+      }
+
+      function applyView() {
+        var grandTotal = 0;
+        document.querySelectorAll(".panel").forEach(function (panel) {
+          var shown = 0, matched = 0;
+          panel.querySelectorAll("[data-brief-item]").forEach(function (card) {
+            var srcOk = !active.size || active.has(card.getAttribute("data-src"));
+            if (srcOk) matched++;
+            var vis = srcOk && (!budget || shown < budget);
+            if (vis) shown++;
+            card.classList.toggle("is-hidden", !vis);
+            /* keep hidden cards out of the tab order */
+            card.querySelectorAll("a, button").forEach(function (n) {
+              if (vis) n.removeAttribute("tabindex"); else n.setAttribute("tabindex", "-1");
+            });
+          });
+          ["grid", "tail"].forEach(function (cls) {
+            var box = panel.querySelector("." + cls);
+            if (box) box.hidden = !box.querySelector("[data-brief-item]:not(.is-hidden)");
+          });
+          var trim = panel.querySelector(".trim");
+          if (trim) {
+            var hiddenByBudget = matched - shown;
+            trim.hidden = hiddenByBudget <= 0;
+            var label = trim.querySelector(".trim-text");
+            if (label) label.textContent = "Showing the top " + shown + " of " + matched + " — " + hiddenByBudget + " more below your cutoff.";
+          }
+          var dc = panel.querySelector(".doneCount");
+          if (dc) dc.textContent = shown;
+          var dn = panel.querySelector(".doneNoun");
+          if (dn) dn.textContent = shown === 1 ? "story" : "stories";
+          grandTotal += shown;
+        });
+        if (readout) {
+          var mins = Math.max(1, Math.round(grandTotal * SECS_PER_STORY / 60));
+          readout.textContent = "≈ " + mins + " min";
+        }
+        chips.forEach(function (c) {
+          var on = active.has(c.getAttribute("data-src"));
+          c.classList.toggle("on", on);
+          c.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        if (clearBtn) clearBtn.hidden = active.size === 0;
+        if (budgetBar) budgetBar.querySelectorAll("button").forEach(function (b) {
+          var on = parseInt(b.getAttribute("data-budget"), 10) === budget;
+          b.classList.toggle("on", on);
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+      }
+
+      chips.forEach(function (c) {
+        c.addEventListener("click", function () {
+          var s = c.getAttribute("data-src");
+          if (active.has(s)) active.delete(s); else active.add(s);
+          persist(); applyView();
+        });
+      });
+      if (clearBtn) clearBtn.addEventListener("click", function () { active.clear(); persist(); applyView(); });
+      if (budgetBar) budgetBar.querySelectorAll("button").forEach(function (b) {
+        b.addEventListener("click", function () {
+          budget = parseInt(b.getAttribute("data-budget"), 10) || 0;
+          persist(); applyView();
+        });
+      });
+      document.querySelectorAll("[data-show-all]").forEach(function (b) {
+        b.addEventListener("click", function () { budget = 0; persist(); applyView(); });
+      });
+      applyView();
+    } catch (e) { console.error("[daily-brief] view-controls init failed", e); }
+  })();
+  </script>
+</body>
+</html>
